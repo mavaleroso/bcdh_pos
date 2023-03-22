@@ -5,7 +5,7 @@ import sys
 
 
 def main():
-    """Run administrative tasks."""
+    """Run administrative tasks. Test"""
     os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'bcdh_pos.settings')
     try:
         from django.core.management import execute_from_command_line
