@@ -9,3 +9,7 @@ def index(request):
 @csrf_exempt
 def login(request):
     return render(request, 'login.html')
+
+@csrf_exempt
+def dashboard(request):
+    return render(request, 'index.html')

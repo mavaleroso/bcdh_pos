@@ -129,7 +129,7 @@
             <h3 class="mb-1 fw-bold">Welcome to Vuexy! 👋</h3>
             <p class="mb-4">Please sign-in to your account and start the adventure</p>
 
-            <form id="formAuthentication" class="mb-3" action="index.html" method="POST">
+            <form id="formAuthentication" class="mb-3" action="{% url 'dashboard' %}" method="POST">
               <div class="mb-3">
                 <label for="email" class="form-label">Email or Username</label>
                 <input
@@ -166,7 +166,7 @@
                   <label class="form-check-label" for="remember-me"> Remember Me </label>
                 </div>
               </div>
-              <button class="btn btn-primary d-grid w-100">Sign in</button>
+              <button type="submit" class="btn btn-primary d-grid w-100">Sign in</button>
             </form>
 
             <p class="text-center">
