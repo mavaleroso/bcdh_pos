@@ -12,4 +12,4 @@ def login(request):
 
 @csrf_exempt
 def dashboard(request):
-    return render(request, 'index.html')
+    return render(request, 'dashboard.html')
