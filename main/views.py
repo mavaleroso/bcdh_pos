@@ -1,6 +1,9 @@
 from django.http import HttpResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
+from django.http import JsonResponse, HttpResponse
+from django.contrib.auth import authenticate, login as auth_login
+from django.shortcuts import render, redirect
 
 
 def index(request):
@@ -12,4 +15,5 @@ def login(request):
 
 @csrf_exempt
 def dashboard(request):
-    return render(request, 'index.html')
+    return render(request, 'dashboard.html')
+
