@@ -38,14 +38,13 @@ class AuthUser(models.Model):
     first_name = models.CharField(max_length=150)
     last_name = models.CharField(max_length=150)
     email = models.CharField(max_length=254)
-    is_staff = models.IntegerField()
-    is_active = models.IntegerField()
+    is_staff = models.BooleanField(default=True)
+    is_active = models.BooleanField(default=True)
     date_joined = models.DateTimeField()
 
     class Meta:
         managed = False
         db_table = 'auth_user'
-
 
 class AuthUserGroups(models.Model):
     user = models.ForeignKey(AuthUser, models.DO_NOTHING)
@@ -124,7 +123,7 @@ class Company(models.Model):
 
 class Generic(models.Model):
     name = models.CharField(max_length=128, blank=True, null=True)
-    is_active = models.CharField(max_length=128, blank=True, null=True)
+    is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
     class Meta:
@@ -133,7 +132,7 @@ class Generic(models.Model):
 
 class SubGeneric(models.Model):
     name = models.CharField(max_length=128, blank=True, null=True)
-    is_active = models.CharField(max_length=128, blank=True, null=True)
+    is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
     class Meta:
@@ -157,42 +156,155 @@ class Unit(models.Model):
         managed = True
         db_table = 'unit'
 
-# class Users(models.Model):
-#     first_name = models.CharField(max_length=128, blank=True, null=True)
-#     middle_name = models.CharField(max_length=128, blank=True, null=True)
-#     last_name = models.CharField(max_length=128, blank=True, null=True)
-#     birthdate = models.DateField(blank=True, null=True)
-#     sex = models.CharField(max_length=128, blank=True, null=True)
-#     address = models.CharField(max_length=128, blank=True, null=True)
-#     email = models.CharField(max_length=128, blank=True, null=True)
-#     position = models.CharField(max_length=128, blank=True, null=True)
-#     username = models.CharField(max_length=128, blank=True, null=True)
-#     password = models.CharField(max_length=128, blank=True, null=True)
-#     created_at = models.DateTimeField(blank=True, null=True)
-#     updated_at = models.DateTimeField(blank=True, null=True)
-#     class Meta:
-#         managed = False
-#         db_table = 'user'
+class UserDetails(models.Model):
+    user = models.OneToOneField(AuthUser, on_delete=models.CASCADE)
+    middle_name = models.CharField(max_length=128, blank=True, null=True)
+    birthdate = models.DateField(blank=True, null=True)
+    sex = models.CharField(max_length=128, blank=True, null=True)
+    address = models.CharField(max_length=128, blank=True, null=True)
+    position = models.CharField(max_length=128, blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
+    class Meta:
+        managed = True
+        db_table = 'user_details'
 
 
+class Item(models.Model):
+    type_id = models.CharField(max_length=128, blank=True, null=True)
+    generic_id = models.ForeignKey(Generic, models.DO_NOTHING)
+    sub_generic_id = models.ForeignKey(SubGeneric, models.DO_NOTHING)
+    description = models.CharField(max_length=300, blank=True, null=True)
+    brand_id = models.ForeignKey(Brand, models.DO_NOTHING)
+    company_id = models.ForeignKey(Company, models.DO_NOTHING)
+    unit_id = models.ForeignKey(Unit, models.DO_NOTHING)
+    quantity = models.IntegerField(max_length=128, blank=True, null=True)
+    unit_price = models.DecimalField(max_digits=30, decimal_places=10, blank=True, null=True)
+    retail_price = models.DecimalField(max_digits=30, decimal_places=10, blank=True, null=True)
+    is_damaged = models.CharField(max_length=128, blank=True, null=True)
+    user_id = models.ForeignKey(AuthUser, models.DO_NOTHING)
+    delivered_date = models.DateTimeField(blank=True, null=True)
+    created_at = models.DateTimeField(blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
+    deleted_at = models.DateTimeField(blank=True, null=True)
+    class Meta:
+        managed = True
+        db_table = 'item'
 
-# class item(models.Model):
-#     type_id = models.CharField(max_length=128, blank=True, null=True)
-#     generic_id = models.ForeignKey(Generic, models.DO_NOTHING)
-#     sub_generic_id = models.ForeignKey(SubGeneric, models.DO_NOTHING)
-#     description = models.CharField(max_length=300, blank=True, null=True)
-#     brand_id = models.ForeignKey(Brand, models.DO_NOTHING)
-#     company_id = models.ForeignKey(Company, models.DO_NOTHING)
-#     unit_id = models.ForeignKey(Unit, models.DO_NOTHING)
-#     quantity = models.IntegerField()
-#     unit_price = models.IntegerField()
-#     retail_price = models.IntegerField()
-#     is_damaged = models.CharField(max_length=128, blank=True, null=True)
-#     user_id = models.ForeignKey(Users, models.DO_NOTHING)
-#     delivered_date = models.DateTimeField(blank=True, null=True)
-#     created_at = models.DateTimeField(blank=True, null=True)
-#     updated_at = models.DateTimeField(blank=True, null=True)
-#     deleted_at = models.DateTimeField(blank=True, null=True)
-#     class Meta:
-#         managed = False
-#         db_table = 'item'
+class EditRequests(models.Model):
+    item_id = models.ForeignKey(Item, models.DO_NOTHING)
+    status = models.CharField(max_length=128, blank=True, null=True)
+    user_id = models.ForeignKey(AuthUser, models.DO_NOTHING)
+    created_at = models.DateTimeField(blank=True, null=True)
+    class Meta:
+        managed = True
+        db_table = 'edit_requests'
+
+class ClientType(models.Model):
+    name = models.CharField(max_length=128, blank=True, null=True)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
+    class Meta:
+        managed = True
+        db_table = 'client_type'
+
+class Clients(models.Model):
+    client_type_id = models.ForeignKey(ClientType, models.DO_NOTHING)
+    first_name = models.CharField(max_length=128, blank=True, null=True)
+    middle_name = models.CharField(max_length=128, blank=True, null=True)
+    last_name = models.DateField(blank=True, null=True)
+    birthdate = models.CharField(max_length=128, blank=True, null=True)
+    sex = models.CharField(max_length=128, blank=True, null=True)
+    address = models.CharField(max_length=128, blank=True, null=True)
+    occupation = models.CharField(max_length=128, blank=True, null=True)
+    created_at = models.DateTimeField(blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
+    deleted_at = models.DateTimeField(blank=True, null=True)
+    class Meta:
+        managed = True
+        db_table = 'clients'
+
+class ItemDetails(models.Model):
+    item_id = models.ForeignKey(Item, models.DO_NOTHING)
+    barcode = models.CharField(max_length=128, blank=True, null=True)
+    expiration_date = models.DateTimeField(blank=True, null=True)
+    created_at = models.DateTimeField(blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
+    deleted_at = models.DateTimeField(blank=True, null=True)
+    class Meta:
+        managed = True
+        db_table = 'item_details'
+
+class Location(models.Model):
+    name = models.CharField(max_length=128, blank=True, null=True)
+    created_at = models.DateTimeField(blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
+    class Meta:
+        managed = True
+        db_table = 'location'
+
+class ItemLocation(models.Model):
+    item_id = models.ForeignKey(Item, models.DO_NOTHING)
+    location_id = models.ForeignKey(Location, models.DO_NOTHING)
+    quantity = models.IntegerField(max_length=128, blank=True, null=True)
+    created_at = models.DateTimeField(blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
+    class Meta:
+        managed = True
+        db_table = 'item_location'
+
+class Discounts(models.Model):
+    name = models.CharField(max_length=128, blank=True, null=True)
+    percentage = models.FloatField(null=True, blank=True, default=0)
+    is_fixed_amount = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    created_at = models.DateTimeField(blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
+    class Meta:
+        managed = True
+        db_table = 'discounts'
+
+class Sales(models.Model):
+    client_id = models.ForeignKey(Clients, models.DO_NOTHING)
+    transaction_code = models.CharField(max_length=128, blank=True, null=True)
+    discount_id = models.ForeignKey(Discounts, models.DO_NOTHING)
+    is_er = models.BooleanField(default=False)
+    user_id = models.ForeignKey(AuthUser, models.DO_NOTHING)
+    status = models.CharField(max_length=128, blank=True, null=True)
+    remarks = models.CharField(max_length=255, blank=True, null=True)
+    created_at = models.DateTimeField(blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
+    class Meta:
+        managed = True
+        db_table = 'sales'
+
+class Payment(models.Model):
+    sales_id = models.ForeignKey(Sales, models.DO_NOTHING)
+    amount_paid = models.DecimalField(max_digits=30, decimal_places=10, blank=True, null=True)
+    created_at = models.DateTimeField(blank=True, null=True)
+    class Meta:
+        managed = True
+        db_table = 'payment'
+
+class InpatientSales(models.Model):
+    transaction_code = models.CharField(max_length=128, blank=True, null=True)
+    client_id = models.ForeignKey(Clients, models.DO_NOTHING)
+    user_id = models.ForeignKey(AuthUser, models.DO_NOTHING)
+    status = models.CharField(max_length=128, blank=True, null=True)
+    remarks = models.CharField(max_length=255, blank=True, null=True)
+    created_at = models.DateTimeField(blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
+    class Meta:
+        managed = True
+        db_table = 'inpatient_sales'
+
+class OutItems(models.Model):
+    sales_id = models.ForeignKey(Sales, models.DO_NOTHING)
+    inpatient_sales_id = models.ForeignKey(InpatientSales, models.DO_NOTHING)
+    item_id = models.ForeignKey(Item, models.DO_NOTHING)
+    quantity = models.IntegerField(max_length=128, blank=True, null=True)
+    discounted_amount = models.DecimalField(max_digits=30, decimal_places=10, blank=True, null=True)
+    created_at = models.DateTimeField(blank=True, null=True)
+    class Meta:
+        managed = True
+        db_table = 'out_items'
