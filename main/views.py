@@ -11,12 +11,13 @@ from django.contrib import messages
 def index(request):
     if request.user.is_authenticated:
         return redirect("dashboard")
-    else: 
+    else:
         return redirect("login")
+
 
 @csrf_exempt
 def login(request):
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and request.user.is_superuser == True:
         return redirect("dashboard")
     if request.method == 'POST':
         username = request.POST['username']
@@ -24,25 +25,23 @@ def login(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             auth_login(request, user)
-            request.session['user_id'] = user.id;
-            request.session['username'] = user.username;
-            request.session['fullname'] = user.first_name + user.last_name;
+            request.session['user_id'] = user.id
+            request.session['username'] = user.username
+            request.session['fullname'] = user.first_name + user.last_name
             return redirect("dashboard")
         else:
             messages.error(request, 'Invalid Username and Password.')
-        
+
     return render(request, 'login.html')
 
 
 @login_required(login_url='login')
 def dashboard(request):
     return render(request, 'dashboard.html')
-  
-    
+
+
 @csrf_exempt
 def logout(request):
     auth_logout(request)
     request.session.flush()
     return redirect("login")
-
-
