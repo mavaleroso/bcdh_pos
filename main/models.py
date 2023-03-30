@@ -169,8 +169,17 @@ class UserDetails(models.Model):
         db_table = 'user_details'
 
 
+class ItemType(models.Model):
+    name = models.CharField(max_length=128, blank=True, null=True)
+    created_at = models.DateTimeField(blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True)
+    class Meta:
+        managed = True
+        db_table = 'item_type'
+
+
 class Item(models.Model):
-    type_id = models.CharField(max_length=128, blank=True, null=True)
+    type = models.ForeignKey(ItemType, models.DO_NOTHING)
     generic = models.ForeignKey(Generic, models.DO_NOTHING)
     sub_generic = models.ForeignKey(SubGeneric, models.DO_NOTHING)
     description = models.CharField(max_length=300, blank=True, null=True)
