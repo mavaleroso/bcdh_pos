@@ -11,5 +11,5 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 
 
-def receive(request):
-    return render(request, 'inventory/receive.html')
+def inventory_in(request):
+    return render(request, 'inventory/in.html')

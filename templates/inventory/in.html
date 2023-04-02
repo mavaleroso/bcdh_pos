@@ -89,18 +89,29 @@
                                     <label class="form-label" for="item-quantity">Item Quantity</label>
                                     <div class="input-group input-group-merge">
                                         <input type="text" id="item-quantity" class="form-control" />
-                                        <span class="input-group-text">Box</span>
+                                        <span id="item-quantity-unit" class="input-group-text"></span>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label" for="item-quantity-pcs">Quantity in PC/s</label>
+                                    <label class="form-label" for="item-quantity-pcs">Quantity Per Item Unit in PC/s</label>
                                     <div class="input-group input-group-merge">
                                         <input type="text" id="item-quantity-pcs" class="form-control" />
                                         <span class="input-group-text">PC/s</span>
                                     </div>
                                 </div>
                                 <div class="col-md-6">
-                                    <label class="form-label" for="retail-price">Retail Price</label>
+                                    <label class="form-label" for="total-quantity-pcs">Total Quantity Per PC/s</label>
+                                    <div class="input-group input-group-merge">
+                                        <input type="text" id="total-quantity-pcs" class="form-control" readonly />
+                                        <span class="input-group-text">PC/s</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="retail-price">Retail Price Per <span id="retail-price-unit">Unit</span></label>
+                                    <input type="text" id="retail-price" class="form-control" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="retail-price">Retail Price Per PC/s</label>
                                     <input type="text" id="retail-price" class="form-control" />
                                 </div>
                             </div>
@@ -142,4 +153,40 @@
     <!-- /Sticky Actions -->
 </div>
 <!-- / Content -->
-{% endblock %}
+{% endblock %} {% block footer_scripts %}
+<script>
+    $(document).ready(function () {
+        let item_unit_id = $('#item-unit')
+        let item_quantity_unit_id = $('#item-quantity-unit')
+        let retail_price_unit_id = $('#retail-price-unit')
+        let item_quantity_id = $('#item-quantity')
+        let tbl_item_details = $('#tbl-item-details')
+
+        item_unit_id.on('change', function () {
+            item_quantity_unit_id.text(item_unit_id.val())
+            retail_price_unit_id.text(item_unit_id.val())
+        })
+
+        item_quantity_id.on('keyup', function () {
+            let item_quantity_val = item_quantity_id.val() ?? 0
+            let tbl_item_details_html = ''
+            tbl_item_details.remove()
+            for (let i = 0; i > item_quantity_val; i++) {
+                tbl_item_details_html +=
+                    '<tr>' +
+                    '<td>' +
+                    '<div class="input-group input-group-merge">' +
+                    '<span class="input-group-text" id="basic-addon-search31"><i class="ti ti-barcode"></i></span>' +
+                    '<input type="text" class="form-control" aria-describedby="basic-addon-search31" />' +
+                    '</div>' +
+                    '</td>' +
+                    '<td>' +
+                    '<input class="form-control" type="date" value="" id="html5-date-input" />' +
+                    '</td>' +
+                    '</tr>'
+            }
+            tbl_item_details.append(tbl_item_details_html)
+        })
+    })
+</script>
+{% endblock footer_scripts %}
