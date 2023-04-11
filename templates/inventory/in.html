@@ -27,36 +27,40 @@
                             <div class="row g-3">
                                 <div class="col-md-6">
                                     <label class="form-label" for="item-type">Item type</label>
+
                                     <select id="item-type" class="select2 form-select" data-allow-clear="true">
-                                        <option value="">Select</option>
-                                        <option value="Medicine">Medicine</option>
-                                        <option value="Supply">Supply</option>
+                                        <option></option>
+		              			        {% for row in item_type %}
+              						        <option value="{{ row.id }}">{{ row.name }}</option>	
+		              			        {% endfor %}
                                     </select>
+                                    
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label" for="company">Company</label>
                                     <select id="company" class="select2 form-select" data-allow-clear="true">
-                                        <option value="">Select</option>
-                                        <option value="Generic Pharmacy">Generic Pharmacy</option>
-                                        <option value="C&C Pharmacy">C&C Pharmacy</option>
+                                        <option></option>
+                                        {% for row in company %}
+                                            <option value="{{ row.id }}">{{ row.name }}</option>	
+                                        {% endfor %}
                                     </select>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label" for="generic">Generic</label>
                                     <select id="generic" class="select2 form-select" data-allow-clear="true">
-                                        <option value="">Select</option>
-                                        <option value="Ambroxol">Ambroxol</option>
-                                        <option value="Amlodipine">Amlodipine</option>
-                                        <option value="Ascorbic Acid">Ascorbic Acid</option>
+                                        <option></option>
+                                        {% for row in generic %}
+                                            <option value="{{ row.id }}">{{ row.name }}</option>	
+                                        {% endfor %}
                                     </select>
                                 </div>
                                 <div class="col-md-6">
                                     <label class="form-label" for="sub-generic">Sub-generic</label>
                                     <select id="sub-generic" class="select2 form-select" data-allow-clear="true">
-                                        <option value="">Select</option>
-                                        <option value="Expel">Expel</option>
-                                        <option value="Amvasc">Amvasc</option>
-                                        <option value="Ceelin">Ceelin</option>
+                                        <option></option>
+                                        {% for row in sub_generic %}
+                                            <option value="{{ row.id }}">{{ row.name }}</option>	
+                                        {% endfor %}
                                     </select>
                                 </div>
                                 <div class="col-12">
@@ -66,10 +70,10 @@
                                 <div class="col-md-6">
                                     <label class="form-label" for="brand">Brand</label>
                                     <select id="brand" class="select2 form-select" data-allow-clear="true">
-                                        <option value="">Select</option>
-                                        <option value="Calpol">Calpol</option>
-                                        <option value="Hedex">Hedex</option>
-                                        <option value="Panadol">Panadol</option>
+                                        <option></option>
+                                        {% for row in brand %}
+                                            <option value="{{ row.id }}">{{ row.name }}</option>	
+                                        {% endfor %}
                                     </select>
                                 </div>
                                 <div class="col-md-6">
@@ -79,10 +83,10 @@
                                 <div class="col-md-6">
                                     <label class="form-label" for="item-unit">Item unit</label>
                                     <select id="item-unit" class="select2 form-select" data-allow-clear="true">
-                                        <option value="">Select</option>
-                                        <option value="Box">Box</option>
-                                        <option value="Dozen">Dozen</option>
-                                        <option value="Packs">Packs</option>
+                                        <option></option>
+                                        {% for row in item_unit %}
+                                            <option value="{{ row.id }}">{{ row.name }}</option>	
+                                        {% endfor %}
                                     </select>
                                 </div>
                                 <div class="col-md-6">
