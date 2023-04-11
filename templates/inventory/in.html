@@ -1,0 +1,192 @@
+{% extends 'index.html' %} {% block content %} {% load staticfiles %}
+<!-- Content -->
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="fw-bold py-3 mb-4">
+        <span class="text-muted fw-light">Inventory/</span>
+        Receive
+    </h4>
+    <!-- Sticky Actions -->
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div
+                    class="card-header sticky-element bg-label-secondary d-flex justify-content-sm-between align-items-sm-center flex-column flex-sm-row"
+                >
+                    <h5 class="card-title mb-sm-0 me-2">Receive Item/s Form</h5>
+                    <div class="action-btns">
+                        <button class="btn btn-label-primary me-3">
+                            <span class="align-middle"> Reset</span>
+                        </button>
+                        <button class="btn btn-primary">Submit</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-8 mx-auto">
+                            <!-- 1. Delivery Address -->
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label" for="item-type">Item type</label>
+                                    <select id="item-type" class="select2 form-select" data-allow-clear="true">
+                                        <option value="">Select</option>
+                                        <option value="Medicine">Medicine</option>
+                                        <option value="Supply">Supply</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="company">Company</label>
+                                    <select id="company" class="select2 form-select" data-allow-clear="true">
+                                        <option value="">Select</option>
+                                        <option value="Generic Pharmacy">Generic Pharmacy</option>
+                                        <option value="C&C Pharmacy">C&C Pharmacy</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="generic">Generic</label>
+                                    <select id="generic" class="select2 form-select" data-allow-clear="true">
+                                        <option value="">Select</option>
+                                        <option value="Ambroxol">Ambroxol</option>
+                                        <option value="Amlodipine">Amlodipine</option>
+                                        <option value="Ascorbic Acid">Ascorbic Acid</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="sub-generic">Sub-generic</label>
+                                    <select id="sub-generic" class="select2 form-select" data-allow-clear="true">
+                                        <option value="">Select</option>
+                                        <option value="Expel">Expel</option>
+                                        <option value="Amvasc">Amvasc</option>
+                                        <option value="Ceelin">Ceelin</option>
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label" for="description">Description</label>
+                                    <textarea name="description" class="form-control" id="address" rows="2"></textarea>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="brand">Brand</label>
+                                    <select id="brand" class="select2 form-select" data-allow-clear="true">
+                                        <option value="">Select</option>
+                                        <option value="Calpol">Calpol</option>
+                                        <option value="Hedex">Hedex</option>
+                                        <option value="Panadol">Panadol</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="unit-price">Unit Price</label>
+                                    <input type="text" id="unit-price" class="form-control" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="item-unit">Item unit</label>
+                                    <select id="item-unit" class="select2 form-select" data-allow-clear="true">
+                                        <option value="">Select</option>
+                                        <option value="Box">Box</option>
+                                        <option value="Dozen">Dozen</option>
+                                        <option value="Packs">Packs</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="item-quantity">Item Quantity</label>
+                                    <div class="input-group input-group-merge">
+                                        <input type="text" id="item-quantity" class="form-control" />
+                                        <span id="item-quantity-unit" class="input-group-text"></span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="item-quantity-pcs">Quantity Per Item Unit in PC/s</label>
+                                    <div class="input-group input-group-merge">
+                                        <input type="text" id="item-quantity-pcs" class="form-control" />
+                                        <span class="input-group-text">PC/s</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="total-quantity-pcs">Total Quantity Per PC/s</label>
+                                    <div class="input-group input-group-merge">
+                                        <input type="text" id="total-quantity-pcs" class="form-control" readonly />
+                                        <span class="input-group-text">PC/s</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="retail-price">Retail Price Per <span id="retail-price-unit">Unit</span></label>
+                                    <input type="text" id="retail-price" class="form-control" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="retail-price">Retail Price Per PC/s</label>
+                                    <input type="text" id="retail-price" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="divider divider-dashed">
+                                    <div class="divider-text"></div>
+                                </div>
+
+                                <div class="table-responsive text-nowrap">
+                                    <table class="table">
+                                        <thead class="table-light text-center">
+                                            <tr>
+                                                <th>Barcode</th>
+                                                <th>Expiration Date</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="table-border-bottom-0">
+                                            <tr>
+                                                <td>
+                                                    <div class="input-group input-group-merge">
+                                                        <span class="input-group-text" id="basic-addon-search31"><i class="ti ti-barcode"></i></span>
+                                                        <input type="text" class="form-control" aria-describedby="basic-addon-search31" />
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <input class="form-control" type="date" value="" id="html5-date-input" />
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Sticky Actions -->
+</div>
+<!-- / Content -->
+{% endblock %} {% block footer_scripts %}
+<script>
+    $(document).ready(function () {
+        let item_unit_id = $('#item-unit')
+        let item_quantity_unit_id = $('#item-quantity-unit')
+        let retail_price_unit_id = $('#retail-price-unit')
+        let item_quantity_id = $('#item-quantity')
+        let tbl_item_details = $('#tbl-item-details')
+
+        item_unit_id.on('change', function () {
+            item_quantity_unit_id.text(item_unit_id.val())
+            retail_price_unit_id.text(item_unit_id.val())
+        })
+
+        item_quantity_id.on('keyup', function () {
+            let item_quantity_val = item_quantity_id.val() ?? 0
+            let tbl_item_details_html = ''
+            tbl_item_details.remove()
+            for (let i = 0; i > item_quantity_val; i++) {
+                tbl_item_details_html +=
+                    '<tr>' +
+                    '<td>' +
+                    '<div class="input-group input-group-merge">' +
+                    '<span class="input-group-text" id="basic-addon-search31"><i class="ti ti-barcode"></i></span>' +
+                    '<input type="text" class="form-control" aria-describedby="basic-addon-search31" />' +
+                    '</div>' +
+                    '</td>' +
+                    '<td>' +
+                    '<input class="form-control" type="date" value="" id="html5-date-input" />' +
+                    '</td>' +
+                    '</tr>'
+            }
+            tbl_item_details.append(tbl_item_details_html)
+        })
+    })
+</script>
+{% endblock footer_scripts %}
