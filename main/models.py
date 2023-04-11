@@ -148,8 +148,7 @@ class Brand(models.Model):
         db_table = 'brand'
 
 class Unit(models.Model):
-    item_unit = models.CharField(max_length=128, blank=True, null=True)
-    sub_item_unit = models.CharField(max_length=128, blank=True, null=True)
+    name = models.CharField(max_length=128, blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
     class Meta:
@@ -186,9 +185,11 @@ class Item(models.Model):
     brand = models.ForeignKey(Brand, models.DO_NOTHING)
     company = models.ForeignKey(Company, models.DO_NOTHING)
     unit = models.ForeignKey(Unit, models.DO_NOTHING)
+    unit_quantity = models.IntegerField(max_length=128, blank=True, null=True)
     quantity = models.IntegerField(max_length=128, blank=True, null=True)
     unit_price = models.DecimalField(max_digits=30, decimal_places=10, blank=True, null=True)
     retail_price = models.DecimalField(max_digits=30, decimal_places=10, blank=True, null=True)
+    retail_price_unit = models.DecimalField(max_digits=30, decimal_places=10, blank=True, null=True)
     is_damaged = models.CharField(max_length=128, blank=True, null=True)
     user = models.ForeignKey(AuthUser, models.DO_NOTHING)
     delivered_date = models.DateTimeField(blank=True, null=True)
