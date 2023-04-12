@@ -205,26 +205,29 @@
                                 <div data-i18n="Permissions">Permissions</div>
                             </a>
                         </li>
-                        <li class="menu-item">
-                            <a href="app-email.html" class="menu-link">
+
+                        
+
+                        <li class="menu-item {% if url_name == 'company-list' %}active{% endif %}" >
+                            <a href="{% url 'company-list' %}"  class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-id"></i>
-                                <div data-i18n="Suppliers">Suppliers</div>
+                                <div data-i18n="Company">Company</div>
                             </a>
                         </li>
-                        <li class="menu-item">
-                            <a href="app-email.html" class="menu-link">
+                        <li class="menu-item {% if url_name == 'brand-list' %}active{% endif %}">
+                            <a href="{% url 'brand-list' %}" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-square"></i>
                                 <div data-i18n="Brand">Brand</div>
                             </a>
                         </li>
-                        <li class="menu-item">
-                            <a href="app-email.html" class="menu-link">
+                        <li class="menu-item {% if url_name == 'generic-list' %}active{% endif %}">
+                            <a href="{% url 'generic-list' %}" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-layout-navbar"></i>
                                 <div data-i18n="Generic">Generic</div>
                             </a>
                         </li>
-                        <li class="menu-item">
-                            <a href="app-email.html" class="menu-link">
+                        <li class="menu-item {% if url_name == 'sub-generic-list' %}active{% endif %}">
+                            <a href="{% url 'sub-generic-list' %}" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-table"></i>
                                 <div data-i18n="Sub-generic">Sub-generic</div>
                             </a>
