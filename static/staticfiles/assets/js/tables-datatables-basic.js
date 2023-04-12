@@ -132,6 +132,7 @@ $(function () {
         { data: 'start_date' },
         { data: 'salary' },
         { data: 'status' },
+        
         { data: '' }
       ],
       columnDefs: [
@@ -284,7 +285,7 @@ $(function () {
                     });
                     return result;
                   }
-                }
+                 }
               },
               customize: function (win) {
                 //customize print view for dark
