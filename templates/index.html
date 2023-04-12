@@ -142,8 +142,8 @@
                                 <div data-i18n="Out">Out</div>
                             </a>
                         </li>
-                        <li class="menu-item">
-                            <a href="app-email.html" class="menu-link">
+                        <li class="menu-item {% if url_name == 'inventory-list' %}active{% endif %}">
+                            <a href="{% url 'inventory-list' %}" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-layout-grid"></i>
                                 <div data-i18n="List">List</div>
                             </a>
@@ -844,6 +844,17 @@
         <!-- Page JS -->
         <script src="{% static 'assets/js/dashboards-analytics.js' %}"></script>
         <script src="{% static 'assets/js/form-layouts.js' %}"></script>
+
+         <!-- Vendors JS -->
+         <script src="{% static 'assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js' %}"></script>
+         <!-- Flat Picker -->
+         <script src="{% static 'assets/vendor/libs/moment/moment.js' %}"></script>
+         <script src="{% static 'assets/vendor/libs/flatpickr/flatpickr.js' %}"></script>
+
+        <!-- Data tables -->
+        <script src="{% static 'assets/js/tables-datatables-advanced.js' %}"></script>
+        <script src="{% static 'assets/js/tables-datatables-extensions.js' %}"></script>
+        
 
         {% block footer_scripts %} {% endblock footer_scripts %}
     </body>

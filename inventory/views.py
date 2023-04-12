@@ -22,3 +22,6 @@ def inventory_in(request):
         'item_unit' : Unit.objects.filter().order_by('name'),
 	}
     return render(request, 'inventory/in.html', context)
+
+def inventory_list(request):
+    return render(request, 'inventory/list.html')
