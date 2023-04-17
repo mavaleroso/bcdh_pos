@@ -55,6 +55,10 @@
         <link rel="stylesheet" href="{% static 'assets/vendor/libs/typeahead-js/typeahead.css' %}" />
         <link rel="stylesheet" href="{% static 'assets/vendor/libs/select2/select2.css' %}" />
 
+        <link rel="stylesheet" href="{% static 'assets/vendor/libs/animate-css/animate.css' %}" />
+        <link rel="stylesheet" href="{% static 'assets/vendor/libs/sweetalert2/sweetalert2.css' %}" />
+
+
         <!-- Page CSS -->
         <link rel="stylesheet" href="{% static 'assets/vendor/css/pages/cards-advance.css' %}" />
         <script src="{% static 'assets/vendor/js/helpers.js' %}"></script>
@@ -187,8 +191,8 @@
                         <li class="menu-header small text-uppercase">
                             <span class="menu-header-text">Admin</span>
                         </li>
-                        <li class="menu-item">
-                            <a href="app-email.html" class="menu-link">
+                        <li class="menu-item {% if url_name == 'user-list' %}active{% endif %}">
+                            <a href="{% url 'user-list' %}" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-users"></i>
                                 <div data-i18n="Users">Users</div>
                             </a>
@@ -205,26 +209,29 @@
                                 <div data-i18n="Permissions">Permissions</div>
                             </a>
                         </li>
-                        <li class="menu-item">
-                            <a href="app-email.html" class="menu-link">
+
+                        
+
+                        <li class="menu-item {% if url_name == 'company-list' %}active{% endif %}" >
+                            <a href="{% url 'company-list' %}"  class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-id"></i>
-                                <div data-i18n="Suppliers">Suppliers</div>
+                                <div data-i18n="Company">Company</div>
                             </a>
                         </li>
-                        <li class="menu-item">
-                            <a href="app-email.html" class="menu-link">
+                        <li class="menu-item {% if url_name == 'brand-list' %}active{% endif %}">
+                            <a href="{% url 'brand-list' %}" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-square"></i>
                                 <div data-i18n="Brand">Brand</div>
                             </a>
                         </li>
-                        <li class="menu-item">
-                            <a href="app-email.html" class="menu-link">
+                        <li class="menu-item {% if url_name == 'generic-list' %}active{% endif %}">
+                            <a href="{% url 'generic-list' %}" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-layout-navbar"></i>
                                 <div data-i18n="Generic">Generic</div>
                             </a>
                         </li>
-                        <li class="menu-item">
-                            <a href="app-email.html" class="menu-link">
+                        <li class="menu-item {% if url_name == 'sub-generic-list' %}active{% endif %}">
+                            <a href="{% url 'sub-generic-list' %}" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-table"></i>
                                 <div data-i18n="Sub-generic">Sub-generic</div>
                             </a>
@@ -854,6 +861,21 @@
         <!-- Data tables -->
         <script src="{% static 'assets/js/tables-datatables-advanced.js' %}"></script>
         <script src="{% static 'assets/js/tables-datatables-extensions.js' %}"></script>
+
+
+        <script src="{% static 'assets/vendor/libs/formvalidation/dist/js/FormValidation.min.js' %}"></script>
+        <script src="{% static 'assets/vendor/libs/formvalidation/dist/js/plugins/Bootstrap5.min.js' %}"></script>
+        <script src="{% static 'assets/vendor/libs/formvalidation/dist/js/plugins/AutoFocus.min.js' %}"></script>
+
+
+        <script src="{% static 'assets/vendor/libs/sweetalert2/sweetalert2.js' %}"></script>
+        <script src="{% static 'assets/js/extended-ui-sweetalert2.js' %}"></script>
+
+        <script src="{% static 'assets/vendor/libs/toastr/toastr.js' %}"></script>
+        <script src="{% static 'assets/js/ui-toasts.js' %}"></script>
+
+        
+        <!-- <script src="{% static 'assets/js/tables-datatables-basic.js' %}"></script> -->
         
 
         {% block footer_scripts %} {% endblock footer_scripts %}
