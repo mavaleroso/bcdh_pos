@@ -8,4 +8,5 @@ urlpatterns = [
     path('brand', views.brand, name='brand-list'),
     path('generic', views.generic, name='generic-list'),
     path('subgeneric', views.subgeneric, name='sub-generic-list'),
+    path('addgeneric', views.addgeneric, name='add-generic'),
 ]

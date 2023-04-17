@@ -17,6 +17,8 @@ sub_generic_name = ['GYNE-TOCIN/AMBTOCYN','EUROCLAV/XOVAX','INDIMAX','IRWAX','NE
 unit_name = ['Box','Pack','Bottle']
 item_type = ['Medicine','Supply']
 company_name = ['CMN PHARMA INC.','ALL BIO PHARMA','ALTOMED PHARMACEUTICALS INC.','D & G PHARMA','DEMS TRADING','GEN PHARMA DIST.CO.','ECE MARKETING']
+company_code = ['CPI', 'ABP', 'API','DGP','DT','GPDC','EM']
+status = ['Active','Inactive']
 brand_name = ['Paracetamol','Biogesic','Calpol','Neozep','Solmux']
 client_type = ['Walk-in','Out-patient','In-patient']
 discount = ['PWD','Senior Citizen','OPD','Corporators','Special']
@@ -48,9 +50,13 @@ for client in client_type:
     client_val = ClientType(name=client, created_at = fake.date_time(), updated_at =fake.date_time())
     client_val.save()
 
-for company in company_name:
-    com_val = Company(name=company,code=fake.sbn9(),address =fake.unique.address(),remarks =company,  created_at = fake.date_time(), updated_at =fake.date_time())
+for i in range(len(company_name)):
+    com_val = Company(name=company_name[i],code = company_code[i],address =fake.unique.address(),remarks =company_name[i],  created_at = fake.date_time(), updated_at =fake.date_time())
     com_val.save()
+
+# for company in company_name:
+#     com_val = Company(name=company,code=fake.sbn9(),address =fake.unique.address(),remarks =company,  created_at = fake.date_time(), updated_at =fake.date_time())
+#     com_val.save()
 
 for brand in brand_name:
     brand_val = Brand(name=brand,created_at = fake.date_time(), updated_at =fake.date_time())
