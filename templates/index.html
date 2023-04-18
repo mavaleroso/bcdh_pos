@@ -54,6 +54,7 @@
         <link rel="stylesheet" href="{% static 'assets/vendor/libs/node-waves/node-waves.css' %}" />
         <link rel="stylesheet" href="{% static 'assets/vendor/libs/typeahead-js/typeahead.css' %}" />
         <link rel="stylesheet" href="{% static 'assets/vendor/libs/select2/select2.css' %}" />
+        <link rel="stylesheet" href="{% static 'assets/vendor/libs/sweetalert2/sweetalert2' %}.css" />
 
         <!-- Page CSS -->
         <link rel="stylesheet" href="{% static 'assets/vendor/css/pages/cards-advance.css' %}" />
@@ -64,6 +65,9 @@
         <script src="{% static 'assets/vendor/js/template-customizer.js' %}"></script>
         <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
         <script src="{% static 'assets/js/config.js' %}"></script>
+
+        <!-- Custom made CSS -->
+        <link rel="stylesheet" href="{% static 'custom/custom.css' %}" />
     </head>
 
     <body>
@@ -810,13 +814,26 @@
         <script src="{% static 'assets/vendor/libs/cleavejs/cleave.js' %}"></script>
         <script src="{% static 'assets/vendor/libs/cleavejs/cleave-phone.js' %}"></script>
         <script src="{% static 'assets/vendor/libs/select2/select2.js' %}"></script>
+        <script src="{% static 'assets/vendor/libs/moment/moment.js' %}"></script>
+        <script src="{% static 'assets/vendor/libs/flatpickr/flatpickr.js' %}"></script>
+        <script src="{% static 'assets/vendor/libs/typeahead-js/typeahead.js' %}"></script>
+        <script src="{% static 'assets/vendor/libs/tagify/tagify.js' %}"></script>
+        <script src="{% static 'assets/vendor/libs/formvalidation/dist/js/FormValidation.min.js' %}"></script>
+        <script src="{% static 'assets/vendor/libs/formvalidation/dist/js/plugins/Bootstrap5.min.js' %}"></script>
+        <script src="{% static 'assets/vendor/libs/formvalidation/dist/js/plugins/AutoFocus.min.js' %}"></script>
+        <script src="{% static 'assets/vendor/libs/sweetalert2/sweetalert2.js' %}"></script>
 
         <!-- Main JS -->
         <script src="{% static 'assets/js/main.js' %}"></script>
 
         <!-- Page JS -->
         <script src="{% static 'assets/js/dashboards-analytics.js' %}"></script>
+        {% comment %}
         <script src="{% static 'assets/js/form-layouts.js' %}"></script>
+        {% endcomment %}
+
+        <!-- Custom made JS -->
+        <script src="{% static 'custom/custom.js' %}"></script>
 
         {% block footer_scripts %} {% endblock footer_scripts %}
     </body>
