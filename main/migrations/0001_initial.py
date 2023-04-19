@@ -251,9 +251,9 @@ class Migration(migrations.Migration):
             name='Item',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('code', models.CharField(blank=True, max_length=300, null=True)),
                 ('description', models.CharField(blank=True, max_length=300, null=True)),
                 ('unit_quantity', models.IntegerField(blank=True, max_length=128, null=True)),
-                ('quantity', models.IntegerField(blank=True, max_length=128, null=True)),
                 ('unit_price', models.DecimalField(blank=True, decimal_places=10, max_digits=30, null=True)),
                 ('retail_price', models.DecimalField(blank=True, decimal_places=10, max_digits=30, null=True)),
                 ('retail_price_unit', models.DecimalField(blank=True, decimal_places=10, max_digits=30, null=True)),
@@ -408,6 +408,7 @@ class Migration(migrations.Migration):
             name='ItemDetails',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
+                ('quantity', models.IntegerField(blank=True, max_length=128, null=True)),
                 ('barcode', models.CharField(blank=True, max_length=128, null=True)),
                 ('expiration_date', models.DateTimeField(blank=True, null=True)),
                 ('created_at', models.DateTimeField(blank=True, null=True)),

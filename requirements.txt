@@ -2,3 +2,4 @@ django-extensions
 mysqlclient
 faker
 numpy
+autopep8
