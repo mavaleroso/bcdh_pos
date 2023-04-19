@@ -31,13 +31,11 @@ def company(request):
     context = {
 		'company' : Company.objects.filter().order_by('name'),
 	}
-    print("test")
-    print(context)
     return render(request, 'admin/company.html', context)
 
 def generic(request):
     context = {
-		'generic' : Generic.objects.filter().order_by('name'),
+        'generic' : Generic.objects.filter().order_by('id'),
 	}
     return render(request, 'admin/generic.html', context)
 
@@ -55,9 +53,36 @@ def user(request):
 
 @csrf_exempt
 def addgeneric(request):
-    add = Generic(
-          name=request.POST.get('genericname'))
-    add.save()
-    return JsonResponse({'data': 'success'})
+    if request.method == 'POST':
+        check_generic = False
+        generic_name = request.POST.get('genericname')
+        if Generic.objects.filter(name=generic_name):
+            return JsonResponse({'data': 'error'})
+        else:
+            check_generic = True        
+        if check_generic:
+            add = Generic(
+                name= generic_name)
+            add.save()
+            return JsonResponse({'data': 'success'})
+        
+@csrf_exempt
+def updategeneric(request):
+    if request.method == 'POST':
+        generic_id = request.POST.get('generic_id')
+        generic_name = request.POST.get('genericname')
+        status = request.POST.get('is_active')
+
+        check_generic = False
+        generic_name = request.POST.get('genericname')
+        if Generic.objects.filter(name=generic_name).exclude(id=generic_id):
+            return JsonResponse({'data': 'error'})
+        else:
+            check_generic = True        
+        if check_generic:
+            Generic.objects.filter(id=generic_id).update(name=generic_name, is_active=status)
+            return JsonResponse({'data': 'success'})
+        
+
 
 

@@ -9,4 +9,5 @@ urlpatterns = [
     path('generic', views.generic, name='generic-list'),
     path('subgeneric', views.subgeneric, name='sub-generic-list'),
     path('addgeneric', views.addgeneric, name='add-generic'),
+    path('updategeneric', views.updategeneric, name='update-generic'),
 ]
