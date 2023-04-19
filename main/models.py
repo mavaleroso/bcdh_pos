@@ -116,6 +116,7 @@ class Company(models.Model):
     code = models.CharField(max_length=128, blank=True, null=True)
     address = models.CharField(max_length=128, blank=True, null=True)
     remarks = models.CharField(max_length=300, blank=True, null=True)
+    is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(default=datetime.now,blank=True, null=True)
     updated_at = models.DateTimeField(default=datetime.now,blank=True, null=True)
     class Meta:
@@ -142,6 +143,7 @@ class SubGeneric(models.Model):
 
 class Brand(models.Model):
     name = models.CharField(max_length=128, blank=True, null=True)
+    is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(default=datetime.now,blank=True, null=True)
     updated_at = models.DateTimeField(default=datetime.now,blank=True, null=True)
     class Meta:

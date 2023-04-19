@@ -27,7 +27,7 @@
                         {% if row.is_active == True %}<span class="badge bg-label-success">Active</span> {% else %}<span class="badge bg-label-danger">Inactive</span> {% endif %}
                     </td>
                     <td>{{row.created_at}}</td>
-                    <td></td>
+                    <td><a class="btn btn-sm btn-icon item-edit" id={{row.id}} value="{{row.name}}" status="{{row.is_active}}"><i class="text-primary ti ti-pencil"></i></a></td>
                   </tr>
                  {% endfor %}
                  </tbody> 
@@ -39,7 +39,7 @@
   <!-- Modal to add new record -->
   <div class="offcanvas offcanvas-end" id="add-new-record">
     <div class="offcanvas-header border-bottom">
-      <h5 class="offcanvas-title" id="exampleModalLabel">Add Record</h5>
+      <h5 class="offcanvas-title" id="exampleModalLabel"><p class="title-name">Add Record</p></h5>
       <button
         type="button"
         class="btn-close text-reset"
@@ -48,7 +48,7 @@
       ></button>
     </div>
     <div class="offcanvas-body flex-grow-1">
-      <form class="add-new-record pt-0 row g-2" id="form-add-new-record" onsubmit="return false">
+      <form class="add-new-record pt-0 row g-2" id="form-add-new-record" action="javascript:;">
         <div class="col-sm-12">
           <label class="form-label" for="Genericname">Generic Name</label>
           <div class="input-group input-group-merge">
@@ -64,10 +64,23 @@
             />
           </div>
         </div>
+
+        <div class="col-sm-12 generic-status">
+          <label class="form-label" for="Genericname">Status</label>
+          <div class="input-group input-group-merge">
+            <span id="Genericname2" class="input-group-text"><i class="ti ti-user"></i></span>
+
+              <select class="form-select select-status" id="select">
+                <option value="1">Active</option>
+                <option value="0">Inactive</option>
+              </select>
+    
+          </div>
+        </div>
                 
-        <div class="col-sm-12">
+        <div class="col-sm-12 update-div-generic">
           <br>
-          <button type="button"  id="add-generic" class="btn btn-primary data-submit me-sm-3 me-1">Submit</button>
+          <button type="button" id="add-generic" class="btn btn-primary data-submit me-sm-3 me-1 additional-record">Submit</button>
           <button type="reset" class="btn btn-outline-secondary" data-bs-dismiss="offcanvas">Cancel</button>
         </div>
       </form>
@@ -78,17 +91,36 @@
 
 
 {% endblock %} 
-
-
 {% block footer_scripts %}
 <script>
 $(document).ready(function(){
+  let id,name,status;
+    $('.item-edit').click(function (event) {
+      $('.generic-status').show();
+      id = $(this).attr('id');
+      name = $(this).attr('value')
+      status = $(this).attr('status')
+      if (status == "True"){status =1}
+      else {status =0}
+      $('.title-name').text('Update Record');
+      $('.dt-generic-name').text('Update Record');
+      offCanvasElement = document.querySelector('#add-new-record'); 
+      let fv, offCanvasEl;
+      offCanvasEl = new bootstrap.Offcanvas(offCanvasElement);
+      (offCanvasElement.querySelector('.dt-generic-name').value = name);
+      (offCanvasElement.querySelector('.select-status').value = status),
+        offCanvasEl.show();
+    });
+
     $('#add-generic').on('click', function(){
         $genericname = $('#Genericname').val();
+        $selectvalue = $('#select').find(":selected").val();
+        if(id){request_url = "{% url 'update-generic' %}";identifier_swal = "Update";}
+        else{identifier_swal = "Add";request_url = "{% url 'add-generic' %}";}
         if($genericname != ""){
           Swal.fire({
             title: 'Are you sure?',
-            text: "Add " + $genericname +" as Generic name?",
+            text: identifier_swal +" " + $genericname +" as Generic name?",
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Yes',
@@ -98,33 +130,38 @@ $(document).ready(function(){
             },
             buttonsStyling: false
       }).then(function (result) {
-        if (result.value) 
-        {
-          $.ajax({
-              type: "POST",
-              url: "{% url 'add-generic' %}",
-              data:{
-                  genericname: $genericname,
-              },
-              success: function(){
+        if (result.value) {
+            $.ajax({
+                type: "POST",
+                url: request_url,
+                data:{
+                    genericname: $genericname,is_active : $selectvalue, generic_id: id
+                }
+            }).done(function(data){
+              if(data.data == "success"){
                 Swal.fire({
-                  icon: 'success',
-                  title: 'Successfully save!',
-                  text: $genericname +' has been added.',
-                  customClass: {
-                    confirmButton: 'btn btn-success'
+                    icon: 'success',
+                    title: 'Successfully save!',
+                    text: $genericname +' has been added.',
+                    customClass: {
+                      confirmButton: 'btn btn-success'
+                    }
+                  });
+                    window.location.reload();
+              }
+              else{
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Generic Name',
+                    text: $genericname +' already exist',
+                    customClass: {
+                      confirmButton: 'btn btn-success'
+                    }});
                   }
                 });
-                  window.location = "{% url 'generic-list' %}";
-              }
-          });
-        }
-      });
-
-  }
-    });
-});
-
+              }});
+            }});
+        });
 
 'use strict';
 let fv, offCanvasEl;
@@ -139,6 +176,15 @@ document.addEventListener('DOMContentLoaded', function (e) {
       // To open offCanvas, to add new record
       if (newRecord) {
         newRecord.addEventListener('click', function () {
+          $('.title-name').text('Add Record');
+          $('.generic-status').hide();
+          $('.update-div-generic update-generic').hide();
+
+          
+
+                    // $('.update-record').hide();
+          
+          
           offCanvasEl = new bootstrap.Offcanvas(offCanvasElement);
           // Empty fields on offCanvas open
           (offCanvasElement.querySelector('.dt-generic-name').value = '');
@@ -202,29 +248,15 @@ $(function () {
     dt_basic = dt_basic_table.DataTable({
       // ajax: assetsPath + 'json/table-datatable.json',
       
-      columns: [
-        { data: 'name' },
-        { data: 'status' },
-        { data: 'date_added' },
-        { data: '' }
-      ],
+      // columns: [
+      //   { data: 'name' },
+      //   { data: 'status' },
+      //   { data: 'date_added' },
+      //   { data: '' }
+      // ],
       columnDefs: [
-        {
-          responsivePriority: 1,
-          targets: 3
-        },
-        {
-          // Actions
-          targets: -1,
-          title: 'Actions',
-          orderable: false,
-          searchable: false,
-          render: function (data, type, full, meta) {
-            return (
-              '<a href="javascript:;" class="btn btn-sm btn-icon item-edit"><i class="text-primary ti ti-pencil"></i></a>'
-            );
-          }
-        }
+
+       
       ],
       order: [[2, 'desc']],
       dom: '<"card-header flex-column flex-md-row"<"head-label text-center"><"dt-action-buttons text-end pt-3 pt-md-0"B>><"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-center justify-content-md-end"f>>t<"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
