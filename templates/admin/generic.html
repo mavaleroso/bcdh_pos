@@ -93,8 +93,9 @@
 {% endblock %} 
 {% block footer_scripts %}
 <script>
+let id,name,status,identifier_swal;
 $(document).ready(function(){
-  let id,name,status;
+
     $('.item-edit').click(function (event) {
       $('.generic-status').show();
       id = $(this).attr('id');
@@ -120,7 +121,7 @@ $(document).ready(function(){
         if($genericname != ""){
           Swal.fire({
             title: 'Are you sure?',
-            text: identifier_swal +" " + $genericname +" as Generic name?",
+            html: identifier_swal+" "+'<strong>'+$genericname+ " ?"+'</strong>',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Yes',
@@ -163,7 +164,7 @@ $(document).ready(function(){
             }});
         });
 
-'use strict';
+// 'use strict';
 let fv, offCanvasEl;
 document.addEventListener('DOMContentLoaded', function (e) {
   (function () {
@@ -179,17 +180,11 @@ document.addEventListener('DOMContentLoaded', function (e) {
           $('.title-name').text('Add Record');
           $('.generic-status').hide();
           $('.update-div-generic update-generic').hide();
-
-          
-
-                    // $('.update-record').hide();
-          
-          
+          id = "";         
+          identifier_swal = "Add";          
           offCanvasEl = new bootstrap.Offcanvas(offCanvasElement);
           // Empty fields on offCanvas open
           (offCanvasElement.querySelector('.dt-generic-name').value = '');
-
- 
           // Open offCanvas with form
           offCanvasEl.show();
         });
