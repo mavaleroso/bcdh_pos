@@ -1,5 +1,5 @@
 from faker import Faker
-from main.models import Location, Generic, SubGeneric, Unit,Company,ClientType,Brand, ItemType, Discounts
+from main.models import Location, Generic, SubGeneric, Unit,Company,ClientType,Brand, ItemType, Discounts, SystemConfiguration
 import numpy as np
 import random
 
@@ -64,4 +64,7 @@ for i in range(len(discount)):
 for i in range(20):
     location_db = Location(name=fake.address(), created_at = fake.date_time(), updated_at =fake.date_time())
     location_db.save()
+
+system_configuration_db = SystemConfiguration(name='Bayugan City Doctors Hospital', inventory_code='23-04-00000', year='2023')
+system_configuration_db.save()
 

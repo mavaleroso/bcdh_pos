@@ -131,24 +131,7 @@
                                                     <th>Expiration Date</th>
                                                 </tr>
                                             </thead>
-                                            <tbody id="tbl-item-details" class="table-border-bottom-0">
-                                                {% comment %}
-                                                <tr>
-                                                    <td>1</td>
-                                                    <td>
-                                                        <div class="input-group input-group-merge">
-                                                            <span class="input-group-text" id="basic-addon-search31"
-                                                                ><i class="ti ti-barcode"></i
-                                                            ></span>
-                                                            <input type="text" class="form-control" aria-describedby="basic-addon-search31" />
-                                                        </div>
-                                                    </td>
-                                                    <td>
-                                                        <input class="form-control" type="date" value="" id="html5-date-input" />
-                                                    </td>
-                                                </tr>
-                                                {% endcomment %}
-                                            </tbody>
+                                            <tbody id="tbl-item-details" class="table-border-bottom-0"></tbody>
                                         </table>
                                     </div>
                                 </div>
@@ -178,34 +161,7 @@
             let item_unit_selected = $('#item-unit option:selected')
             item_quantity_unit_id.text(item_unit_selected.text())
             retail_price_unit_lbl.text(item_unit_selected.text())
-        })
-
-        item_quantity_id.on('keyup', function () {
-            let item_quantity_val = item_quantity_id.val() ?? 0
-            let tbl_item_details_html = ''
-            tbl_item_details.empty()
-            for (let i = 0; i < item_quantity_val; i++) {
-                tbl_item_details_html +=
-                    '<tr>' +
-                    '<td>' +
-                    (i + 1) +
-                    '</td>' +
-                    '<td>' +
-                    '<div class="input-group input-group-merge">' +
-                    '<span class="input-group-text" id="basic-addon-search31"><i class="ti ti-barcode"></i></span>' +
-                    '<input type="text" name="barcode_' +
-                    i +
-                    '" class="form-control" aria-describedby="basic-addon-search31" />' +
-                    '</div>' +
-                    '</td>' +
-                    '<td>' +
-                    '<input name="expiry_date_' +
-                    i +
-                    '" class="form-control" type="date" value="" id="html5-date-input" />' +
-                    '</td>' +
-                    '</tr>'
-            }
-            tbl_item_details.append(tbl_item_details_html)
+            item_quantity_id.val('')
         })
 
         item_quantity_pcs.on('keyup', function () {
@@ -222,9 +178,7 @@
             let total = quan_pcs * quan_pcs2
             total_quantity_pcs.val(total)
         }
-    })
 
-    document.addEventListener('DOMContentLoaded', function (e) {
         const InFormValidation = document.getElementById('in-frm'),
             ItemType = jQuery(InFormValidation.querySelector('[name="ItemType"]')),
             Company = jQuery(InFormValidation.querySelector('[name="Company"]')),
@@ -232,6 +186,21 @@
             SubGeneric = jQuery(InFormValidation.querySelector('[name="SubGeneric"]')),
             Brand = jQuery(InFormValidation.querySelector('[name="Brand"]')),
             ItemUnit = jQuery(InFormValidation.querySelector('[name="ItemUnit"]'))
+
+        const titleValidators = {
+            validators: {
+                notEmpty: {
+                    message: 'The task is required',
+                },
+            },
+        }
+        const dueDateValidators = {
+            validators: {
+                notEmpty: {
+                    message: 'The due date is required',
+                },
+            },
+        }
 
         const fv = FormValidation.formValidation(InFormValidation, {
             fields: {
@@ -291,13 +260,6 @@
                         },
                     },
                 },
-                RetailPriceUnit: {
-                    validators: {
-                        notEmpty: {
-                            message: 'Please enter retail price per unit',
-                        },
-                    },
-                },
                 RetailPricePcs: {
                     validators: {
                         notEmpty: {
@@ -315,31 +277,7 @@
             },
             plugins: {
                 trigger: new FormValidation.plugins.Trigger(),
-                bootstrap5: new FormValidation.plugins.Bootstrap5({
-                    // Use this for enabling/changing valid/invalid class
-                    // eleInvalidClass: '',
-                    eleValidClass: '',
-                    rowSelector: function (field, ele) {
-                        // field is the field name & ele is the field element
-                        switch (field) {
-                            case 'ItemType':
-                            case 'Company':
-                            case 'Generic':
-                            case 'SubGeneric':
-                            case 'Brand':
-                            case 'UnitPrice':
-                            case 'ItemQuantityPcs':
-                            case 'TotalQuantityPcs':
-                            case 'RetailPriceUnit':
-                            case 'RetailPricePcs':
-                                return '.col-md-6'
-                            case 'Description':
-                                return '.col-12'
-                            default:
-                                return '.row'
-                        }
-                    },
-                }),
+                bootstrap5: new FormValidation.plugins.Bootstrap5(),
                 submitButton: new FormValidation.plugins.SubmitButton(),
                 // Submit the form when all fields are valid
                 //defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
@@ -389,7 +327,10 @@
                                     confirmButton: 'btn btn-success',
                                 },
                             })
-                            // window.location.reload()
+
+                            setTimeout(() => {
+                                window.location.reload()
+                            }, 1300)
                         } else {
                             Swal.fire({
                                 icon: 'error',
@@ -473,6 +414,53 @@
                 dropdownParent: ItemUnit.parent(),
             })
         }
+
+        item_quantity_id.on('keyup', function () {
+            if (!item_unit_id.val()) return
+            let item_quantity_val = item_quantity_id.val() ?? 0
+            append_item_details(item_quantity_val)
+        })
+
+        item_quantity_pcs.on('keyup', function () {
+            if (item_quantity_id.val() && item_unit_id.val()) return
+            let item_quantity_val = item_quantity_pcs.val() ?? 0
+            append_item_details(item_quantity_val)
+        })
+
+        function append_item_details(quantity) {
+            let tbl_item_details_html = ''
+            tbl_item_details.empty()
+            for (let i = 0; i < quantity; i++) {
+                tbl_item_details_html =
+                    '<tr>' +
+                    '<td>' +
+                    (i + 1) +
+                    '</td>' +
+                    '<td>' +
+                    '<div class="input-group input-group-merge">' +
+                    '<span class="input-group-text" id="basic-addon"><i class="ti ti-barcode"></i></span>' +
+                    '<input type="text" name="barcode[' +
+                    i +
+                    ']" class="form-control" aria-describedby="basic-addon" />' +
+                    '</div>' +
+                    '</td>' +
+                    '<td>' +
+                    '<div class="input-group input-group-merge">' +
+                    '<input type="date" name="expiryDate[' +
+                    i +
+                    ']" class="form-control"/>' +
+                    '</div>' +
+                    '</td>' +
+                    '</tr>'
+
+                tbl_item_details.append(tbl_item_details_html)
+                // Add new fields
+                // Note that we also pass the validator rules for new field as the third parameter
+                fv.addField('barcode[' + i + ']', titleValidators).addField('expiryDate[' + i + ']', dueDateValidators)
+            }
+        }
     })
+
+    document.addEventListener('DOMContentLoaded', function (e) {})
 </script>
 {% endblock footer_scripts %}

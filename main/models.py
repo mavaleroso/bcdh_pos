@@ -185,7 +185,7 @@ class Item(models.Model):
     description = models.CharField(max_length=300, blank=True, null=True)
     brand = models.ForeignKey(Brand, models.DO_NOTHING)
     company = models.ForeignKey(Company, models.DO_NOTHING)
-    unit = models.ForeignKey(Unit, models.DO_NOTHING)
+    unit = models.ForeignKey(Unit, models.DO_NOTHING, blank=True, null=True)
     unit_quantity = models.IntegerField(max_length=128, blank=True, null=True)
     unit_price = models.DecimalField(max_digits=30, decimal_places=10, blank=True, null=True)
     retail_price = models.DecimalField(max_digits=30, decimal_places=10, blank=True, null=True)
@@ -238,7 +238,7 @@ class ItemDetails(models.Model):
     item = models.ForeignKey(Item, models.DO_NOTHING)
     quantity = models.IntegerField(max_length=128, blank=True, null=True)
     barcode = models.CharField(max_length=128, blank=True, null=True)
-    expiration_date = models.DateTimeField(blank=True, null=True)
+    expiration_date = models.DateField(blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     updated_at = models.DateTimeField(blank=True, null=True, auto_now=True)
     deleted_at = models.DateTimeField(blank=True, null=True)
@@ -319,3 +319,14 @@ class OutItems(models.Model):
     class Meta:
         managed = True
         db_table = 'out_items'
+
+
+class SystemConfiguration(models.Model):
+    name = models.CharField(max_length=128, blank=True, null=True)
+    inventory_code = models.CharField(max_length=128, blank=True, null=True)
+    year = models.CharField(max_length=128, blank=True, null=True)
+    created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
+    updated_at = models.DateTimeField(blank=True, null=True, auto_now=True)
+    class Meta:
+        managed = True
+        db_table = 'system_configuration'
