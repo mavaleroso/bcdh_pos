@@ -54,6 +54,7 @@ def user(request):
 @csrf_exempt
 def addgeneric(request):
     if request.method == 'POST':
+        print("addni")
         check_generic = False
         generic_name = request.POST.get('genericname')
         if Generic.objects.filter(name=generic_name):
@@ -69,6 +70,7 @@ def addgeneric(request):
 @csrf_exempt
 def updategeneric(request):
     if request.method == 'POST':
+        print("updateni")
         generic_id = request.POST.get('generic_id')
         generic_name = request.POST.get('genericname')
         status = request.POST.get('is_active')
@@ -81,6 +83,43 @@ def updategeneric(request):
             check_generic = True        
         if check_generic:
             Generic.objects.filter(id=generic_id).update(name=generic_name, is_active=status)
+            return JsonResponse({'data': 'success'})
+        
+@csrf_exempt
+def addcompany(request):
+    if request.method == 'POST':
+        check_generic = False
+        generic_name = request.POST.get('companyname')
+        code_name = request.POST.get('code')
+        address_ = request.POST.get('address')
+        remarks = request.POST.get('remarks')
+        if Company.objects.filter(name=generic_name):
+            return JsonResponse({'data': 'error'})
+        else:
+            check_generic = True        
+        if check_generic:
+            add = Company(
+                name= generic_name, code = code_name, address = address_, remarks = remarks)
+            add.save()
+            return JsonResponse({'data': 'success'})
+        
+@csrf_exempt
+def updatecompany(request):
+    if request.method == 'POST':
+        company_id = request.POST.get('company_id')
+        company_name = request.POST.get('companyname')
+        status = request.POST.get('is_active')
+        code_name = request.POST.get('code')
+        address_ = request.POST.get('address')
+        remarks = request.POST.get('remarks')
+
+        check_company = False
+        if Company.objects.filter(name=company_name).exclude(id=company_id):
+            return JsonResponse({'data': 'error'})
+        else:
+            check_company = True        
+        if check_company:
+            Company.objects.filter(id=company_id).update(name=company_name, is_active=status,code = code_name, address = address_, remarks = remarks)
             return JsonResponse({'data': 'success'})
         
 
