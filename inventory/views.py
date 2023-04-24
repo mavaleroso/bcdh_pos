@@ -9,8 +9,7 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from main.models import (Item, ItemDetails, SystemConfiguration)
-
+from main.models import (Item, ItemDetails, SystemConfiguration, ItemType, Company, Generic, SubGeneric, Brand, Unit)
 import datetime
 
 
@@ -74,3 +73,20 @@ def store_items(request):
             item_details_add.save()
 
         return JsonResponse({'data': 'success'})
+
+
+
+def inventory_in(request):
+    context = {
+		'item_type' : ItemType.objects.filter().order_by('name'),
+        'company' : Company.objects.filter().order_by('name'),
+        'generic' : Generic.objects.filter().order_by('name'),
+        'sub_generic' : SubGeneric.objects.filter().order_by('name'),
+        'brand' : Brand.objects.filter().order_by('name'),
+        'item_unit' : Unit.objects.filter().order_by('name'),
+	  }
+    return render(request, 'inventory/in.html', context)
+
+def inventory_list(request):
+    return render(request, 'inventory/list.html')
+

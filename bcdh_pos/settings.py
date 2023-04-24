@@ -27,7 +27,7 @@ SECRET_KEY = '@1d=!6svu4gy(xf!*1vj@qgb68ti7u#)ye!uq(cjna1t@9ievi'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     'django_extensions',
     'main',
     'inventory',
+  
 ]
 
 MIDDLEWARE = [

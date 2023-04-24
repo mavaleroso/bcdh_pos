@@ -1,0 +1,694 @@
+{% extends 'index.html' %} {% block content %} {% load staticfiles %}
+
+
+<!-- Content wrapper -->
+<div class="content-wrapper">
+    <!-- Content -->
+    <div class="container-xxl flex-grow-1 container-p-y">
+      <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Users /</span> List</h4>
+
+<!-- DataTable with Buttons -->
+        <div class="card">
+            <div class="card-datatable table-responsive pt-0">
+            <table class="datatables-basic table">
+                <thead>
+                <tr>
+                  <th>Username</th>
+                  <th>Fullname</th>
+                  <th>Email</th>
+                  <th>Birthdate</th>
+                  <th>Sex</th>
+                  <th>Address</th>
+                  <th>Position</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+                </thead>
+                <tbody>
+                  {% for row in users %}
+                  <tr>
+                    <td>{{row.username}}</td>
+                    <td>{{row.first_name}} {{row.userdetails.middle_name}} {{row.last_name}}</td>
+                    <td>{{row.email}}</td>
+                    <td>{{row.userdetails.birthdate}}</td>
+                    <td>{{row.userdetails.sex}}</td>
+                    <td>{{row.userdetails.address}}</td>
+                    <td>{{row.userdetails.position}}</td>
+                    <td>{% if row.is_active == True %}<span class="badge bg-label-success">Active</span>{% else %}<span class="badge bg-label-danger">Inactive</span> {% endif %}</td>
+                    <td><a class="btn btn-sm btn-icon item-edit" id={{row.id}} firstname="{{row.first_name}}" email="{{row.email}}" middlename="{{row.userdetails.middle_name}}" lastname="{{row.last_name}}" username="{{row.username}}" password="{{row.password}}" status="{{row.is_active}}" address="{{row.userdetails.address}}" position = "{{row.userdetails.position}}" birthdate = "{{row.userdetails.birthdate|date:"Y-m-d"}}" roles = "{{row.is_superuser}}" ><i class="text-primary ti ti-pencil"></i></a></td>
+                  </tr>
+                 {% endfor %}
+                 </tbody> 
+            </table>
+            </div>
+        </div>
+    </div>
+</div>
+  <!-- Modal to add new record -->
+  <div class="offcanvas offcanvas-end" id="add-new-record">
+    <div class="offcanvas-header border-bottom">
+      <h5 class="offcanvas-title" id="exampleModalLabel"><p class="title-name">Add Record</p></h5>
+      <button
+        type="button"
+        class="btn-close text-reset"
+        data-bs-dismiss="offcanvas"
+        aria-label="Close"
+      ></button>
+    </div>
+    <div class="offcanvas-body flex-grow-1">
+      <form class="add-new-record pt-0 row g-2" id="form-add-new-record" action="javascript:;">
+        <div class="col-sm-12">
+          <label class="form-label" for="Firstname">First Name</label>
+          <div class="input-group input-group-merge">
+            <span id="username2" class="input-group-text"><i class="ti ti-user"></i></span>
+            <input
+              type="text"
+              id="firstname"
+              class="form-control dt-first-name"
+              name="firstname"
+              placeholder="Enter firstname"
+              aria-describedby="firstname2"
+            />
+          </div>
+        </div>
+
+        <div class="col-sm-12">
+          <label class="form-label" for="Middlename">Middle Name</label>
+          <div class="input-group input-group-merge">
+            <span id="middlename2" class="input-group-text"><i class="ti ti-user"></i></span>
+            <input
+              type="text"
+              id="middlename"
+              class="form-control dt-middle-name"
+              name="middlename"
+              placeholder="Enter Middlename"
+              aria-describedby="middlename2"
+            />
+          </div>
+        </div>
+
+        <div class="col-sm-12">
+            <label class="form-label" for="Lastname">Last Name</label>
+            <div class="input-group input-group-merge">
+              <span id="lastname2" class="input-group-text"><i class="ti ti-user"></i></span>
+              <input
+                type="text"
+                id="lastname"
+                class="form-control dt-last-name"
+                name="lastname"
+                placeholder="Enter Lastname"
+                aria-describedby="lastname2"
+              />
+            </div>
+        </div>
+
+        <div class="col-sm-12">
+            <label class="form-label" for="Lastname">User Name</label>
+            <div class="input-group input-group-merge">
+              <span id="user2" class="input-group-text"><i class="ti ti-user"></i></span>
+              <input
+                type="text"
+                id="username"
+                class="form-control dt-user-name"
+                name="username"
+                placeholder="Enter Username"
+                aria-describedby="user2"
+              />
+            </div>
+        </div>
+
+        <div class="col-sm-12 form-password-toggle">
+            <label class="form-label" for="Password">Password</label>
+            <div class="input-group input-group-merge">
+              <span id="password2" class="input-group-text"><i class="ti ti-user"></i></span>
+              
+              <input
+                type="password"
+                id="password"
+                class="form-control dt-password"
+                name="password"
+                placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
+                aria-describedby="password"
+              />
+                <span class="input-group-text cursor-pointer"><i class="ti ti-eye-off"></i></span>
+            </div>
+        </div>
+
+        <div class="col-sm-12 form-password-toggle">
+          <label class="form-label" for="Confirm_password">Confirm password</label>
+          <div class="input-group input-group-merge">
+            <span id="confirm_password2" class="input-group-text"><i class="ti ti-user"></i></span>
+            <input
+              type="password"
+              id="confirm_password"
+              class="form-control dt-confirm-password"
+              name="confirm_password"
+              placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
+              aria-describedby="confirm_password2"
+            />
+            <span class="input-group-text cursor-pointer"><i class="ti ti-eye-off"></i></span>
+          </div>
+      </div>
+
+      <div class="col-sm-12 user-roles">
+        <label class="form-label" for="status">Roles</label>
+        <div class="input-group input-group-merge">
+          <span id="roles2" class="input-group-text"><i class="ti ti-user"></i></span>
+
+            <select class="form-select dt-roles" name="roles" id="roles">
+              <option value="2">Inventory staff</option>
+              <option value="3">Sales staff</option>
+              <option value="4">Management</option>
+              <option value="5">Admin</option>
+            </select>
+  
+        </div>
+      </div>
+        
+        <div class="col-sm-12 user-status">
+          <label class="form-label" for="status">Status</label>
+          <div class="input-group input-group-merge">
+            <span id="status2" class="input-group-text"><i class="ti ti-user"></i></span>
+
+              <select class="form-select select-status" id="select">
+                <option value="1">Active</option>
+                <option value="0">Inactive</option>
+              </select>
+    
+          </div>
+        </div>
+
+        <div class="col-sm-12">
+          <label class="form-label" for="Email">Email</label>
+          <div class="input-group input-group-merge">
+            <span id="email2" class="input-group-text"><i class="ti ti-user"></i></span>
+            <input
+              type="text"
+              id="email"
+              class="form-control dt-email"
+              name="email"
+              placeholder="Enter Email"
+              aria-describedby="email2"
+            />
+          </div>
+        </div>
+
+        <div class="col-sm-12">
+          <label class="form-label" for="Birthdate">Birthdate</label>
+          <div class="input-group input-group-merge">
+            <span id="birthdate2" class="input-group-text"><i class="ti ti-user"></i></span>
+            <input
+              type="date"
+              id="birthdate"
+              class="form-control dt-birthdate"
+              name="birthdate"
+              placeholder="Enter Birthdate"
+              aria-describedby="birthdate2"
+            />
+          </div>
+        </div>
+
+        <div class="col-sm-12 user-sex">
+          <label class="form-label" for="Sex">Sex</label>
+          <div class="input-group input-group-merge">
+            <span id="sex2" class="input-group-text"><i class="ti ti-user"></i></span>
+
+              <select class="form-select dt-sex" id="sex">
+                <option value="Male">Male</option>
+                <option value="Female">Female</option>
+              </select>
+    
+          </div>
+        </div>
+
+        <div class="col-sm-12">
+          <label class="form-label" for="Address">Address</label>
+          <div class="input-group input-group-merge">
+            <span id="address2" class="input-group-text"><i class="ti ti-user"></i></span>
+            <input
+              type="text"
+              id="address"
+              class="form-control dt-address"
+              name="address"
+              placeholder="Enter Address"
+              aria-describedby="address2"
+            />
+          </div>
+        </div>
+
+        <div class="col-sm-12">
+          <label class="form-label" for="Position">Position</label>
+          <div class="input-group input-group-merge">
+            <span id="position2" class="input-group-text"><i class="ti ti-user"></i></span>
+            <input
+              type="text"
+              id="position"
+              class="form-control dt-position"
+              name="position"
+              placeholder="Enter Position"
+              aria-describedby="position2"
+            />
+          </div>
+        </div>
+
+
+        <div class="col-sm-12 update-div-user">
+          <br>
+          <button type="button" id="submit-user" class="btn btn-primary data-submit me-sm-3 me-1">Submit</button>
+          <button type="reset" class="btn btn-outline-secondary" data-bs-dismiss="offcanvas">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+  
+{% endblock %} 
+{% block footer_scripts %}
+<script>
+let id,name,status,middlename,lastname,username,password,confirm_password,address,birthdate,email,position,roles,sex,identifier_swal;
+$(document).ready(function(){
+    $('.item-edit').click(function (event) {
+      $('.user-status').show();
+      id = $(this).attr('id');
+      firstname = $(this).attr('firstname');
+      middlename = $(this).attr('middlename');
+      lastname = $(this).attr('lastname');
+      status = $(this).attr('status');
+      username = $(this).attr('username');
+      password = $(this).attr('password');
+      confirm_password = $(this).attr('confirm_password');
+      email = $(this).attr('email');
+      address = $(this).attr('address');
+      birthdate = $(this).attr('birthdate');
+      position = $(this).attr('position');
+      sex = $('.dt-sex').find(":selected").val();
+      roles = $('.dt-roles').find(":selected").val();
+      
+      if (status == "True"){status =1}
+      else {status =0}
+      $('.title-name').text('Update Record');
+      $('.dt-first-name').text('Update Record');
+      offCanvasElement = document.querySelector('#add-new-record'); 
+      let fv, offCanvasEl;
+      offCanvasEl = new bootstrap.Offcanvas(offCanvasElement);
+      (offCanvasElement.querySelector('.dt-first-name').value = firstname),
+      (offCanvasElement.querySelector('.dt-middle-name').value = middlename),
+      (offCanvasElement.querySelector('.select-status').value = status),
+      (offCanvasElement.querySelector('.dt-last-name').value = lastname),
+      (offCanvasElement.querySelector('.dt-user-name').value = username),
+      (offCanvasElement.querySelector('.dt-email').value = email),
+      (offCanvasElement.querySelector('.dt-address').value = address),
+      (offCanvasElement.querySelector('.dt-birthdate').value = birthdate),
+      (offCanvasElement.querySelector('.dt-position').value = position);
+      (offCanvasElement.querySelector('.dt-roles').value = roles);
+        offCanvasEl.show();
+    });
+
+    $('#submit-user').on('click', function(){
+        $firstname = $('#firstname').val();
+        $middlename = $('#middlename').val();
+        $lastname = $('#lastname').val();
+        $username = $('#username').val();
+        $password = $('#password').val();
+        $confirm_password = $('#confirm_password').val();
+        $email = $('#firstname').val();
+        $birthdate = $('#birthdate').val();
+        $sex = $('.dt-sex').find(":selected").val();
+        $address = $('#address').val();
+        $position = $('#position').val();
+        $roles = $('#roles').val();
+        $selectvalue = $('#select').find(":selected").val();
+
+        if(id){request_url = "{% url 'update-user' %}";identifier_swal = "Update";}
+        else{identifier_swal = "Add";request_url = "{% url 'add-user' %}";}
+        if($firstname !=""){
+          Swal.fire({
+            title: 'Are you sure?',
+            html: identifier_swal+" "+'<strong>'+$username+ " ?"+'</strong>',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            customClass: {
+              confirmButton: 'btn btn-primary me-3',
+              cancelButton: 'btn btn-label-secondary'
+            },
+            buttonsStyling: false
+      }).then(function (result) {
+        if (result.value) {
+            $.ajax({
+                type: "POST",
+                url: request_url,
+                data:{
+                    firstname: $firstname, middlename: $middlename,lastname: $lastname, username: $username, password: $password,sex:$sex, email:$email, birthdate:$birthdate, address:$address, position:$position, roles : $roles,is_active : $selectvalue, user_id: id
+                }
+            }).done(function(data){
+              if(data.data == "success"){
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Successfully save!',
+                    text: $username +' has been added.',
+                    customClass: {
+                      confirmButton: 'btn btn-success'
+                    }
+                  });
+                    window.location.reload();
+              }
+              else{
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid user Name',
+                    text: $username +' already exist',
+                    customClass: {
+                      confirmButton: 'btn btn-success'
+                    }});
+                  }
+                });
+              }});
+            }});
+        });
+
+'use strict';
+let fv, offCanvasEl;
+document.addEventListener('DOMContentLoaded', function (e) {
+  (function () {
+    const formAddNewRecord = document.getElementById('form-add-new-record');
+
+    setTimeout(() => {
+      const newRecord = document.querySelector('.create-new'),
+        offCanvasElement = document.querySelector('#add-new-record');
+
+      // To open offCanvas, to add new record
+      if (newRecord) {
+        newRecord.addEventListener('click', function () {
+          $('.title-name').text('Add Record');
+          $('.user-status').hide();
+          $('.update-div-user update-user').hide();
+          id = "";         
+          identifier_swal = "Add";   
+          offCanvasEl = new bootstrap.Offcanvas(offCanvasElement);
+          // Empty fields on offCanvas open
+          (offCanvasElement.querySelector('.dt-first-name').value = ''),
+          (offCanvasElement.querySelector('.dt-middle-name').value = '');
+          (offCanvasElement.querySelector('.dt-last-name').value = '');
+          (offCanvasElement.querySelector('.dt-user-name').value = '');
+          (offCanvasElement.querySelector('.dt-password').value = '');
+          (offCanvasElement.querySelector('.dt-confirm-password').value = '');
+          (offCanvasElement.querySelector('.dt-email').value = '');
+          (offCanvasElement.querySelector('.dt-birthdate').value = '');
+          (offCanvasElement.querySelector('.dt-address').value = '');
+          (offCanvasElement.querySelector('.dt-position').value = '');
+ 
+          // Open offCanvas with form
+          offCanvasEl.show();
+        });
+      }
+    }, 200);
+
+    // Form validation for Add new record
+    fv = FormValidation.formValidation(formAddNewRecord, {
+      fields: {
+        username: {
+          validators: {
+            notEmpty: {
+              message: 'The name is required'
+            }
+          }
+        },
+        firstname: {
+          validators: {
+            notEmpty: {
+              message: 'The firstname is required'
+            }
+          }
+        },
+      },
+      plugins: {
+        trigger: new FormValidation.plugins.Trigger(),
+        bootstrap5: new FormValidation.plugins.Bootstrap5({
+          // Use this for enabling/changing valid/invalid class
+          // eleInvalidClass: '',
+          eleValidClass: '',
+          rowSelector: '.col-sm-12'
+        }),
+        submitButton: new FormValidation.plugins.SubmitButton(),
+        // defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+        autoFocus: new FormValidation.plugins.AutoFocus()
+      },
+      init: instance => {
+        instance.on('plugins.message.placed', function (e) {
+          if (e.element.parentElement.classList.contains('input-group')) {
+            e.element.parentElement.insertAdjacentElement('afterend', e.messageElement);
+          }
+        });
+      }
+    });
+  })();
+});
+
+
+//datatables
+
+$(function () {
+  var dt_basic_table = $('.datatables-basic'),
+    dt_complex_header_table = $('.dt-complex-header'),
+    dt_row_grouping_table = $('.dt-row-grouping'),
+    dt_multilingual_table = $('.dt-multilingual'),
+    dt_basic;
+
+  // DataTable with buttons
+  // --------------------------------------------------------------------
+
+  if (dt_basic_table.length) {
+    
+    dt_basic = dt_basic_table.DataTable({
+      // ajax: assetsPath + 'json/table-datatable.json',
+      
+      // columns: [
+      //   { data: 'name' },
+      //   { data: 'status' },
+      //   { data: 'date_added' },
+      //   { data: '' }
+      // ],
+      columnDefs: [
+
+       
+      ],
+      order: [[2, 'desc']],
+      dom: '<"card-header flex-column flex-md-row"<"head-label text-center"><"dt-action-buttons text-end pt-3 pt-md-0"B>><"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-center justify-content-md-end"f>>t<"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+      displayLength: 7,
+      lengthMenu: [7, 10, 25, 50, 75, 100],
+      buttons: [
+        {
+          extend: 'collection',
+          className: 'btn btn-label-primary dropdown-toggle me-2',
+          text: '<i class="ti ti-file-export me-sm-1"></i> <span class="d-none d-sm-inline-block">Export</span>',
+          buttons: [
+            {
+              extend: 'print',
+              text: '<i class="ti ti-printer me-1" ></i>Print',
+              className: 'dropdown-item',
+              exportOptions: {
+                columns: [3, 4, 5, 6, 7],
+                // prevent avatar to be display
+                format: {
+                  body: function (inner, coldex, rowdex) {
+                    if (inner.length <= 0) return inner;
+                    var el = $.parseHTML(inner);
+                    var result = '';
+                    $.each(el, function (index, item) {
+                      if (item.classList !== undefined && item.classList.contains('user-name')) {
+                        result = result + item.lastChild.firstChild.textContent;
+                      } else if (item.innerText === undefined) {
+                        result = result + item.textContent;
+                      } else result = result + item.innerText;
+                    });
+                    return result;
+                  }
+                 }
+              },
+              customize: function (win) {
+                //customize print view for dark
+                $(win.document.body)
+                  .css('color', config.colors.headingColor)
+                  .css('border-color', config.colors.borderColor)
+                  .css('background-color', config.colors.bodyBg);
+                $(win.document.body)
+                  .find('table')
+                  .addClass('compact')
+                  .css('color', 'inherit')
+                  .css('border-color', 'inherit')
+                  .css('background-color', 'inherit');
+              }
+            },
+            {
+              extend: 'csv',
+              text: '<i class="ti ti-file-text me-1" ></i>Csv',
+              className: 'dropdown-item',
+              exportOptions: {
+                columns: [3, 4, 5, 6, 7],
+                // prevent avatar to be display
+                format: {
+                  body: function (inner, coldex, rowdex) {
+                    if (inner.length <= 0) return inner;
+                    var el = $.parseHTML(inner);
+                    var result = '';
+                    $.each(el, function (index, item) {
+                      if (item.classList !== undefined && item.classList.contains('user-name')) {
+                        result = result + item.lastChild.firstChild.textContent;
+                      } else if (item.innerText === undefined) {
+                        result = result + item.textContent;
+                      } else result = result + item.innerText;
+                    });
+                    return result;
+                  }
+                }
+              }
+            },
+            {
+              extend: 'excel',
+              text: '<i class="ti ti-file-spreadsheet me-1"></i>Excel',
+              className: 'dropdown-item',
+              exportOptions: {
+                columns: [3, 4, 5, 6, 7],
+                // prevent avatar to be display
+                format: {
+                  body: function (inner, coldex, rowdex) {
+                    if (inner.length <= 0) return inner;
+                    var el = $.parseHTML(inner);
+                    var result = '';
+                    $.each(el, function (index, item) {
+                      if (item.classList !== undefined && item.classList.contains('user-name')) {
+                        result = result + item.lastChild.firstChild.textContent;
+                      } else if (item.innerText === undefined) {
+                        result = result + item.textContent;
+                      } else result = result + item.innerText;
+                    });
+                    return result;
+                  }
+                }
+              }
+            },
+            {
+              extend: 'pdf',
+              text: '<i class="ti ti-file-description me-1"></i>Pdf',
+              className: 'dropdown-item',
+              exportOptions: {
+                columns: [3, 4, 5, 6, 7],
+                // prevent avatar to be display
+                format: {
+                  body: function (inner, coldex, rowdex) {
+                    if (inner.length <= 0) return inner;
+                    var el = $.parseHTML(inner);
+                    var result = '';
+                    $.each(el, function (index, item) {
+                      if (item.classList !== undefined && item.classList.contains('user-name')) {
+                        result = result + item.lastChild.firstChild.textContent;
+                      } else if (item.innerText === undefined) {
+                        result = result + item.textContent;
+                      } else result = result + item.innerText;
+                    });
+                    return result;
+                  }
+                }
+              }
+            },
+            {
+              extend: 'copy',
+              text: '<i class="ti ti-copy me-1" ></i>Copy',
+              className: 'dropdown-item',
+              exportOptions: {
+                columns: [3, 4, 5, 6, 7],
+                // prevent avatar to be display
+                format: {
+                  body: function (inner, coldex, rowdex) {
+                    if (inner.length <= 0) return inner;
+                    var el = $.parseHTML(inner);
+                    var result = '';
+                    $.each(el, function (index, item) {
+                      if (item.classList !== undefined && item.classList.contains('user-name')) {
+                        result = result + item.lastChild.firstChild.textContent;
+                      } else if (item.innerText === undefined) {
+                        result = result + item.textContent;
+                      } else result = result + item.innerText;
+                    });
+                    return result;
+                  }
+                }
+              }
+            }
+          ]
+        },
+        {
+          text: '<i class="ti ti-plus me-sm-1"></i> <span class="d-none d-sm-inline-block">Add New User</span>',
+          className: 'create-new btn btn-primary'
+        }
+      ],
+      responsive: {
+        details: {
+          display: $.fn.dataTable.Responsive.display.modal({
+            header: function (row) {
+              var data = row.data();
+              return 'Details of ' + data['full_name'];
+            }
+          }),
+          type: 'column',
+          renderer: function (api, rowIdx, columns) {
+            var data = $.map(columns, function (col, i) {
+              return col.title !== '' // ? Do not show row in modal popup if title is blank (for check box)
+                ? '<tr data-dt-row="' +
+                    col.rowIndex +
+                    '" data-dt-column="' +
+                    col.columnIndex +
+                    '">' +
+                    '<td>' +
+                    col.title +
+                    ':' +
+                    '</td> ' +
+                    '<td>' +
+                    col.data +
+                    '</td>' +
+                    '</tr>'
+                : '';
+            }).join('');
+
+            return data ? $('<table class="table"/><tbody />').append(data) : false;
+          }
+        }
+      }
+    });
+    $('div.head-label').html('<h5 class="card-title mb-0">Admin</h5>');
+  }
+
+  // Add New record
+  // ? Remove/Update this code as per your requirements
+  var count = 101;
+  // On form submit, if form is valid
+  fv.on('core.form.valid', function () {
+    var $new_name = $('.add-new-record .dt-first-name').val();
+
+
+    if ($new_name != '') {
+      dt_basic.row
+        .add({
+          id: count,
+          full_name: $new_name
+        })
+        .draw();
+      count++;
+
+      // Hide offcanvas using javascript method
+      offCanvasEl.hide();
+    }
+  });
+});
+
+</script>
+{% endblock footer_scripts %}
+
+
+
+
+
+
+
+
+

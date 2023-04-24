@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import datetime  
 
 
 class AuthGroup(models.Model):
@@ -117,6 +118,7 @@ class Company(models.Model):
     remarks = models.CharField(max_length=300, blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     updated_at = models.DateTimeField(blank=True, null=True, auto_now=True)
+    is_active = models.BooleanField(default=True)
     class Meta:
         managed = True
         db_table = 'company'
@@ -143,6 +145,7 @@ class Brand(models.Model):
     name = models.CharField(max_length=128, blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     updated_at = models.DateTimeField(blank=True, null=True, auto_now=True)
+    is_active = models.BooleanField(default=True)
     class Meta:
         managed = True
         db_table = 'brand'
@@ -151,6 +154,7 @@ class Unit(models.Model):
     name = models.CharField(max_length=128, blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     updated_at = models.DateTimeField(blank=True, null=True, auto_now=True)
+    is_active = models.BooleanField(default=True)
     class Meta:
         managed = True
         db_table = 'unit'

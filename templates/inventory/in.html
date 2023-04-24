@@ -21,17 +21,81 @@
                             <button type="submit" name="submitButton" class="btn btn-primary">Submit</button>
                         </div>
                     </div>
-                    <div class="card-body">
-                        <div class="row">
-                            <div class="col-lg-8 mx-auto">
-                                <div class="row g-3">
-                                    <div class="col-md-6">
-                                        <label class="form-label" for="item-type">Item type</label>
-                                        <select id="item-type" name="ItemType" class="select2 form-select" data-allow-clear="true">
-                                            <option value="">Select</option>
-                                            <option value="1">Medicine</option>
-                                            <option value="2">Supply</option>
-                                        </select>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-8 mx-auto">
+                            <!-- 1. Delivery Address -->
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label class="form-label" for="item-type">Item type</label>
+
+                                    <select id="item-type" class="select2 form-select" data-allow-clear="true">
+                                        <option></option>
+		              			        {% for row in item_type %}
+              						        <option value="{{ row.id }}">{{ row.name }}</option>	
+		              			        {% endfor %}
+                                    </select>
+                                    
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="company">Company</label>
+                                    <select id="company" class="select2 form-select" data-allow-clear="true">
+                                        <option></option>
+                                        {% for row in company %}
+                                            <option value="{{ row.id }}">{{ row.name }}</option>	
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="generic">Generic</label>
+                                    <select id="generic" class="select2 form-select" data-allow-clear="true">
+                                        <option></option>
+                                        {% for row in generic %}
+                                            <option value="{{ row.id }}">{{ row.name }}</option>	
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="sub-generic">Sub-generic</label>
+                                    <select id="sub-generic" class="select2 form-select" data-allow-clear="true">
+                                        <option></option>
+                                        {% for row in sub_generic %}
+                                            <option value="{{ row.id }}">{{ row.name }}</option>	
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-12">
+                                    <label class="form-label" for="description">Description</label>
+                                    <textarea name="description" class="form-control" id="address" rows="2"></textarea>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="brand">Brand</label>
+                                    <select id="brand" class="select2 form-select" data-allow-clear="true">
+                                        <option></option>
+                                        {% for row in brand %}
+                                            <option value="{{ row.id }}">{{ row.name }}</option>	
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="unit-price">Unit Price</label>
+                                    <input type="text" id="unit-price" class="form-control" />
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="item-unit">Item unit</label>
+                                    <select id="item-unit" class="select2 form-select" data-allow-clear="true">
+                                        <option></option>
+                                        {% for row in item_unit %}
+                                            <option value="{{ row.id }}">{{ row.name }}</option>	
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-6">
+                                    <label class="form-label" for="item-quantity">Item Quantity</label>
+                                    <div class="input-group input-group-merge">
+                                        <input type="text" id="item-quantity" class="form-control" />
+                                        <span id="item-quantity-unit" class="input-group-text"></span>
                                     </div>
                                     <div class="col-md-6">
                                         <label class="form-label" for="company">Company</label>
