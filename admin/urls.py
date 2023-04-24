@@ -12,4 +12,6 @@ urlpatterns = [
     path('updategeneric', views.updategeneric, name='update-generic'),
     path('addcompany', views.addcompany, name='add-company'),
     path('updatecompany', views.updatecompany, name='update-company'),
+    path('adduser', views.adduser, name='add-user'),
+    path('updateuser', views.updateuser, name='update-user'),
 ]
