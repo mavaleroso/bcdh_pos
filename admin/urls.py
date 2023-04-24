@@ -17,5 +17,8 @@ urlpatterns = [
     path('updatesubgeneric', views.updatesubgeneric, name='update-sub-generic'),
     path('units', views.addunits, name='add-units'),
     path('updateunits', views.updateunits, name='update-units'),
-
+    path('addcompany', views.addcompany, name='add-company'),
+    path('updatecompany', views.updatecompany, name='update-company'),
+    path('adduser', views.adduser, name='add-user'),
+    path('updateuser', views.updateuser, name='update-user'),
 ]
