@@ -18,7 +18,7 @@
         <meta name="description" content="" />
 
         <!-- Favicon -->
-        <link rel="icon" type="image/x-icon" href="{% static 'assets/img/favicon/favicon.ico' %}" />
+        <link rel="icon" type="image/x-icon" href="{% static 'assets/img/logos/bcdh_logo.png' %}" />
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -54,6 +54,7 @@
         <link rel="stylesheet" href="{% static 'assets/vendor/libs/node-waves/node-waves.css' %}" />
         <link rel="stylesheet" href="{% static 'assets/vendor/libs/typeahead-js/typeahead.css' %}" />
         <link rel="stylesheet" href="{% static 'assets/vendor/libs/select2/select2.css' %}" />
+        <link rel="stylesheet" href="{% static 'assets/vendor/libs/sweetalert2/sweetalert2' %}.css" />
 
         <link rel="stylesheet" href="{% static 'assets/vendor/libs/animate-css/animate.css' %}" />
         <link rel="stylesheet" href="{% static 'assets/vendor/libs/sweetalert2/sweetalert2.css' %}" />
@@ -68,6 +69,9 @@
         <script src="{% static 'assets/vendor/js/template-customizer.js' %}"></script>
         <!--? Config:  Mandatory theme config file contain global vars & default theme options, Set your preferred theme option in this file.  -->
         <script src="{% static 'assets/js/config.js' %}"></script>
+
+        <!-- Custom made CSS -->
+        <link rel="stylesheet" href="{% static 'custom/custom.css' %}" />
     </head>
 
     <body>
@@ -79,35 +83,8 @@
                 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
                     <div class="app-brand demo">
                         <a href="index.html" class="app-brand-link">
-                            <span class="app-brand-logo demo">
-                                <svg width="32" height="22" viewBox="0 0 32 22" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        fill-rule="evenodd"
-                                        clip-rule="evenodd"
-                                        d="M0.00172773 0V6.85398C0.00172773 6.85398 -0.133178 9.01207 1.98092 10.8388L13.6912 21.9964L19.7809 21.9181L18.8042 9.88248L16.4951 7.17289L9.23799 0H0.00172773Z"
-                                        fill="#7367F0"
-                                    />
-                                    <path
-                                        opacity="0.06"
-                                        fill-rule="evenodd"
-                                        clip-rule="evenodd"
-                                        d="M7.69824 16.4364L12.5199 3.23696L16.5541 7.25596L7.69824 16.4364Z"
-                                        fill="#161616"
-                                    />
-                                    <path
-                                        opacity="0.06"
-                                        fill-rule="evenodd"
-                                        clip-rule="evenodd"
-                                        d="M8.07751 15.9175L13.9419 4.63989L16.5849 7.28475L8.07751 15.9175Z"
-                                        fill="#161616"
-                                    />
-                                    <path
-                                        fill-rule="evenodd"
-                                        clip-rule="evenodd"
-                                        d="M7.77295 16.3566L23.6563 0H32V6.88383C32 6.88383 31.8262 9.17836 30.6591 10.4057L19.7824 22H13.6938L7.77295 16.3566Z"
-                                        fill="#7367F0"
-                                    />
-                                </svg>
+                            <span class="app-brand-logo demo" style="width: 17% !important; height: 17% !important">
+                                <img class="w-100" src="{% static 'assets/img/logos/bcdh_logo.png' %}" />
                             </span>
                             <span class="app-brand-text demo menu-text fw-bold">BCDH</span>
                         </a>
@@ -851,13 +828,23 @@
         <script src="{% static 'assets/vendor/libs/cleavejs/cleave.js' %}"></script>
         <script src="{% static 'assets/vendor/libs/cleavejs/cleave-phone.js' %}"></script>
         <script src="{% static 'assets/vendor/libs/select2/select2.js' %}"></script>
+        <script src="{% static 'assets/vendor/libs/moment/moment.js' %}"></script>
+        <script src="{% static 'assets/vendor/libs/flatpickr/flatpickr.js' %}"></script>
+        <script src="{% static 'assets/vendor/libs/typeahead-js/typeahead.js' %}"></script>
+        <script src="{% static 'assets/vendor/libs/tagify/tagify.js' %}"></script>
+        <script src="{% static 'assets/vendor/libs/formvalidation/dist/js/FormValidation.min.js' %}"></script>
+        <script src="{% static 'assets/vendor/libs/formvalidation/dist/js/plugins/Bootstrap5.min.js' %}"></script>
+        <script src="{% static 'assets/vendor/libs/formvalidation/dist/js/plugins/AutoFocus.min.js' %}"></script>
+        <script src="{% static 'assets/vendor/libs/sweetalert2/sweetalert2.js' %}"></script>
 
         <!-- Main JS -->
         <script src="{% static 'assets/js/main.js' %}"></script>
 
         <!-- Page JS -->
         <script src="{% static 'assets/js/dashboards-analytics.js' %}"></script>
-        <script src="{% static 'assets/js/form-layouts.js' %}"></script>
+
+        <!-- Custom made JS -->
+        <script src="{% static 'custom/custom.js' %}"></script>
 
          <!-- Vendors JS -->
          <script src="{% static 'assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js' %}"></script>
