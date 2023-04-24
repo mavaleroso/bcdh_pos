@@ -236,6 +236,12 @@
                                 <div data-i18n="Sub-generic">Sub-generic</div>
                             </a>
                         </li>
+                        <li class="menu-item {% if url_name == 'units-list' %}active{% endif %}">
+                            <a href="{% url 'units-list' %}" class="menu-link">
+                                <i class="menu-icon tf-icons ti ti-table"></i>
+                                <div data-i18n="Units">Units</div>
+                            </a>
+                        </li>
                     </ul>
                     {% endwith %}
                 </aside>

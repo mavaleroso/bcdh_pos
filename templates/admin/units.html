@@ -5,7 +5,7 @@
 <div class="content-wrapper">
     <!-- Content -->
     <div class="container-xxl flex-grow-1 container-p-y">
-      <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Brand /</span> List</h4>
+      <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Units /</span> List</h4>
 
 <!-- DataTable with Buttons -->
         <div class="card">
@@ -20,7 +20,7 @@
                 </tr>
                 </thead>
                 <tbody>
-                  {% for row in brand %}
+                  {% for row in units %}
                   <tr>
                     <td>{{row.name}}</td>
                     <td>
@@ -50,25 +50,25 @@
     <div class="offcanvas-body flex-grow-1">
       <form class="add-new-record pt-0 row g-2" id="form-add-new-record" action="javascript:;">
         <div class="col-sm-12">
-          <label class="form-label" for="Brandname">Brand Name</label>
+          <label class="form-label" for="Unitsname">Units Name</label>
           <div class="input-group input-group-merge">
-            <span id="Brandname2" class="input-group-text"><i class="ti ti-user"></i></span>
+            <span id="Unitsname2" class="input-group-text"><i class="ti ti-user"></i></span>
             <input
               type="text"
-              id="Brandname"
-              class="form-control dt-brand-name"
-              name="Brandname"
-              placeholder="Enter Brand name"
+              id="Unitsname"
+              class="form-control dt-units-name"
+              name="Unitsname"
+              placeholder="Enter Units name"
               aria-label="Oxytocin"
-              aria-describedby="Brandname2"
+              aria-describedby="Unitsname2"
             />
           </div>
         </div>
 
-        <div class="col-sm-12 brand-status">
-          <label class="form-label" for="Brandname">Status</label>
+        <div class="col-sm-12 units-status">
+          <label class="form-label" for="Unitsname">Status</label>
           <div class="input-group input-group-merge">
-            <span id="Brandname2" class="input-group-text"><i class="ti ti-user"></i></span>
+            <span id="Unitsname2" class="input-group-text"><i class="ti ti-user"></i></span>
 
               <select class="form-select select-status" id="select">
                 <option value="1">Active</option>
@@ -78,9 +78,9 @@
           </div>
         </div>
                 
-        <div class="col-sm-12 update-div-brand">
+        <div class="col-sm-12 update-div-units">
           <br>
-          <button type="button" id="add-brand" class="btn btn-primary data-submit me-sm-3 me-1 additional-record">Submit</button>
+          <button type="button" id="add-units" class="btn btn-primary data-submit me-sm-3 me-1 additional-record">Submit</button>
           <button type="reset" class="btn btn-outline-secondary" data-bs-dismiss="offcanvas">Cancel</button>
         </div>
       </form>
@@ -97,31 +97,31 @@
 $(document).ready(function(){
   
     $('.item-edit').click(function (event) {
-      $('.brand-status').show();
+      $('.units-status').show();
       id = $(this).attr('id');
       name = $(this).attr('value')
       status = $(this).attr('status')
       if (status == "True"){status =1}
       else {status =0}
       $('.title-name').text('Update Record');
-      $('.dt-brand-name').text('Update Record');
+      $('.dt-units-name').text('Update Record');
       offCanvasElement = document.querySelector('#add-new-record'); 
       let fv, offCanvasEl;
       offCanvasEl = new bootstrap.Offcanvas(offCanvasElement);
-      (offCanvasElement.querySelector('.dt-brand-name').value = name);
+      (offCanvasElement.querySelector('.dt-units-name').value = name);
       (offCanvasElement.querySelector('.select-status').value = status),
         offCanvasEl.show();
     });
 
-    $('#add-brand').on('click', function(){
-        $brandname = $('#Brandname').val();
+    $('#add-units').on('click', function(){
+        $unitsname = $('#Unitsname').val();
         $selectvalue = $('#select').find(":selected").val();
-        if(id){request_url = "{% url 'update-brand' %}";identifier_swal = "Update";}
-        else{identifier_swal = "Add";request_url = "{% url 'add-brand' %}";}
-        if($brandname != ""){
+        if(id){request_url = "{% url 'update-units' %}";identifier_swal = "Update";}
+        else{identifier_swal = "Add";request_url = "{% url 'add-units' %}";}
+        if($unitsname != ""){
           Swal.fire({
             title: 'Are you sure?',
-            html: identifier_swal+" "+'<strong>'+$brandname+ " ?"+'</strong>',
+            html: identifier_swal+" "+'<strong>'+$unitsname+ " ?"+'</strong>',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Yes',
@@ -136,14 +136,14 @@ $(document).ready(function(){
                 type: "POST",
                 url: request_url,
                 data:{
-                    brandname: $brandname,is_active : $selectvalue, brand_id: id
+                    unitsname: $unitsname,is_active : $selectvalue, units_id: id
                 }
             }).done(function(data){
               if(data.data == "success"){
                 Swal.fire({
                     icon: 'success',
                     title: 'Successfully save!',
-                    text: $brandname +' has been added.',
+                    text: $unitsname +' has been added.',
                     customClass: {
                       confirmButton: 'btn btn-success'
                     }
@@ -153,8 +153,8 @@ $(document).ready(function(){
               else{
                 Swal.fire({
                     icon: 'error',
-                    title: 'Invalid Brand Name',
-                    text: $brandname +' already exist',
+                    title: 'Invalid Units Name',
+                    text: $unitsname +' already exist',
                     customClass: {
                       confirmButton: 'btn btn-success'
                     }});
@@ -178,14 +178,14 @@ document.addEventListener('DOMContentLoaded', function (e) {
       if (newRecord) {
         newRecord.addEventListener('click', function () {
           $('.title-name').text('Add Record');
-          $('.brand-status').hide();
-          $('.update-div-brand update-brand').hide();
+          $('.units-status').hide();
+          $('.update-div-units update-units').hide();
           id = "";
           identifier_swal = "Add";
 
           offCanvasEl = new bootstrap.Offcanvas(offCanvasElement);
           // Empty fields on offCanvas open
-          (offCanvasElement.querySelector('.dt-brand-name').value = '');
+          (offCanvasElement.querySelector('.dt-units-name').value = '');
 
  
           // Open offCanvas with form
@@ -197,7 +197,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
     // Form validation for Add new record
     fv = FormValidation.formValidation(formAddNewRecord, {
       fields: {
-        Brandname: {
+        Unitsname: {
           validators: {
             notEmpty: {
               message: 'The name is required'
@@ -447,7 +447,7 @@ $(function () {
   var count = 101;
   // On form submit, if form is valid
   fv.on('core.form.valid', function () {
-    var $new_name = $('.add-new-record .dt-brand-name').val();
+    var $new_name = $('.add-new-record .dt-units-name').val();
 
 
     if ($new_name != '') {
