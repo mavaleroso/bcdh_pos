@@ -21,184 +21,111 @@
                             <button type="submit" name="submitButton" class="btn btn-primary">Submit</button>
                         </div>
                     </div>
-                </div>
-                <div class="card-body">
-                    <div class="row">
-                        <div class="col-lg-8 mx-auto">
-                            <!-- 1. Delivery Address -->
-                            <div class="row g-3">
-                                <div class="col-md-6">
-                                    <label class="form-label" for="item-type">Item type</label>
-
-                                    <select id="item-type" class="select2 form-select" data-allow-clear="true">
-                                        <option></option>
-		              			        {% for row in item_type %}
-              						        <option value="{{ row.id }}">{{ row.name }}</option>	
-		              			        {% endfor %}
-                                    </select>
-                                    
+                    <div class="card-body">
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label class="form-label" for="barcode">Barcode<span class="text-red">*</span></label>
+                                <div class="input-group input-group-merge">
+                                    <span class="input-group-text" id="basic-addon"><i class="ti ti-barcode"></i></span>
+                                    <input type="text" id="barcode" name="Barcode" class="form-control" />
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label" for="company">Company</label>
-                                    <select id="company" class="select2 form-select" data-allow-clear="true">
-                                        <option></option>
-                                        {% for row in company %}
-                                            <option value="{{ row.id }}">{{ row.name }}</option>	
-                                        {% endfor %}
-                                    </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="delivered-date">Delivery Date<span class="text-red">*</span></label>
+                                <input type="date" id="delivered-date" name="DeliveredDate" class="form-control" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="expiration-date">Expiration Date<span class="text-red">*</span></label>
+                                <input type="date" id="expiration-date" name="ExpirationDate" class="form-control" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="item-type">Item type<span class="text-red">*</span></label>
+                                <select id="item-type" name="ItemType" class="select2 form-select" data-allow-clear="true">
+                                    <option></option>
+                                    {% for row in item_type %}
+                                    <option value="{{ row.id }}">{{ row.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="company">Company<span class="text-red">*</span></label>
+                                <select id="company" name="Company" class="select2 form-select" data-allow-clear="true">
+                                    <option></option>
+                                    {% for row in company %}
+                                    <option value="{{ row.id }}">{{ row.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="brand">Brand<span class="text-red">*</span></label>
+                                <select id="brand" name="Brand" class="select2 form-select" data-allow-clear="true">
+                                    <option></option>
+                                    {% for row in brand %}
+                                    <option value="{{ row.id }}">{{ row.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="generic">Generic<span class="text-red">*</span></label>
+                                <select id="generic" name="Generic" class="select2 form-select" data-allow-clear="true">
+                                    <option></option>
+                                    {% for row in generic %}
+                                    <option value="{{ row.id }}">{{ row.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="sub-generic">Sub-generic<span class="text-red">*</span></label>
+                                <select id="sub-generic" name="SubGeneric" class="select2 form-select" data-allow-clear="true">
+                                    <option></option>
+                                    {% for row in sub_generic %}
+                                    <option value="{{ row.id }}">{{ row.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="description">Description<span class="text-red">*</span></label>
+                                <input type="text" name="Description" id="description" class="form-control" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="unit-price">Unit Price<span class="text-red">*</span></label>
+                                <input dir="rtl" type="number" name="UnitPrice" id="unit-price" class="form-control" />
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="item-unit">Item unit</label>
+                                <select id="item-unit" class="select2 form-select" data-allow-clear="true">
+                                    <option></option>
+                                    {% for row in item_unit %}
+                                    <option value="{{ row.id }}">{{ row.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="item-quantity">Item Quantity</label>
+                                <div class="input-group input-group-merge">
+                                    <input type="number" id="item-quantity" name="ItemQuantity" class="form-control" />
+                                    <span id="item-quantity-unit" class="input-group-text"></span>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label" for="generic">Generic</label>
-                                    <select id="generic" class="select2 form-select" data-allow-clear="true">
-                                        <option></option>
-                                        {% for row in generic %}
-                                            <option value="{{ row.id }}">{{ row.name }}</option>	
-                                        {% endfor %}
-                                    </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="item-quantity-pcs"
+                                    >Quantity Per Item Unit in PC/s<span class="text-red">*</span></label
+                                >
+                                <div class="input-group input-group-merge">
+                                    <input type="number" id="item-quantity-pcs" name="ItemQuantityPcs" class="form-control" />
+                                    <span class="input-group-text">PC/s</span>
                                 </div>
-                                <div class="col-md-6">
-                                    <label class="form-label" for="sub-generic">Sub-generic</label>
-                                    <select id="sub-generic" class="select2 form-select" data-allow-clear="true">
-                                        <option></option>
-                                        {% for row in sub_generic %}
-                                            <option value="{{ row.id }}">{{ row.name }}</option>	
-                                        {% endfor %}
-                                    </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="total-quantity-pcs">Total Quantity in PC/s<span class="text-red">*</span></label>
+                                <div class="input-group input-group-merge">
+                                    <input type="text" id="total-quantity-pcs" name="TotalQuantityPcs" class="form-control" readonly />
+                                    <span class="input-group-text">PC/s</span>
                                 </div>
-                                <div class="col-12">
-                                    <label class="form-label" for="description">Description</label>
-                                    <textarea name="description" class="form-control" id="address" rows="2"></textarea>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label" for="brand">Brand</label>
-                                    <select id="brand" class="select2 form-select" data-allow-clear="true">
-                                        <option></option>
-                                        {% for row in brand %}
-                                            <option value="{{ row.id }}">{{ row.name }}</option>	
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label" for="unit-price">Unit Price</label>
-                                    <input type="text" id="unit-price" class="form-control" />
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label" for="item-unit">Item unit</label>
-                                    <select id="item-unit" class="select2 form-select" data-allow-clear="true">
-                                        <option></option>
-                                        {% for row in item_unit %}
-                                            <option value="{{ row.id }}">{{ row.name }}</option>	
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="col-md-6">
-                                    <label class="form-label" for="item-quantity">Item Quantity</label>
-                                    <div class="input-group input-group-merge">
-                                        <input type="text" id="item-quantity" class="form-control" />
-                                        <span id="item-quantity-unit" class="input-group-text"></span>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label" for="company">Company</label>
-                                        <select id="company" name="Company" class="select2 form-select" data-allow-clear="true">
-                                            <option value="">Select</option>
-                                            <option value="1">Generic Pharmacy</option>
-                                            <option value="2">C&C Pharmacy</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label" for="generic">Generic</label>
-                                        <select id="generic" name="Generic" class="select2 form-select" data-allow-clear="true">
-                                            <option value="">Select</option>
-                                            <option value="1">Ambroxol</option>
-                                            <option value="2">Amlodipine</option>
-                                            <option value="3">Ascorbic Acid</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label" for="sub-generic">Sub-generic</label>
-                                        <select id="sub-generic" name="SubGeneric" class="form-select select2" data-allow-clear="true">
-                                            <option value="">Select</option>
-                                            <option value="1">Expel</option>
-                                            <option value="2">Amvasc</option>
-                                            <option value="3">Ceelin</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-12">
-                                        <label class="form-label" for="Description">Description</label>
-                                        <textarea class="form-control" id="Description" name="Description" rows="2"></textarea>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label" for="brand">Brand</label>
-                                        <select id="brand" name="Brand" class="select2 form-select" data-allow-clear="true">
-                                            <option value="">Select</option>
-                                            <option value="1">Calpol</option>
-                                            <option value="2">Hedex</option>
-                                            <option value="3">Panadol</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label" for="unit-price">Unit Price</label>
-                                        <input type="number" dir="rtl" id="unit-price" name="UnitPrice" class="form-control" required />
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label" for="item-unit">Item unit</label>
-                                        <select id="item-unit" name="ItemUnit" class="select2 form-select" data-allow-clear="true">
-                                            <option value="">Select</option>
-                                            <option value="1">Box</option>
-                                            <option value="2">Dozen</option>
-                                            <option value="3">Packs</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label" for="item-quantity">Item Quantity</label>
-                                        <div class="input-group input-group-merge">
-                                            <input type="number" id="item-quantity" name="ItemQuantity" class="form-control" />
-                                            <span id="item-quantity-unit" class="input-group-text"></span>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label" for="item-quantity-pcs">Quantity Per Item Unit in PC/s</label>
-                                        <div class="input-group input-group-merge">
-                                            <input type="number" id="item-quantity-pcs" name="ItemQuantityPcs" class="form-control" />
-                                            <span class="input-group-text">PC/s</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label" for="total-quantity-pcs">Total Quantity in PC/s</label>
-                                        <div class="input-group input-group-merge">
-                                            <input type="text" id="total-quantity-pcs" name="TotalQuantityPcs" class="form-control" readonly />
-                                            <span class="input-group-text">PC/s</span>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label" for="retail-price-unit"
-                                            >Retail Price Per <span id="retail-price-unit-lbl">Unit</span></label
-                                        >
-                                        <input type="number" dir="rtl" id="retail-price-unit" name="RetailPriceUnit" class="form-control" />
-                                    </div>
-                                    <div class="col-md-6">
-                                        <label class="form-label" for="retail-price-pcs">Retail Price Per PC/s</label>
-                                        <input type="number" dir="rtl" id="retail-price-pcs" name="RetailPricePcs" class="form-control" />
-                                    </div>
-                                </div>
-                                <div class="row">
-                                    <div class="divider divider-dashed">
-                                        <div class="divider-text"></div>
-                                    </div>
-
-                                    <div class="table-responsive text-nowrap">
-                                        <table class="table">
-                                            <thead class="table-light text-center">
-                                                <tr>
-                                                    <th>#</th>
-                                                    <th>Barcode</th>
-                                                    <th>Expiration Date</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody id="tbl-item-details" class="table-border-bottom-0"></tbody>
-                                        </table>
-                                    </div>
-                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label" for="retail-price-pcs">Retail Price Per PC/s<span class="text-red">*</span></label>
+                                <input type="number" dir="rtl" id="retail-price-pcs" name="RetailPricePcs" class="form-control" />
                             </div>
                         </div>
                     </div>
@@ -214,8 +141,6 @@
     $(document).ready(function () {
         let item_unit_id = $('#item-unit')
         let item_quantity_unit_id = $('#item-quantity-unit')
-        let retail_price_unit_id = $('#retail-price-unit')
-        let retail_price_unit_lbl = $('#retail-price-unit-lbl')
         let item_quantity_id = $('#item-quantity')
         let tbl_item_details = $('#tbl-item-details')
         let item_quantity_pcs = $('#item-quantity-pcs')
@@ -223,8 +148,6 @@
 
         item_unit_id.on('change', function () {
             let item_unit_selected = $('#item-unit option:selected')
-            item_quantity_unit_id.text(item_unit_selected.text())
-            retail_price_unit_lbl.text(item_unit_selected.text())
             item_quantity_id.val('')
         })
 
@@ -251,23 +174,37 @@
             Brand = jQuery(InFormValidation.querySelector('[name="Brand"]')),
             ItemUnit = jQuery(InFormValidation.querySelector('[name="ItemUnit"]'))
 
-        const titleValidators = {
+        const ExpirationDateValidation = {
             validators: {
                 notEmpty: {
-                    message: 'The task is required',
-                },
-            },
-        }
-        const dueDateValidators = {
-            validators: {
-                notEmpty: {
-                    message: 'The due date is required',
+                    message: 'Expiration Date is required',
                 },
             },
         }
 
         const fv = FormValidation.formValidation(InFormValidation, {
             fields: {
+                Barcode: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Please enter barcode',
+                        },
+                    },
+                },
+                DeliveredDate: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Please delivery date',
+                        },
+                    },
+                },
+                ExpirationDate: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Please delivery date',
+                        },
+                    },
+                },
                 ItemType: {
                     validators: {
                         notEmpty: {
@@ -479,50 +416,42 @@
             })
         }
 
-        item_quantity_id.on('keyup', function () {
-            if (!item_unit_id.val()) return
-            let item_quantity_val = item_quantity_id.val() ?? 0
-            append_item_details(item_quantity_val)
-        })
+        // item_quantity_id.on('keyup', function () {
+        //     if (!item_unit_id.val()) return
+        //     let item_quantity_val = item_quantity_id.val() ?? 0
+        //     append_item_details(item_quantity_val)
+        // })
+        //
+        // item_quantity_pcs.on('keyup', function () {
+        //     if (item_quantity_id.val() && item_unit_id.val()) return
+        //     let item_quantity_val = item_quantity_pcs.val() ?? 0
+        //     append_item_details(item_quantity_val)
+        // })
 
-        item_quantity_pcs.on('keyup', function () {
-            if (item_quantity_id.val() && item_unit_id.val()) return
-            let item_quantity_val = item_quantity_pcs.val() ?? 0
-            append_item_details(item_quantity_val)
-        })
-
-        function append_item_details(quantity) {
-            let tbl_item_details_html = ''
-            tbl_item_details.empty()
-            for (let i = 0; i < quantity; i++) {
-                tbl_item_details_html =
-                    '<tr>' +
-                    '<td>' +
-                    (i + 1) +
-                    '</td>' +
-                    '<td>' +
-                    '<div class="input-group input-group-merge">' +
-                    '<span class="input-group-text" id="basic-addon"><i class="ti ti-barcode"></i></span>' +
-                    '<input type="text" name="barcode[' +
-                    i +
-                    ']" class="form-control" aria-describedby="basic-addon" />' +
-                    '</div>' +
-                    '</td>' +
-                    '<td>' +
-                    '<div class="input-group input-group-merge">' +
-                    '<input type="date" name="expiryDate[' +
-                    i +
-                    ']" class="form-control"/>' +
-                    '</div>' +
-                    '</td>' +
-                    '</tr>'
-
-                tbl_item_details.append(tbl_item_details_html)
-                // Add new fields
-                // Note that we also pass the validator rules for new field as the third parameter
-                fv.addField('barcode[' + i + ']', titleValidators).addField('expiryDate[' + i + ']', dueDateValidators)
-            }
-        }
+        //function append_item_details(quantity) {
+        //    let tbl_item_details_html = ''
+        //    tbl_item_details.empty()
+        //    for (let i = 0; i < quantity; i++) {
+        //        tbl_item_details_html =
+        //            '<tr>' +
+        //            '<td>' +
+        //            (i + 1) +
+        //            '</td>' +
+        //            '<td>' +
+        //            '<div class="input-group input-group-merge">' +
+        //            '<input type="date" name="expiryDate[' +
+        //            i +
+        //            ']" class="form-control"/>' +
+        //            '</div>' +
+        //            '</td>' +
+        //            '</tr>'
+        //
+        //        tbl_item_details.append(tbl_item_details_html)
+        //        // Add new fields
+        //        // Note that we also pass the validator rules for new field as the third parameter
+        //        fv.addField('expiryDate[' + i + ']', ExpirationDateValidation)
+        //    }
+        //}
     })
 
     document.addEventListener('DOMContentLoaded', function (e) {})
