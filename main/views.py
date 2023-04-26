@@ -17,7 +17,7 @@ def index(request):
 
 @csrf_exempt
 def login(request):
-    if request.user.is_authenticated and request.user.is_superuser == True:
+    if request.user.is_authenticated:
         return redirect("dashboard")
     if request.method == 'POST':
         username = request.POST['username']

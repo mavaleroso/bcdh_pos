@@ -183,6 +183,7 @@ class ItemType(models.Model):
 
 class Item(models.Model):
     code = models.CharField(max_length=128, blank=True, null=True)
+    barcode = models.CharField(max_length=128, blank=True, null=True)
     type = models.ForeignKey(ItemType, models.DO_NOTHING)
     generic = models.ForeignKey(Generic, models.DO_NOTHING)
     sub_generic = models.ForeignKey(SubGeneric, models.DO_NOTHING)
@@ -191,12 +192,14 @@ class Item(models.Model):
     company = models.ForeignKey(Company, models.DO_NOTHING)
     unit = models.ForeignKey(Unit, models.DO_NOTHING, blank=True, null=True)
     unit_quantity = models.IntegerField(max_length=128, blank=True, null=True)
+    pcs_quantity = models.IntegerField(max_length=128, blank=True, null=True)
     unit_price = models.DecimalField(max_digits=30, decimal_places=10, blank=True, null=True)
     retail_price = models.DecimalField(max_digits=30, decimal_places=10, blank=True, null=True)
     retail_price_unit = models.DecimalField(max_digits=30, decimal_places=10, blank=True, null=True)
     is_damaged = models.CharField(max_length=128, blank=True, null=True)
     user = models.ForeignKey(AuthUser, models.DO_NOTHING)
-    delivered_date = models.DateTimeField(blank=True, null=True, auto_now_add=True)
+    expiration_date = models.DateTimeField(blank=True, null=True)
+    delivered_date = models.DateTimeField(blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     updated_at = models.DateTimeField(blank=True, null=True, auto_now=True)
     deleted_at = models.DateTimeField(blank=True, null=True)
@@ -237,18 +240,6 @@ class Clients(models.Model):
     class Meta:
         managed = True
         db_table = 'clients'
-
-class ItemDetails(models.Model):
-    item = models.ForeignKey(Item, models.DO_NOTHING)
-    quantity = models.IntegerField(max_length=128, blank=True, null=True)
-    barcode = models.CharField(max_length=128, blank=True, null=True)
-    expiration_date = models.DateField(blank=True, null=True)
-    created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
-    updated_at = models.DateTimeField(blank=True, null=True, auto_now=True)
-    deleted_at = models.DateTimeField(blank=True, null=True)
-    class Meta:
-        managed = True
-        db_table = 'item_details'
 
 class Location(models.Model):
     name = models.CharField(max_length=128, blank=True, null=True)
