@@ -55,12 +55,15 @@
         <link rel="stylesheet" href="{% static 'assets/vendor/libs/select2/select2.css' %}" />
         
 
+        <link rel="stylesheet" href="{% static 'assets/vendor/libs/toastr/toastr.css' %}" />
         <link rel="stylesheet" href="{% static 'assets/vendor/libs/animate-css/animate.css' %}" />
         <link rel="stylesheet" href="{% static 'assets/vendor/libs/sweetalert2/sweetalert2.css' %}" />
 
          <!-- sales -->
         <link rel="stylesheet" href="{% static 'assets/vendor/libs/bs-stepper/bs-stepper.css' %}" />
         <link rel="stylesheet" href="{% static 'assets/vendor/css/pages/wizard-ex-checkout.css' %}" />
+
+
 
 
         <!-- Page CSS -->
@@ -851,8 +854,12 @@
         <script src="{% static 'assets/vendor/libs/cleavejs/cleave-phone.js' %}"></script>
         <script src="{% static 'assets/vendor/libs/select2/select2.js' %}"></script>
 
+        <script src="{% static 'assets/vendor/libs/toastr/toastr.js' %}"></script>
+
         <!-- Main JS -->
         <script src="{% static 'assets/js/main.js' %}"></script>
+
+        <script src="{% static 'assets/js/ui-toasts.js' %}"></script>
 
         <!-- Page JS -->
         <script src="{% static 'assets/js/dashboards-analytics.js' %}"></script>
@@ -877,8 +884,8 @@
         <script src="{% static 'assets/vendor/libs/sweetalert2/sweetalert2.js' %}"></script>
         <script src="{% static 'assets/js/extended-ui-sweetalert2.js' %}"></script>
 
-        <script src="{% static 'assets/vendor/libs/toastr/toastr.js' %}"></script>
-        <script src="{% static 'assets/js/ui-toasts.js' %}"></script>
+ 
+
 
         <script src="{% static 'assets/vendor/libs/bs-stepper/bs-stepper.js' %}"></script>
         <script src="{% static 'assets/vendor/libs/rateyo/rateyo.js' %}"></script>
@@ -892,6 +899,8 @@
         <script src="../../assets/js/wizard-ex-checkout.js"></script> -->
 
         <!-- <script src="{% static 'assets/js/tables-datatables-basic.js' %}"></script> -->
+
+
         
 
         {% block footer_scripts %} {% endblock footer_scripts %}

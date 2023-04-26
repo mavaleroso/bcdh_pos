@@ -8,7 +8,7 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from main.models import ( ItemType, Company, Generic, SubGeneric, Brand, Unit, AuthUser, UserDetails )
+from main.models import (Clients)
 import json 
 from django.core import serializers
 import datetime
@@ -16,10 +16,10 @@ from django.contrib.auth.hashers import make_password
 
 
 def salestransaction(request):
-    # context = {
-	# 	'users' : AuthUser.objects.filter().exclude(id=1).order_by('first_name').select_related('userdetails')
-	# }
-    return render(request, 'sales/transaction.html')
+    context = {
+		'clients' : Clients.objects.filter().order_by('first_name')
+	}
+    return render(request, 'sales/transaction.html', context)
 
 
         
