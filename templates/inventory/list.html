@@ -2,31 +2,111 @@
 
 <!-- Content wrapper -->
 <div class="content-wrapper">
-  <!-- Content -->
-  <div class="container-xxl flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Inventory /</span> List</h4>
+    <!-- Content -->
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Inventory /</span> List</h4>
 
-    <div class="card">
-      <!-- <h5 class="card-header"></h5> -->
-      <div class="card-datatable text-nowrap">
-        <table class="dt-scrollableTable table">
-          <thead>
-            <tr>
-              <th>Brand</th>
-              <th>Generic</th>
-              <th>Sub-generic</th>
-              <th>Description</th>
-              <th>Expiry Date</th>
-              <th>Retail Price</th>
-              <th>Unit</th>
-              <th>Unit_Qty</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-        </table>
-      </div>
+        <div class="card">
+            <div class="card-datatable text-nowrap">
+                <table id="tbl-items" class="dt-scrollableTable table">
+                    <thead>
+                        <tr>
+                            <th>Action</th>
+                            <th>Barcode</th>
+                            <th>Generic</th>
+                            <th>Sub-generic</th>
+                            <th>Description</th>
+                            <th>Unit</th>
+                            <th>Unit Qty</th>
+                            <th>Total Qty</th>
+                            <th>Unit Price</th>
+                            <th>Retail Price</th>
+                            <th>Expiration Date</th>
+                            <th>Delivery Date</th>
+                            <th>Status</th>
+                            <th>created_at</th>
+                            <th>updated_at</th>
+                            <th>created_by</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
-  {% endblock %}
+{% endblock %} {% block footer_scripts %}
+<script>
+    $(document).ready(function () {
+        const table = $('#tbl-items')
+
+        var itemTable = table.DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: "{% url 'inventory-load' %}",
+            columns: [
+                { data: 'id' },
+                { data: 'barcode' },
+                { data: 'generic' },
+                { data: 'sub_generic' },
+                { data: 'description' },
+                { data: 'unit' },
+                { data: 'unit_quantity' },
+                { data: 'pcs_quantity' },
+                { data: 'unit_price' },
+                { data: 'retail_price' },
+                { data: 'expiration_date' },
+                { data: 'delivered_date' },
+                { data: 'status' },
+                { data: 'created_at' },
+                { data: 'updated_at' },
+                { data: 'created_by' },
+              ],
+            columnDefs: [
+                //{
+                //    // Label
+                //    targets: -2,
+                //    render: function (data, type, full, meta) {
+                //        var $status_number = full['status']
+                //        var $status = {
+                //            1: { title: 'Current', class: 'bg-label-primary' },
+                //            2: { title: 'Professional', class: ' bg-label-success' },
+                //            3: { title: 'Rejected', class: ' bg-label-danger' },
+                //            4: { title: 'Resigned', class: ' bg-label-warning' },
+                //            5: { title: 'Applied', class: ' bg-label-info' },
+                //        }
+                //        if (typeof $status[$status_number] === 'undefined') {
+                //            return data
+                //        }
+                //        return '<span class="badge ' + $status[$status_number].class + '">' + $status[$status_number].title + '</span>'
+                //    },
+                //},
+                {
+                    // Actions
+                    targets: 0,
+                    title: 'Actions',
+                    searchable: false,
+                    orderable: false,
+                    render: function (data, type, full, meta) {
+                        return (
+                            '<div class="d-inline-block">' +
+                            '<a href="javascript:;" class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="text-primary ti ti-dots-vertical"></i></a>' +
+                            '<div class="dropdown-menu dropdown-menu-end m-0">' +
+                            '<a href="javascript:;" class="dropdown-item">Details</a>' +
+                            '<a href="javascript:;" class="dropdown-item">Archive</a>' +
+                            '<div class="dropdown-divider"></div>' +
+                            '<a href="javascript:;" class="dropdown-item text-danger delete-record">Delete</a>' +
+                            '</div>' +
+                            '</div>' +
+                            '<a href="javascript:;" class="item-edit text-body"><i class="text-primary ti ti-pencil"></i></a>'
+                        )
+                    },
+                },
+            ],
+            // Scroll options
+            scrollY: '300px',
+            scrollX: true,
+            dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-center justify-content-md-end"f>>t<"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+        })
+    })
+</script>
+{% endblock footer_scripts %}

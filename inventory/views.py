@@ -9,16 +9,79 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from main.models import (Item, SystemConfiguration, ItemType, Company, Generic, SubGeneric, Brand, Unit)
+from django.core import serializers
+from main.models import (Item, SystemConfiguration,
+                         ItemType, Company, Generic, SubGeneric, Brand, Unit, AuthUser)
 import datetime
+import math
 
 
 def inventory_in(request):
-    return render(request, 'inventory/in.html')
+    context = {
+        'item_type': ItemType.objects.filter().order_by('name'),
+        'company': Company.objects.filter().order_by('name'),
+        'generic': Generic.objects.filter().order_by('name'),
+        'sub_generic': SubGeneric.objects.filter().order_by('name'),
+        'brand': Brand.objects.filter().order_by('name'),
+        'item_unit': Unit.objects.filter().order_by('name'),
+    }
+    return render(request, 'inventory/in.html', context)
+
+
+def inventory_list(request):
+    return render(request, 'inventory/list.html')
+
+
+def inventory_load(request):
+    item_data = Item.objects.select_related()
+    total = item_data.count()
+
+    _start = request.GET.get('start')
+    _length = request.GET.get('length')
+    if _start and _length:
+        start = int(_start)
+        length = int(_length)
+        page = math.ceil(start / length) + 1
+        per_page = length
+
+        item_data = item_data[start:start + length]
+
+    data = []
+
+    for item in item_data:
+        item = {
+            'id': item.id,
+            'barcode': item.barcode,
+            'generic': item.generic.name,
+            'sub_generic': item.sub_generic.name,
+            'description': item.description,
+            'unit': item.unit.name if item.unit_id is not None else '',
+            'unit_quantity': item.unit_quantity if item.unit_id is not None else '',
+            'pcs_quantity': item.pcs_quantity,
+            'unit_price': item.unit_price,
+            'retail_price': item.retail_price,
+            'expiration_date': item.expiration_date,
+            'delivered_date': item.delivered_date,
+            'status': item.id,
+            'created_at': item.created_at,
+            'updated_at': item.updated_at,
+            'created_by': ''
+        }
+        data.append(item)
+
+    response = {
+        'data': data,
+        'page': page,
+        'per_page': per_page,
+        'recordsTotal': total,
+        'recordsFiltered': total,
+    }
+    return JsonResponse(response)
 
 
 def generate_code():
-    inventory_code = SystemConfiguration.objects.values_list('inventory_code', flat=True).first()
+    inventory_code = SystemConfiguration.objects.values_list(
+        'inventory_code', flat=True).first()
 
     last_code = inventory_code.split('-')
 
@@ -46,17 +109,19 @@ def store_items(request):
         brand = request.POST.get('Brand')
         unit_price = request.POST.get('UnitPrice')
         item_unit = request.POST.get('ItemUnit')
-        item_quantity = request.POST.get('ItemQuantity') if request.POST.get('ItemQuantity') else 0
+        item_quantity = request.POST.get(
+            'ItemQuantity') if request.POST.get('ItemQuantity') else 0
         item_quantity_pcs = request.POST.get('ItemQuantityPcs')
         total_quantity_pcs = request.POST.get('TotalQuantityPcs')
-        retail_price_unit = request.POST.get('RetailPriceUnit') if request.POST.get('RetailPriceUnit') else 0
+        retail_price_unit = request.POST.get(
+            'RetailPriceUnit') if request.POST.get('RetailPriceUnit') else 0
         retail_price_pcs = request.POST.get('RetailPricePcs')
         barcode = request.POST.get('Barcode')
         expiration_date = request.POST.get('ExpirationDate')
         delivery_date = request.POST.get('DeliveredDate')
         user_id = request.session.get('user_id', 0)
         code = generate_code()
-       
+
         item_add = Item(code=code, barcode=barcode, type_id=item_type, company_id=company, generic_id=generic, sub_generic_id=sub_generic,
                         description=description, brand_id=brand, unit_price=unit_price, unit_id=item_unit, unit_quantity=item_quantity, pcs_quantity=total_quantity_pcs, retail_price_unit=retail_price_unit, retail_price=retail_price_pcs, delivered_date=delivery_date, expiration_date=expiration_date, user_id=user_id)
 
@@ -68,20 +133,3 @@ def store_items(request):
             system_config.save()
 
         return JsonResponse({'data': 'success'})
-
-
-
-def inventory_in(request):
-    context = {
-		'item_type' : ItemType.objects.filter().order_by('name'),
-        'company' : Company.objects.filter().order_by('name'),
-        'generic' : Generic.objects.filter().order_by('name'),
-        'sub_generic' : SubGeneric.objects.filter().order_by('name'),
-        'brand' : Brand.objects.filter().order_by('name'),
-        'item_unit' : Unit.objects.filter().order_by('name'),
-	  }
-    return render(request, 'inventory/in.html', context)
-
-def inventory_list(request):
-    return render(request, 'inventory/list.html')
-

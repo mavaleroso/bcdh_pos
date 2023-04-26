@@ -93,7 +93,7 @@
                             </div>
                             <div class="col-md-4">
                                 <label class="form-label" for="item-unit">Item unit</label>
-                                <select id="item-unit" class="select2 form-select" data-allow-clear="true">
+                                <select id="item-unit" name="ItemUnit" class="select2 form-select" data-allow-clear="true">
                                     <option></option>
                                     {% for row in item_unit %}
                                     <option value="{{ row.id }}">{{ row.name }}</option>

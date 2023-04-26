@@ -203,6 +203,7 @@ class Item(models.Model):
     created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     updated_at = models.DateTimeField(blank=True, null=True, auto_now=True)
     deleted_at = models.DateTimeField(blank=True, null=True)
+
     class Meta:
         managed = True
         db_table = 'item'
