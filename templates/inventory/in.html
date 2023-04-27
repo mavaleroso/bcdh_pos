@@ -145,6 +145,9 @@
         let tbl_item_details = $('#tbl-item-details')
         let item_quantity_pcs = $('#item-quantity-pcs')
         let total_quantity_pcs = $('#total-quantity-pcs')
+        let delivered_date = $('#delivered-date')
+
+        delivered_date.val(dateToday())
 
         item_unit_id.on('change', function () {
             let item_unit_selected = $('#item-unit option:selected')

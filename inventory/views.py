@@ -11,7 +11,7 @@ from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.core import serializers
 from main.models import (Item, SystemConfiguration,
-                         ItemType, Company, Generic, SubGeneric, Brand, Unit, AuthUser)
+                         ItemType, Company, Generic, SubGeneric, Brand, Unit, AuthUser, OutItems)
 import datetime
 import math
 
@@ -49,15 +49,29 @@ def inventory_load(request):
     data = []
 
     for item in item_data:
+        userData = AuthUser.objects.filter(id=item.user.id)
+        outItemsData=OutItems.objects.filter(item_id=item.id)
+        full_name = userData[0].first_name + ' ' + userData[0].last_name
+
+        expended_stock = 0
+
+        for outItem in outItemsData:
+            expended_stock = expended_stock + outItem.quantity
+
+        available = item.pcs_quantity - expended_stock
+
         item = {
             'id': item.id,
+            'code': item.code,
             'barcode': item.barcode,
             'generic': item.generic.name,
             'sub_generic': item.sub_generic.name,
             'description': item.description,
             'unit': item.unit.name if item.unit_id is not None else '',
             'unit_quantity': item.unit_quantity if item.unit_id is not None else '',
+            'unit_quantity_pcs': item.unit_quantity_pcs if item.unit_id is not None else '',
             'pcs_quantity': item.pcs_quantity,
+            'available_stock': available,
             'unit_price': item.unit_price,
             'retail_price': item.retail_price,
             'expiration_date': item.expiration_date,
@@ -65,9 +79,11 @@ def inventory_load(request):
             'status': item.id,
             'created_at': item.created_at,
             'updated_at': item.updated_at,
-            'created_by': ''
+            'created_by': full_name
         }
-        data.append(item)
+
+        if available > 0:
+            data.append(item)
 
     response = {
         'data': data,
@@ -123,7 +139,7 @@ def store_items(request):
         code = generate_code()
 
         item_add = Item(code=code, barcode=barcode, type_id=item_type, company_id=company, generic_id=generic, sub_generic_id=sub_generic,
-                        description=description, brand_id=brand, unit_price=unit_price, unit_id=item_unit, unit_quantity=item_quantity, pcs_quantity=total_quantity_pcs, retail_price_unit=retail_price_unit, retail_price=retail_price_pcs, delivered_date=delivery_date, expiration_date=expiration_date, user_id=user_id)
+                        description=description, brand_id=brand, unit_price=unit_price, unit_id=item_unit, unit_quantity=item_quantity, unit_quantity_pcs=item_quantity_pcs, pcs_quantity=total_quantity_pcs, retail_price_unit=retail_price_unit, retail_price=retail_price_pcs, delivered_date=delivery_date, expiration_date=expiration_date, user_id=user_id)
 
         item_add.save()
 
