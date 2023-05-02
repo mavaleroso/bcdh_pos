@@ -17,54 +17,6 @@
         </button>
       </div>
 
-      <!-- <div class="col-4 col-xxl-4 col-xl-12">
-        <div class="d-grid">
-          <button type="button" class="btn btn-label-primary">Apply</button>
-        </div>
-      </div> -->
-
-     
-      <!-- <div class="line">
-        <i class="ti ti-chevron-right"></i>
-      </div>
-      <div class="step" data-target="#checkout-address">
-        <button type="button" class="step-trigger">
-          <span class="bs-stepper-icon">
-            <svg viewBox="0 0 54 54">
-              <use
-                xlink:href="../../assets/svg/icons/wizard-checkout-address.svg#wizardCheckoutAddress"
-              ></use>
-            </svg>
-          </span>
-          <span class="bs-stepper-label">Address</span>
-        </button>
-      </div>
-      <div class="line">
-        <i class="ti ti-chevron-right"></i>
-      </div> -->
-      <!-- <div class="step" data-target="#checkout-payment">
-        <button type="button" class="step-trigger">
-          <span class="bs-stepper-icon">
-            <svg viewBox="0 0 58 54">
-              <use xlink:href="../../assets/svg/icons/wizard-checkout-payment.svg#wizardPayment"></use>
-            </svg>
-          </span>
-          <span class="bs-stepper-label">Payment</span>
-        </button>
-      </div>
-      <div class="line">
-        <i class="ti ti-chevron-right"></i>
-      </div> -->
-      <!-- <div class="step" data-target="#checkout-confirmation">
-        <button type="button" class="step-trigger">
-          <span class="bs-stepper-icon">
-            <svg viewBox="0 0 58 54">
-              <use xlink:href="../../assets/svg/icons/wizard-checkout-confirmation.svg#wizardConfirm"></use>
-            </svg>
-          </span>
-          <span class="bs-stepper-label">Confirmation</span>
-        </button>
-      </div> -->
     </div>
     <div class="bs-stepper-content">
       <form id="wizard-checkout-form" onSubmit="return false">
@@ -81,11 +33,12 @@
                 <div class="row">
                   <div class="col-md-6">
                     <p class="me-3">
-                      <a href="javascript:void(0)" class="text-body"><h5>Cart (2 Items)</h5></a>
+                      <a href="javascript:void(0)" class="text-body"><p id="count_items"></p></a>
+
+                      
                     </p>
                   
                   </div>
-        
                   <div class="col-md-6">
                     <div class="text-md-end">
                       <button
@@ -94,111 +47,22 @@
                       data-bs-toggle="modal"
                       data-bs-target="#exLargeModal"
                     >
-                    <i class="ti ti-user-check me-1"></i>Add
+                    <i class="ti ti-user-check me-1"></i>Add item
                     </button>
                     </div>
                   </div>
                 </div>
               </div>
 
-
-
-
-
-
-
-
-
-
-
-
-              <ul class="list-group mb-3">
-                <li class="list-group-item p-4">
-                  <div class="d-flex gap-3">
-                    <!-- <div class="flex-shrink-0 d-flex align-items-center">
-                      <img src="../../assets/img/products/1.png" alt="google home" class="w-px-100" />
-                    </div> -->
-                    <div class="flex-grow-1">
-                      <div class="row">
-                        <div class="col-md-8">
-                          <p class="me-3">
-                            <a href="javascript:void(0)" class="text-body">Co-amoxiclav - Paracetamol</a>
-                          </p>
-                          <div class="text-muted mb-2 d-flex flex-wrap">
-                            <span class="me-1">Sold by:</span>
-                            <a href="javascript:void(0)" class="me-3">CMN PHARMA INC.</a>
-                            <span class="badge bg-label-success">In Stock</span>
-                          </div>
-                        
-                          <input
-                            type="number"
-                            class="form-control form-control-sm w-px-75"
-                            value="1"
-                            min="1"
-                            max="5"
-                          />
-                        </div>
-                        <div class="col-md-4">
-                          <div class="text-md-end">
-                            <button type="button" class="btn-close btn-pinned" aria-label="Close"></button>
-                            <div class="my-2 my-md-4 mb-md-5">
-                              <span class="text-primary">₱299/</span><s class="text-muted">₱359</s>
-                            </div>
-                            <button type="button" class="btn btn-sm btn-label-warning">
-                                59 item available
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-                <li class="list-group-item p-4">
-                  <div class="d-flex gap-3">
-
-                    <div class="flex-grow-1">
-                      <div class="row">
-                        <div class="col-md-8">
-                          <p class="me-3">
-                            <a href="javascript:void(0)" class="text-body">Docusate Sodium - Calpol</a>
-                          </p>
-                          <div class="text-muted mb-2 d-flex flex-wrap">
-                            <span class="me-1">Sold by:</span>
-                            <a href="javascript:void(0)" class="me-3">ALL BIO PHARMA</a>
-                            <span class="badge bg-label-success">In Stock</span>
-                          </div>
-                          <input
-                            type="number"
-                            class="form-control form-control-sm w-px-75"
-                            value="1"
-                            min="1"
-                            max="5"
-                          />
-                        </div>
-                        <div class="col-md-4">
-                          <div class="text-md-end">
-                            <button type="button" class="btn-close btn-pinned" aria-label="Close"></button>
-                            <div class="my-2 my-md-4 mb-md-5">
-                              <span class="text-primary">₱299/</span><s class="text-muted">₱359</s>
-                            </div>
-                            <button type="button" class="btn btn-sm btn-label-danger">
-                              5 item available
-                            </button>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </li>
-              </ul>
+              <ul class="list-group mb-3 whole-div-class"></ul>
 
               <!-- Wishlist -->
-              <div class="list-group">
+              <!-- <div class="list-group">
                 <a href="javascript:void(0)" class="list-group-item d-flex justify-content-between">
                   <span>Add more products from wishlist</span>
                   <i class="ti ti-sm ti-chevron-right scaleX-n1-rtl"></i>
                 </a>
-              </div>
+              </div> -->
             </div>
 
             <!-- Cart right -->
@@ -231,7 +95,7 @@
 
                 <div class="row g-3 mb-3">
                   <div class="col-8 col-xxl-8 col-xl-12">
-                    <select id="item-type" class="select2 form-select" data-allow-clear="true">
+                    <select id="selected-patient" class="select2 form-select" data-allow-clear="true">
                       <option></option>
                       {% for row in clients %}
                       <option value="{{ row.id }}">{{ row.first_name }} {{ row.middle_name }} {{ row.last_name }}</option>	
@@ -240,7 +104,7 @@
                   </div>
                   <div class="col-4 col-xxl-4 col-xl-12">
                     <div class="d-grid">
-                      <button type="button" id="showToastAnimation"  class="btn btn-label-primary add-patient">Apply</button>
+                      <button type="button" class="btn btn-label-primary add-patient">Apply</button>
                     </div>
                   </div>
                 </div>
@@ -248,13 +112,13 @@
                 <!-- Gift wrap -->
                 <div class="bg-lighter rounded p-3">
                   <p class="fw-semibold mb-2">Patient Details</p>
-                  <p class="mb-2">Reymark N. Valdehueza</p>
-                  <p class="mb-2">Status <span class="badge bg-label-primary ms-1">In-patient</span></p>
+                  <p class="mb-2" id="patient-name"></p>
+                  <p class="mb-2" id="patient-status"> <span class="badge bg-label-primary ms-1"></span></p>
                   <!-- <p class="mb-2">Discount <span class="badge bg-label-success ms-1">20%</span></p> -->
 
-                  <a href="javascript:void(0)" class="btn btn-warning">
-                    <i class="ti ti-user-check me-1"></i>Discount
-                  </a>  
+                  <button type="button" id ="add_discount" class="btn btn-warning add-discount">
+                      <i class="ti ti-user-check me-1"></i>Discount
+                  </button>
 
                   <!-- <button type="button" class="btn btn-sm btn-label-warning">
                     59 item available
@@ -317,19 +181,30 @@
 
   
             <div class="card-datatable table-responsive pt-0">
-              <table class="datatables-basic table">
+              <table class="datatables-basic table" id="Table1">
                 <thead>
                   <tr>
                     <th></th>
                     <th>id</th>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Date</th>
-                    <th>Salary</th>
-                    <th>Status</th>
-                    
+                    <th>Item</th>
+                    <th>Brand</th>
+                    <th>Quantity</th>
+                    <th>Retail Price</th>
                   </tr>
                 </thead>
+                <tbody>
+                  {% for row in items %}
+                  <tr>
+                    <td>{{row.id}}</td>
+                    <td></td>
+                    <td><b>{{row.generic.name}}</b> {{row.sub_generic.name}} {{row.description}}</td>
+                    <td>{{row.brand.name}}</td>
+                    <td>{{row.pcs_quantity}}</td>
+                    <td>₱ {{row.retail_price|floatformat:2}}</td>
+                    
+                  </tr>
+                 {% endfor %}
+                 </tbody> 
               </table>
             </div>
           
@@ -338,7 +213,7 @@
           <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
             Close
           </button>
-          <button type="button" class="btn btn-primary">Save changes</button>
+          <button type="button" class="btn btn-primary" id="add_data">Add item</button>
         </div>
       </div>
     </div>
@@ -350,41 +225,69 @@
 {% endblock %} 
 
 {% block footer_scripts %}
-
-
-
-
 <script>
+      
 $(document).ready(function(){
+
     $('.add-patient').click(function (event) {
 
-      const toastAnimationExample = document.querySelector('.toast-ex');
-      let selectedType, selectedAnimation, selectedPlacement, toast, toastAnimation, toastPlacement;
+      var patient_id = $('#selected-patient').find(":selected").val();
 
-      if (toastAnimation) {
-        toastDispose(toastAnimation);
-      }
+      $.ajax({
+        type: "POST",
+        url: "{% url 'patient-details' %}",
+        data:{
+            patient: patient_id
+        }
+        }).done(function(data){
+          console.log(data);
+          // var returnedData = JSON.parse(data.data);
+          // console.log(returnedData);
+          // console.log(returnedData[0].fields.address);
 
-      toastAnimationExample.classList.add('animate__fadeInRight');
-      toastAnimationExample.querySelector('.ti').classList.add('text-success');
-      toastAnimation = new bootstrap.Toast(toastAnimationExample);
-      toastAnimation.show();
+          });
+
+      
+
+      alert (conceptName);
+
+
+
+      // let patient_name;
+      // patient_name = $("#selected-patient :selected").text();
+      // if(patient_name){
+      //   $('#patient-name').text(patient_name);
+      // }
+      // else{
+      //   $('#patient-name').text("");
+      // }
+      // const toastAnimationExample = document.querySelector('.toast-ex');
+      // let selectedType, selectedAnimation, selectedPlacement, toast, toastAnimation, toastPlacement;
+
+      // if (toastAnimation) {
+      //   toastDispose(toastAnimation);
+      // }
+
+      // toastAnimationExample.classList.add('animate__fadeInRight');
+      // toastAnimationExample.querySelector('.ti').classList.add('text-success');
+      // toastAnimation = new bootstrap.Toast(toastAnimationExample);
+      // toastAnimation.show();
 
         // Dispose toast when open another
-      function toastDispose(toast) {
-        if (toast && toast._element !== null) {
-          if (toastPlacementExample) {
-            toastPlacementExample.classList.remove(selectedType);
-            toastPlacementExample.querySelector('.ti').classList.remove(selectedType);
-            DOMTokenList.prototype.remove.apply(toastPlacementExample.classList, selectedPlacement);
-          }
-          if (toastAnimationExample) {
-            toastAnimationExample.classList.remove(selectedType, selectedAnimation);
-            toastAnimationExample.querySelector('.ti').classList.remove(selectedType);
-          }
-          toast.dispose();
-        }
-      }
+      // function toastDispose(toast) {
+      //   if (toast && toast._element !== null) {
+      //     if (toastPlacementExample) {
+      //       toastPlacementExample.classList.remove(selectedType);
+      //       toastPlacementExample.querySelector('.ti').classList.remove(selectedType);
+      //       DOMTokenList.prototype.remove.apply(toastPlacementExample.classList, selectedPlacement);
+      //     }
+      //     if (toastAnimationExample) {
+      //       toastAnimationExample.classList.remove(selectedType, selectedAnimation);
+      //       toastAnimationExample.querySelector('.ti').classList.remove(selectedType);
+      //     }
+      //     toast.dispose();
+      //   }
+      // }
     });
 
     $('#add-item').click(function (event) {
@@ -400,6 +303,7 @@ $(document).ready(function(){
 'use strict';
 
 let fv, offCanvasEl;
+var cart_count =0;
 document.addEventListener('DOMContentLoaded', function (e) {
   (function () {
     const formAddNewRecord = document.getElementById('form-add-new-record');
@@ -517,16 +421,6 @@ $(function () {
 
   if (dt_basic_table.length) {
     dt_basic = dt_basic_table.DataTable({
-      ajax: assetsPath + 'json/table-datatable.json',
-      columns: [
-        { data: 'id' },
-        { data: 'id' },
-        { data: 'full_name' },
-        { data: 'email' },
-        { data: 'start_date' },
-        { data: 'salary' },
-        { data: 'status' }
-      ],
       columnDefs: [
 
         {
@@ -536,11 +430,11 @@ $(function () {
           searchable: false,
           responsivePriority: 3,
           checkboxes: true,
-          render: function () {
-            return '<input type="checkbox" class="dt-checkboxes form-check-input">';
+          render: function (data) {
+            return '<input type="checkbox" class="dt-checkboxes form-check-input" id="cb'+data+'" name="cb'+data+'">';
           },
           checkboxes: {
-            selectAllRender: '<input type="checkbox" class="form-check-input">'
+            selectAllRender: '<input type="checkbox" class="form-check-input" id="allcb" name="allcb">'
           }
         },
         {
@@ -552,26 +446,26 @@ $(function () {
           responsivePriority: 1,
           targets: 3
         },
-        {
-          // Label
-          targets: -1,
-          render: function (data, type, full, meta) {
-            var $status_number = full['status'];
-            var $status = {
-              1: { title: 'Current', class: 'bg-label-primary' },
-              2: { title: 'Professional', class: ' bg-label-success' },
-              3: { title: 'Rejected', class: ' bg-label-danger' },
-              4: { title: 'Resigned', class: ' bg-label-warning' },
-              5: { title: 'Applied', class: ' bg-label-info' }
-            };
-            if (typeof $status[$status_number] === 'undefined') {
-              return data;
-            }
-            return (
-              '<span class="badge ' + $status[$status_number].class + '">' + $status[$status_number].title + '</span>'
-            );
-          }
-        }
+        // {
+        //   // Label
+        //   targets: -1,
+        //   render: function (data, type, full, meta) {
+        //     var $status_number = full['status'];
+        //     var $status = {
+        //       1: { title: 'Current', class: 'bg-label-primary' },
+        //       2: { title: 'Professional', class: ' bg-label-success' },
+        //       3: { title: 'Rejected', class: ' bg-label-danger' },
+        //       4: { title: 'Resigned', class: ' bg-label-warning' },
+        //       5: { title: 'Applied', class: ' bg-label-info' }
+        //     };
+        //     if (typeof $status[$status_number] === 'undefined') {
+        //       return data;
+        //     }
+        //     return (
+        //       '<span class="badge ' + $status[$status_number].class + '">' + $status[$status_number].title + '</span>'
+        //     );
+        //   }
+        // }
       ],
       order: [[2, 'desc']],
       
@@ -621,6 +515,64 @@ $(function () {
     $('.dataTables_length .form-select').removeClass('form-select-sm');
   }, 300);
 });
+
+
+$("#add_data").click(function () {
+    var grid = document.getElementById("Table1");
+    var checkBoxes = grid.getElementsByTagName("INPUT");
+    var str = ''
+
+    for (var i = 0; i < checkBoxes.length; i++) {
+      if (
+        checkBoxes[i].checked &&
+        checkBoxes[i].name !== "allcb" &&
+        !checkBoxes[i].hasCovered
+      ) {
+        var row = checkBoxes[i].parentNode.parentNode;
+        str +=
+          '<li class="list-group-item p-4">'+
+            '<div class="d-flex gap-3">'+
+              '<div class="flex-grow-1 append-item">'+
+                '<div class="row">'+
+                  '<div class="col-md-8">'+
+                    '<p class="me-3">'+
+                      '<a href="javascript:void(0)" class="text-body">'+
+                        row.cells[1].innerHTML +'</a>'+
+                    '</p>'+
+                    '<div class="text-muted mb-2 d-flex flex-wrap">'+
+                      '<span class="me-1">Sold by:</span>'+
+                      '<a href="javascript:void(0)" class="me-3">'+ row.cells[2].innerHTML +'</a>'+
+                      '<span class="badge bg-label-success">In Stock</span>'+
+                    '</div>' +
+                    '<input type="number" class="form-control form-control-sm w-px-75" value="1" min="1"/>' +
+                  '</div>'+
+                  '<div class="col-md-4">'+
+                    '<div class="text-md-end">'+
+                      '<button type="button" class="btn-close btn-pinned" aria-label="Close"></button>'+
+                      '<div class="my-2 my-md-4 mb-md-5">'+
+                        '<span class="text-primary">'+ row.cells[4].innerHTML +'</span>'+
+                      '</div>'+
+                      '<button type="button" class="btn btn-sm btn-label-primary">'+ row.cells[3].innerHTML +' items available</button>'+
+                    '</div>'+
+                  '</div>'+
+                '</div>'+
+              '</div>'+
+            '</div>'+
+          '</li>';        
+          cart_count ++;
+          checkBoxes[i].hasCovered = true;
+        }
+      }
+      $(".whole-div-class").append(str);
+      $('#exLargeModal').modal('hide');
+      $('#count_items').text(cart_count + " items");
+  });
+
+
+
+
+
+
 
 });
 </script>
