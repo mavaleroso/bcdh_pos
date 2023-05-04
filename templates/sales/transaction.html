@@ -1,5 +1,10 @@
 {% extends 'index.html' %} {% block content %} {% load staticfiles %}
 
+
+{% include "modal_main.html" with custom_variable="discount" %}
+
+
+
 <div class="container-xxl flex-grow-1 container-p-y">
   <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Sales /</span> Transaction</h4>
   <!-- Checkout Wizard -->
@@ -81,6 +86,8 @@
                       <button
                       type="button"
                       class="btn btn-primary"
+                      data-bs-toggle="modal"
+                    data-bs-target="#onboardModal"
                     >
                     <i class="ti ti-user-check me-1"></i>Add
                     </button>
@@ -110,15 +117,18 @@
                 </div>
 
                 <!-- Gift wrap -->
-                <div class="bg-lighter rounded p-3">
+                <div class="bg-lighter rounded p-3 patient-details-div">
                   <p class="fw-semibold mb-2">Patient Details</p>
                   <p class="mb-2" id="patient-name"></p>
                   <p class="mb-2" id="patient-status"> <span class="badge bg-label-primary ms-1"></span></p>
                   <!-- <p class="mb-2">Discount <span class="badge bg-label-success ms-1">20%</span></p> -->
 
-                  <button type="button" id ="add_discount" class="btn btn-warning add-discount">
+                  <button type="button" data-bs-toggle="modal"
+                  data-bs-target="#onboardModal" class="btn btn-warning add-discount">
                       <i class="ti ti-user-check me-1"></i>Discount
-                  </button>
+                  </button> 
+
+                  <span class="badge bg-label-success ms-1 spn-patient-status">___</span>
 
                   <!-- <button type="button" class="btn btn-sm btn-label-warning">
                     59 item available
@@ -226,10 +236,11 @@
 
 {% block footer_scripts %}
 <script>
+$(".patient-details-div").hide();
       
 $(document).ready(function(){
-
     $('.add-patient').click(function (event) {
+      $(".patient-details-div").show();
 
       var patient_id = $('#selected-patient').find(":selected").val();
 
@@ -240,16 +251,21 @@ $(document).ready(function(){
             patient: patient_id
         }
         }).done(function(data){
-          console.log(data);
-          // var returnedData = JSON.parse(data.data);
-          // console.log(returnedData);
-          // console.log(returnedData[0].fields.address);
+          console.log(data.data[0]);
+          console.log(data.data[0].client_type__name);
+          var first_name = data.data[0].first_name;
+          var middle_name = data.data[0].middle_name;
+          var last_name = data.data[0].last_name;
+          var client_type_name = data.data[0].client_type__name;
+          $('#patient-name').text(first_name + " " + middle_name + " " + last_name);
 
+          $('.spn-patient-status').text(client_type_name);
+
+
+          
           });
 
-      
-
-      alert (conceptName);
+    
 
 
 
