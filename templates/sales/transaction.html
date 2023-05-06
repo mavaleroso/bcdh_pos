@@ -528,6 +528,20 @@ $(function () {
 });
 
 
+$(document).on( "keyup",  ".quantity-input",function() {
+  var value_input = $(".quantity-input").val();
+  var price_value = $(".price-value").html();
+  let price = price_value.slice(1);
+  var total_value = parseInt(value_input) * parseInt(price);
+  if(value_input.length!=0){$(".total-value").text("₱ "+total_value);}
+  else{$(".total-value").text("₱ 0.00");}
+});
+
+$(document).on("click",".remove_data" , function(){
+        alert("I've been clicked! remove the row item");
+});
+
+
 $("#add_data").click(function () {
     var grid = document.getElementById("Table1");
     var checkBoxes = grid.getElementsByTagName("INPUT");
@@ -555,15 +569,16 @@ $("#add_data").click(function () {
                       '<a href="javascript:void(0)" class="me-3">'+ row.cells[2].innerHTML +'</a>'+
                       '<span class="badge bg-label-success">In Stock</span>'+
                     '</div>' +
-                    '<input type="number" class="form-control form-control-sm w-px-75" value="1" min="1"/>' +
+                    '<span class="text-primary sub-total-row price-value">'+ row.cells[4].innerHTML +'</span><br><br>'+
+                    '<input type="number" class="form-control form-control-sm w-px-75 quantity-input" value="1" min="1"/>' +
                   '</div>'+
                   '<div class="col-md-4">'+
                     '<div class="text-md-end">'+
                       '<button type="button" class="btn-close btn-pinned" aria-label="Close"></button>'+
                       '<div class="my-2 my-md-4 mb-md-5">'+
-                        '<span class="text-primary">'+ row.cells[4].innerHTML +'</span>'+
+                        '<span class="text-primary sub-total-row total-value">'+ row.cells[4].innerHTML +'</span>'+
                       '</div>'+
-                      '<button type="button" class="btn btn-sm btn-label-primary">'+ row.cells[3].innerHTML +' items available</button>'+
+                      '<button type="button" class="btn btn-sm btn-label-primary">'+ row.cells[3].innerHTML +' available</button>'+
                     '</div>'+
                   '</div>'+
                 '</div>'+
