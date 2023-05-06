@@ -24,6 +24,7 @@
                             <th>Unit Price</th>
                             <th>Retail Price</th>
                             <th>Expiration Date</th>
+                            <th>Aging</th>
                             <th>Delivery Date</th>
                             <th>Status</th>
                             <th>created_at</th>
@@ -59,6 +60,7 @@
                 { data: 'unit_price', className: 'text-end' },
                 { data: 'retail_price', className: 'text-end' },
                 { data: 'expiration_date', className: 'text-end' },
+                { data: 'expiration_aging', className: 'text-end' },
                 { data: 'delivered_date', className: 'text-end' },
                 { data: 'status' },
                 { data: 'created_at', className: 'text-end' },
@@ -87,7 +89,13 @@
                     },
                 },
                 {
-                    targets: [1, 2],
+                    targets: 1,
+                    render: function (data) {
+                        return '<span class="badge bg-primary">' + data + '</span>'
+                    },
+                },
+                {
+                    targets: 2,
                     render: function (data) {
                         return '<span class="badge bg-label-primary">' + data + '</span>'
                     },
@@ -110,8 +118,18 @@
                 },
                 {
                     targets: 9,
-                    render: function (data) {
-                        return `<span class="badge bg-label-secondary">${data} pcs</span>`
+                    render: function (data, type, full, meta) {
+                        let background_color = 'bg-secondary'
+                        let pending_percent_val = full['pcs_quantity'] * 0.2
+                        pending_percent_val = Math.trunc(pending_percent_val)
+                        if (data > 0 && pending_percent_val >= 0 && data > pending_percent_val) {
+                            background_color = 'bg-success'
+                        } else if (data > 0 && pending_percent_val > 0 && data <= pending_percent_val) {
+                            background_color = 'bg-pending'
+                        } else if (data == 0 && data < pending_percent_val) {
+                            background_color = 'bg-danger'
+                        }
+                        return `<span class="badge ${background_color}">${data} pcs</span>`
                     },
                 },
                 {
@@ -127,13 +145,34 @@
                     },
                 },
                 {
-                    targets: [12, 13, 15, 16],
+                    targets: 12,
+                    render: function (data, type, full, meta) {
+                        let background_color = 'bg-secondary'
+                        let aging = full['expiration_aging']
+                        if (aging > 30) {
+                            background_color = 'bg-success'
+                        } else if (aging <= 30 && aging > 0) {
+                            background_color = 'bg-pending'
+                        } else if (aging <= 0) {
+                            background_color = 'bg-danger'
+                        }
+                        return `<span class="badge ${background_color}">${moment(data).format('LLL')}</span>`
+                    },
+                },
+                {
+                    targets: 13,
+                    render: function (data) {
+                        return `<span class="badge bg-secondary">${data}</span>`
+                    },
+                },
+                {
+                    targets: [14, 16, 17],
                     render: function (data) {
                         return moment(data).format('LLL')
                     },
                 },
             ],
-            order: [12, 'asc'],
+            order: [13, 'asc'],
             scrollY: '300px',
             scrollX: true,
         })

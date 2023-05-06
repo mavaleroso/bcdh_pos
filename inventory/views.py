@@ -12,7 +12,7 @@ from django.contrib import messages
 from django.core import serializers
 from main.models import (Item, SystemConfiguration,
                          ItemType, Company, Generic, SubGeneric, Brand, Unit, AuthUser, OutItems)
-import datetime
+from datetime import datetime
 import math
 
 
@@ -33,7 +33,7 @@ def inventory_list(request):
 
 
 def inventory_load(request):
-    item_data = Item.objects.select_related()
+    item_data = Item.objects.select_related().order_by('-delivered_date').reverse()
     total = item_data.count()
 
     _start = request.GET.get('start')
@@ -60,6 +60,8 @@ def inventory_load(request):
 
         available = item.pcs_quantity - expended_stock
 
+        expiration_aging = item.expiration_date - datetime.now().date()
+
         item = {
             'id': item.id,
             'code': item.code,
@@ -75,6 +77,7 @@ def inventory_load(request):
             'unit_price': item.unit_price,
             'retail_price': item.retail_price,
             'expiration_date': item.expiration_date,
+            'expiration_aging': expiration_aging.days,
             'delivered_date': item.delivered_date,
             'status': item.id,
             'created_at': item.created_at,
