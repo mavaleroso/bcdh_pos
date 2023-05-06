@@ -9,7 +9,7 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from main.models import (Item, SystemConfiguration, ItemType, Company, Generic, SubGeneric, Brand, Unit)
+from main.models import (Items, SystemConfiguration, ItemType, Company, Generic, SubGeneric, Brand, Unit)
 import datetime
 
 
@@ -57,7 +57,7 @@ def store_items(request):
         user_id = request.session.get('user_id', 0)
         code = generate_code()
        
-        item_add = Item(code=code, barcode=barcode, type_id=item_type, company_id=company, generic_id=generic, sub_generic_id=sub_generic,
+        item_add = Items(code=code, barcode=barcode, type_id=item_type, company_id=company, generic_id=generic, sub_generic_id=sub_generic,
                         description=description, brand_id=brand, unit_price=unit_price, unit_id=item_unit, unit_quantity=item_quantity, pcs_quantity=total_quantity_pcs, retail_price_unit=retail_price_unit, retail_price=retail_price_pcs, delivered_date=delivery_date, expiration_date=expiration_date, user_id=user_id)
 
         item_add.save()

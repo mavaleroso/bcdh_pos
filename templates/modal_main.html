@@ -1,0 +1,87 @@
+
+
+
+{% block modal_scripts %}
+
+<!-- Modal Backdrop -->
+<!-- <div class="col-lg-4 col-md-3"> -->
+
+      <!-- Modal -->
+      <div class="modal-onboarding modal fade animate__animated" id="onboardModal" data-bs-backdrop="static" tabindex="-1">
+        <div class="modal-dialog" role="document">
+
+     {% if custom_variable == "discount" %}
+
+     {% include "modal/modal_discount.html" %}
+          
+    {% endif %}
+
+    
+        </div>
+      </div>
+    </div>
+
+<!-- <div
+class="modal-onboarding modal fade animate__animated"
+id="onboardImageModal"
+tabindex="-1"
+aria-hidden="true"
+>
+    <div class="modal-dialog" role="document">
+    <div class="modal-content text-center">
+        <div class="modal-header border-0">
+        <a class="text-muted close-label" href="javascript:void(0);" data-bs-dismiss="modal"
+            >Skip Intro</a
+        >
+        <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+        ></button>
+        </div>
+        <div class="modal-body p-0">
+        <div class="onboarding-media">
+            <div class="mx-2">
+            <img
+                src="../../assets/img/illustrations/girl-unlock-password-light.png"
+                alt="girl-unlock-password-light"
+                width="335"
+                class="img-fluid"
+                data-app-light-img="illustrations/girl-unlock-password-light.png"
+                data-app-dark-img="illustrations/girl-unlock-password-dark.png"
+            />
+            </div>
+        </div>
+        <div class="onboarding-content mb-0">
+            <h4 class="onboarding-title text-body">Test</h4>
+            <div class="onboarding-info">
+            In this example you can see a form where you can request some additional information
+            from the customer when they land on the app page.
+            </div>
+            <form>
+            <div class="row">
+                <div class="col-sm-12">
+                <div class="mb-3">
+                    <label for="roleEx3" class="form-label">Discount</label>
+                    <select class="form-select" tabindex="0" id="roleEx3">
+                    <option>Senior Citizen - 20%</option>
+                    <option>Business Owner</option>
+                    <option>Other</option>
+                    </select>
+                </div>
+                </div>
+            </div>
+            </form>
+        </div>
+        </div>
+        <div class="modal-footer border-0">
+        <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
+            Close
+        </button>
+        <button type="button" class="btn btn-primary">Submit</button>
+        </div>
+    </div>
+    </div>
+</div> -->
+{% endblock modal_scripts %} 

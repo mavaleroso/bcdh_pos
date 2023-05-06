@@ -161,11 +161,7 @@ def adduser(request):
         sex_ = request.POST.get('sex')
         position_ = request.POST.get('position')
 
-        print("testing")
-        print(password_)
-
         if AuthUser.objects.filter(username=username_):
-            print("halasaroles")
             return JsonResponse({'data': 'error'})
         else:
             add_authuser = AuthUser(
