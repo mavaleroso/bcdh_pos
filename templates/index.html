@@ -215,8 +215,14 @@
                         </li>
                         <li class="menu-item {% if url_name == 'units-list' %}active{% endif %}">
                             <a href="{% url 'units-list' %}" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-table"></i>
+                                <i class="menu-icon tf-icons ti ti-layout-kanban"></i>
                                 <div data-i18n="Units">Units</div>
+                            </a>
+                        </li>
+                        <li class="menu-item {% if url_name == 'clients-list' %}active{% endif %}">
+                            <a href="{% url 'clients-list' %}" class="menu-link">
+                                <i class="menu-icon tf-icons ti ti-color-swatch"></i>
+                                <div data-i18n="Clients">Clients</div>
                             </a>
                         </li>
                     </ul>
