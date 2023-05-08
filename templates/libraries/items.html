@@ -1,0 +1,525 @@
+{% extends 'index.html' %} {% block content %} {% load staticfiles %}
+
+<!-- Content wrapper -->
+<div class="content-wrapper">
+    <!-- Content -->
+    <div class="container-fluid flex-grow-1 container-p-y">
+        <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Item /</span> List</h4>
+
+        <!-- DataTable with Buttons -->
+        <div class="card">
+            <div class="card-datatable table-responsive pt-0">
+                <table id="tbl-items" class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Barcode</th>
+                            <th>Item Type</th>
+                            <th>Generic</th>
+                            <th>Sub-generic</th>
+                            <th>Classification</th>
+                            <th>Description</th>
+                            <th>Brand</th>
+                            <th>Created By</th>
+                            <th>Created Date</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal to add new record -->
+<div class="offcanvas offcanvas-end" id="add-new-record">
+    <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title" id="exampleModalLabel"><p class="title-name">Add Record</p></h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body flex-grow-1">
+        <form class="add-new-record pt-0 row g-2" id="item-form">
+            <div class="col-sm-12">
+                <label class="form-label" for="item-barcode">Barcode</label>
+                <input type="text" id="item-barcode" class="form-control" name="ItemBarcode" placeholder="Enter Barcode" />
+            </div>
+
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="form-label" for="item-type">Item Type</label>
+                    <select id="item-type" name="ItemType" class="select2 form-select" data-allow-clear="true">
+                        <option></option>
+                        {% for row in item_type %}
+                        <option value="{{ row.id }}">{{ row.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="form-label" for="generic">Generic</label>
+                    <select id="generic" name="Generic" class="select2 form-select" data-allow-clear="true">
+                        <option></option>
+                        {% for row in generic %}
+                        <option value="{{ row.id }}">{{ row.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="form-label" for="sub-generic">Sub Generic</label>
+                    <select id="sub-generic" name="SubGeneric" class="select2 form-select" data-allow-clear="true">
+                        <option></option>
+                        {% for row in sub_generic %}
+                        <option value="{{ row.id }}">{{ row.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <label class="form-label" for="classification">Classification<span class="ms-1 text-secondary">(Optional)</span></label>
+                <input
+                    type="text"
+                    id="classification"
+                    class="form-control dt-classification-name"
+                    name="Classification"
+                    placeholder="Enter Classification"
+                />
+            </div>
+
+            <div class="col-sm-12">
+                <label class="form-label" for="description">Description<span class="ms-1 text-secondary">(Optional)</span></label>
+                <input type="text" id="description" class="form-control" name="Description" placeholder="Enter Description" />
+            </div>
+
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="form-label" for="brand">Brand<span class="ms-1 text-secondary">(Optional)</span></label>
+                    <select id="brand" name="Brand" class="select2 form-select" data-allow-clear="true">
+                        <option></option>
+                        {% for row in brand %}
+                        <option value="{{ row.id }}">{{ row.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-sm-12 update-div-generic mt-4">
+                <button name="submitButton" class="btn btn-primary data-submit me-sm-3 me-1 additional-record">Submit</button>
+                <button type="reset" class="btn btn-outline-secondary" data-bs-dismiss="offcanvas">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+{% endblock %} {% block footer_scripts %}
+<script>
+    let id, name, status, identifier_swal
+
+    $(document).ready(function () {
+        const table = $('#tbl-items')
+
+        let dataTable = table.DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: "{% url 'item-load' %}",
+            columns: [
+                { data: 'id' },
+                { data: 'barcode' },
+                { data: 'item_type' },
+                { data: 'generic' },
+                { data: 'sub_generic' },
+                { data: 'classification' },
+                { data: 'description' },
+                { data: 'brand' },
+                { data: 'created_by' },
+                { data: 'created_at', className: 'text-end' },
+            ],
+            columnDefs: [
+                {
+                    targets: 0,
+                    title: 'Actions',
+                    orderable: false,
+                    searchable: false,
+                    render: function (data, type, full, meta) {
+                        return (
+                            '<div class="d-inline-block">' +
+                            '<a href="javascript:;" class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="text-primary ti ti-dots-vertical"></i></a>' +
+                            '<div class="dropdown-menu dropdown-menu-end m-0">' +
+                            '<a href="javascript:;" class="dropdown-item">Details</a>' +
+                            '<a href="javascript:;" class="dropdown-item">Archive</a>' +
+                            '<div class="dropdown-divider"></div>' +
+                            '<a href="javascript:;" class="dropdown-item text-danger delete-record">Delete</a>' +
+                            '</div>' +
+                            '</div>' +
+                            '<a href="javascript:;" class="item-edit text-body"><i class="text-primary ti ti-pencil"></i></a>'
+                        )
+                    },
+                },
+                {
+                    targets: 1,
+                    render: function (data) {
+                        return '<span class="badge bg-primary">' + data + '</span>'
+                    },
+                },
+                {
+                    targets: -1,
+                    render: function (data) {
+                        return moment(data).format('LLL')
+                    },
+                },
+            ],
+            dom: '<"card-header flex-column flex-md-row"<"head-label text-center"><"dt-action-buttons text-end pt-3 pt-md-0"B>><"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6 d-flex justify-content-center justify-content-md-end"f>>t<"row"<"col-sm-12 col-md-6"i><"col-sm-12 col-md-6"p>>',
+            buttons: [
+                {
+                    extend: 'collection',
+                    className: 'btn btn-label-primary dropdown-toggle me-2',
+                    text: '<i class="ti ti-file-export me-sm-1"></i> <span class="d-none d-sm-inline-block">Export</span>',
+                    buttons: [
+                        {
+                            extend: 'print',
+                            text: '<i class="ti ti-printer me-1" ></i>Print',
+                            className: 'dropdown-item',
+                            exportOptions: {
+                                columns: [3, 4, 5, 6, 7],
+                                // prevent avatar to be display
+                                format: {
+                                    body: function (inner, coldex, rowdex) {
+                                        if (inner.length <= 0) return inner
+                                        var el = $.parseHTML(inner)
+                                        var result = ''
+                                        $.each(el, function (index, item) {
+                                            if (item.classList !== undefined && item.classList.contains('user-name')) {
+                                                result = result + item.lastChild.firstChild.textContent
+                                            } else if (item.innerText === undefined) {
+                                                result = result + item.textContent
+                                            } else result = result + item.innerText
+                                        })
+                                        return result
+                                    },
+                                },
+                            },
+                            customize: function (win) {
+                                //customize print view for dark
+                                $(win.document.body)
+                                    .css('color', config.colors.headingColor)
+                                    .css('border-color', config.colors.borderColor)
+                                    .css('background-color', config.colors.bodyBg)
+                                $(win.document.body)
+                                    .find('table')
+                                    .addClass('compact')
+                                    .css('color', 'inherit')
+                                    .css('border-color', 'inherit')
+                                    .css('background-color', 'inherit')
+                            },
+                        },
+                        {
+                            extend: 'csv',
+                            text: '<i class="ti ti-file-text me-1" ></i>Csv',
+                            className: 'dropdown-item',
+                            exportOptions: {
+                                columns: [3, 4, 5, 6, 7],
+                                // prevent avatar to be display
+                                format: {
+                                    body: function (inner, coldex, rowdex) {
+                                        if (inner.length <= 0) return inner
+                                        var el = $.parseHTML(inner)
+                                        var result = ''
+                                        $.each(el, function (index, item) {
+                                            if (item.classList !== undefined && item.classList.contains('user-name')) {
+                                                result = result + item.lastChild.firstChild.textContent
+                                            } else if (item.innerText === undefined) {
+                                                result = result + item.textContent
+                                            } else result = result + item.innerText
+                                        })
+                                        return result
+                                    },
+                                },
+                            },
+                        },
+                        {
+                            extend: 'excel',
+                            text: '<i class="ti ti-file-spreadsheet me-1"></i>Excel',
+                            className: 'dropdown-item',
+                            exportOptions: {
+                                columns: [3, 4, 5, 6, 7],
+                                // prevent avatar to be display
+                                format: {
+                                    body: function (inner, coldex, rowdex) {
+                                        if (inner.length <= 0) return inner
+                                        var el = $.parseHTML(inner)
+                                        var result = ''
+                                        $.each(el, function (index, item) {
+                                            if (item.classList !== undefined && item.classList.contains('user-name')) {
+                                                result = result + item.lastChild.firstChild.textContent
+                                            } else if (item.innerText === undefined) {
+                                                result = result + item.textContent
+                                            } else result = result + item.innerText
+                                        })
+                                        return result
+                                    },
+                                },
+                            },
+                        },
+                        {
+                            extend: 'pdf',
+                            text: '<i class="ti ti-file-description me-1"></i>Pdf',
+                            className: 'dropdown-item',
+                            exportOptions: {
+                                columns: [3, 4, 5, 6, 7],
+                                // prevent avatar to be display
+                                format: {
+                                    body: function (inner, coldex, rowdex) {
+                                        if (inner.length <= 0) return inner
+                                        var el = $.parseHTML(inner)
+                                        var result = ''
+                                        $.each(el, function (index, item) {
+                                            if (item.classList !== undefined && item.classList.contains('user-name')) {
+                                                result = result + item.lastChild.firstChild.textContent
+                                            } else if (item.innerText === undefined) {
+                                                result = result + item.textContent
+                                            } else result = result + item.innerText
+                                        })
+                                        return result
+                                    },
+                                },
+                            },
+                        },
+                        {
+                            extend: 'copy',
+                            text: '<i class="ti ti-copy me-1" ></i>Copy',
+                            className: 'dropdown-item',
+                            exportOptions: {
+                                columns: [3, 4, 5, 6, 7],
+                                // prevent avatar to be display
+                                format: {
+                                    body: function (inner, coldex, rowdex) {
+                                        if (inner.length <= 0) return inner
+                                        var el = $.parseHTML(inner)
+                                        var result = ''
+                                        $.each(el, function (index, item) {
+                                            if (item.classList !== undefined && item.classList.contains('user-name')) {
+                                                result = result + item.lastChild.firstChild.textContent
+                                            } else if (item.innerText === undefined) {
+                                                result = result + item.textContent
+                                            } else result = result + item.innerText
+                                        })
+                                        return result
+                                    },
+                                },
+                            },
+                        },
+                    ],
+                },
+                {
+                    text: '<i class="ti ti-plus me-sm-1"></i> <span class="d-none d-sm-inline-block">Add New Record</span>',
+                    className: 'create-new btn btn-primary',
+                },
+            ],
+            //responsive: {
+            //    details: {
+            //        display: $.fn.dataTable.Responsive.display.modal({
+            //            header: function (row) {
+            //                var data = row.data()
+            //                return 'Details of ' + data['full_name']
+            //            },
+            //        }),
+            //        type: 'column',
+            //        renderer: function (api, rowIdx, columns) {
+            //            var data = $.map(columns, function (col, i) {
+            //                return col.title !== '' // ? Do not show row in modal popup if title is blank (for check box)
+            //                    ? '<tr data-dt-row="' +
+            //                          col.rowIndex +
+            //                          '" data-dt-column="' +
+            //                          col.columnIndex +
+            //                          '">' +
+            //                          '<td>' +
+            //                          col.title +
+            //                          ':' +
+            //                          '</td> ' +
+            //                          '<td>' +
+            //                          col.data +
+            //                          '</td>' +
+            //                          '</tr>'
+            //                    : ''
+            //            }).join('')
+            //
+            //            return data ? $('<table class="table"/><tbody />').append(data) : false
+            //        },
+            //    },
+            //},
+        })
+        $('div.head-label').html('<h5 class="card-title mb-0">Items</h5>')
+
+        // validation
+        const ItemFormValidation = document.getElementById('item-form'),
+            ItemType = jQuery(document.querySelector('[name="ItemType"]')),
+            Generic = jQuery(document.querySelector('[name="Generic"]')),
+            SubGeneric = jQuery(document.querySelector('[name="SubGeneric"]')),
+            Brand = jQuery(document.querySelector('[name="Brand"]')),
+            newRecord = document.querySelector('.create-new'),
+            offCanvasElement = document.querySelector('#add-new-record')
+        const offCanvasEl = new bootstrap.Offcanvas(offCanvasElement)
+
+        setTimeout(() => {
+            // To open offCanvas, to add new record
+            if (newRecord) {
+                newRecord.addEventListener('click', function () {
+                    $('.title-name').text('Add Item Record')
+                    $('.generic-status').hide()
+                    $('.update-div-generic update-generic').hide()
+                    id = ''
+                    identifier_swal = 'Add'
+                    ItemType.val('').trigger('change')
+                    Generic.val('').trigger('change')
+                    SubGeneric.val('').trigger('change')
+                    $('.form-control').val('')
+                    Brand.val('').trigger('change')
+                    offCanvasEl.show()
+                })
+            }
+        }, 200)
+
+        // Form validation for Add new record
+        const fv = FormValidation.formValidation(ItemFormValidation, {
+            fields: {
+                ItemBarcode: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Please barcode',
+                        },
+                    },
+                },
+                ItemType: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Please select item type',
+                        },
+                    },
+                },
+                Generic: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Please select generic',
+                        },
+                    },
+                },
+                SubGeneric: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Please select generic',
+                        },
+                    },
+                },
+            },
+            plugins: {
+                trigger: new FormValidation.plugins.Trigger(),
+                bootstrap5: new FormValidation.plugins.Bootstrap5(),
+                submitButton: new FormValidation.plugins.SubmitButton(),
+                autoFocus: new FormValidation.plugins.AutoFocus(),
+            },
+            init: (instance) => {
+                instance.on('plugins.message.placed', function (e) {
+                    if (e.element.parentElement.classList.contains('input-group')) {
+                        e.element.parentElement.insertAdjacentElement('afterend', e.messageElement)
+                    }
+                })
+            },
+        }).on('core.form.valid', function () {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, save it!',
+                customClass: {
+                    confirmButton: 'btn btn-primary me-3',
+                    cancelButton: 'btn btn-label-secondary',
+                },
+                buttonsStyling: false,
+            }).then(function (result) {
+                if (result.value) {
+                    var form_data = $('#item-form').serialize()
+                    $.ajax({
+                        type: 'POST',
+                        url: "{% url 'item-add' %}",
+                        data: form_data,
+                    }).done(function (data) {
+                        if (data.data == 'success') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Successfully save!',
+                                text: 'Item has been added.',
+                                customClass: {
+                                    confirmButton: 'btn btn-success',
+                                },
+                            })
+                            offCanvasEl.hide()
+                            dataTable.ajax.reload()
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error saving!',
+                                text: 'Encountered error on saving item!',
+                                customClass: {
+                                    confirmButton: 'btn btn-success',
+                                },
+                            })
+                        }
+                    })
+                }
+            })
+        })
+
+        // Select2 (Company)
+        if (ItemType.length) {
+            ItemType.wrap('<div class="position-relative"></div>')
+            ItemType.select2({
+                placeholder: 'Select Item Type',
+                dropdownParent: ItemType.parent(),
+                allowClear: true,
+            }).on('change.select2', function () {
+                // Revalidate the color field when an option is chosen
+                fv.revalidateField('ItemType')
+            })
+        }
+
+        // Select2 (Generic)
+        if (Generic.length) {
+            Generic.wrap('<div class="position-relative"></div>')
+            Generic.select2({
+                placeholder: 'Select Generic',
+                dropdownParent: Generic.parent(),
+                allowClear: true,
+            }).on('change.select2', function () {
+                // Revalidate the color field when an option is chosen
+                fv.revalidateField('Generic')
+            })
+        }
+
+        // Select2 (SubGeneric)
+        if (SubGeneric.length) {
+            SubGeneric.wrap('<div class="position-relative"></div>')
+            SubGeneric.select2({
+                placeholder: 'Select Sub-generic',
+                dropdownParent: SubGeneric.parent(),
+                allowClear: true,
+            }).on('change.select2', function () {
+                // Revalidate the color field when an option is chosen
+                fv.revalidateField('SubGeneric')
+            })
+        }
+
+        // Select2 (Brand)
+        if (Brand.length) {
+            Brand.wrap('<div class="position-relative"></div>')
+            Brand.select2({
+                placeholder: 'Select Brand',
+                dropdownParent: Brand.parent(),
+                allowClear: true,
+            })
+        }
+    })
+</script>
+{% endblock footer_scripts %}

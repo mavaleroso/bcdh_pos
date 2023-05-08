@@ -162,6 +162,17 @@
                             </a>
                         </li>
 
+                        <!-- Libraries -->
+                        <li class="menu-header small text-uppercase">
+                            <span class="menu-header-text">Libraries</span>
+                        </li>
+                        <li class="menu-item {% if url_name == 'item-list' %}active{% endif %}">
+                            <a href="{% url 'item-list' %}" class="menu-link">
+                                <i class="menu-icon tf-icons ti ti-color-swatch"></i>
+                                <div data-i18n="Items">Items</div>
+                            </a>
+                        </li>
+
                         <!-- Admin -->
                         <li class="menu-header small text-uppercase">
                             <span class="menu-header-text">Admin</span>
@@ -226,7 +237,7 @@
                     <!-- Navbar -->
 
                     <nav
-                        class="layout-navbar container-xxl navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
+                        class="layout-navbar container-fluid navbar navbar-expand-xl navbar-detached align-items-center bg-navbar-theme"
                         id="layout-navbar"
                     >
                         <div class="layout-menu-toggle navbar-nav align-items-xl-center me-3 me-xl-0 d-xl-none">
