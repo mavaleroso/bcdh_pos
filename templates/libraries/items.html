@@ -105,7 +105,7 @@
                 </div>
             </div>
 
-            <div class="col-sm-12 update-div-generic mt-4">
+            <div class="col-sm-12 mt-4">
                 <button name="submitButton" class="btn btn-primary data-submit me-sm-3 me-1 additional-record">Submit</button>
                 <button type="reset" class="btn btn-outline-secondary" data-bs-dismiss="offcanvas">Cancel</button>
             </div>
@@ -115,10 +115,15 @@
 
 {% endblock %} {% block footer_scripts %}
 <script>
-    let id, name, status, identifier_swal
-
     $(document).ready(function () {
         const table = $('#tbl-items')
+        const ItemFormValidation = document.getElementById('item-form'),
+            ItemType = jQuery(document.querySelector('[name="ItemType"]')),
+            Generic = jQuery(document.querySelector('[name="Generic"]')),
+            SubGeneric = jQuery(document.querySelector('[name="SubGeneric"]')),
+            Brand = jQuery(document.querySelector('[name="Brand"]')),
+            offCanvasElement = document.querySelector('#add-new-record')
+        const offCanvasEl = new bootstrap.Offcanvas(offCanvasElement)
 
         let dataTable = table.DataTable({
             processing: true,
@@ -142,18 +147,9 @@
                     title: 'Actions',
                     orderable: false,
                     searchable: false,
-                    render: function (data, type, full, meta) {
+                    render: function (data) {
                         return (
-                            '<div class="d-inline-block">' +
-                            '<a href="javascript:;" class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="text-primary ti ti-dots-vertical"></i></a>' +
-                            '<div class="dropdown-menu dropdown-menu-end m-0">' +
-                            '<a href="javascript:;" class="dropdown-item">Details</a>' +
-                            '<a href="javascript:;" class="dropdown-item">Archive</a>' +
-                            '<div class="dropdown-divider"></div>' +
-                            '<a href="javascript:;" class="dropdown-item text-danger delete-record">Delete</a>' +
-                            '</div>' +
-                            '</div>' +
-                            '<a href="javascript:;" class="item-edit text-body"><i class="text-primary ti ti-pencil"></i></a>'
+                            '<a href="javascript:;" data-id="' + data + '" class="item-edit text-body"><i class="text-primary ti ti-pencil"></i></a>'
                         )
                     },
                 },
@@ -317,6 +313,24 @@
                     className: 'create-new btn btn-primary',
                 },
             ],
+            drawCallback: function (settings) {
+                $('.item-edit').on('click', function () {
+                    let id = $(this).data('id')
+                    $('.title-name').text('Update Item Record')
+                    $.ajax({
+                        type: 'GET',
+                        url: "{% url 'item-edit' %}?id=" + id,
+                    }).done(function (data) {
+                        ItemType.val('').trigger('change')
+                        Generic.val('').trigger('change')
+                        SubGeneric.val('').trigger('change')
+                        $('.form-control').val('')
+                        Brand.val('').trigger('change')
+                        offCanvasEl.show()
+                    })
+                })
+            },
+
             //responsive: {
             //    details: {
             //        display: $.fn.dataTable.Responsive.display.modal({
@@ -352,25 +366,12 @@
         })
         $('div.head-label').html('<h5 class="card-title mb-0">Items</h5>')
 
-        // validation
-        const ItemFormValidation = document.getElementById('item-form'),
-            ItemType = jQuery(document.querySelector('[name="ItemType"]')),
-            Generic = jQuery(document.querySelector('[name="Generic"]')),
-            SubGeneric = jQuery(document.querySelector('[name="SubGeneric"]')),
-            Brand = jQuery(document.querySelector('[name="Brand"]')),
-            newRecord = document.querySelector('.create-new'),
-            offCanvasElement = document.querySelector('#add-new-record')
-        const offCanvasEl = new bootstrap.Offcanvas(offCanvasElement)
+        const newRecord = document.querySelector('.create-new')
 
         setTimeout(() => {
-            // To open offCanvas, to add new record
             if (newRecord) {
                 newRecord.addEventListener('click', function () {
                     $('.title-name').text('Add Item Record')
-                    $('.generic-status').hide()
-                    $('.update-div-generic update-generic').hide()
-                    id = ''
-                    identifier_swal = 'Add'
                     ItemType.val('').trigger('change')
                     Generic.val('').trigger('change')
                     SubGeneric.val('').trigger('change')

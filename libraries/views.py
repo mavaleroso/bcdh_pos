@@ -5,7 +5,7 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from libraries.models import (Items)
 from main.models import (ItemType, Generic, SubGeneric, Brand, AuthUser)
-import math
+import math, json
 
 
 def item(request):
@@ -19,13 +19,13 @@ def item(request):
 
 @csrf_exempt
 def item_add(request):
-    barcode = request.POST.get('ItemBarcode');
-    description = request.POST.get('Description');
-    classification = request.POST.get('Classification');
-    generic_id = request.POST.get('Generic');
-    sub_generic_id = request.POST.get('SubGeneric');
-    brand_id = request.POST.get('Brand');
-    type_id = request.POST.get('ItemType');
+    barcode = request.POST.get('ItemBarcode')
+    description = request.POST.get('Description')
+    classification = request.POST.get('Classification')
+    generic_id = request.POST.get('Generic')
+    sub_generic_id = request.POST.get('SubGeneric')
+    brand_id = request.POST.get('Brand')
+    type_id = request.POST.get('ItemType')
     user_id = request.session.get('user_id', 0)
     
     item_add = Items(barcode=barcode, description=description, classification=classification, generic_id=generic_id, sub_generic_id=sub_generic_id, brand_id=brand_id, type_id=type_id, user_id=user_id)
@@ -33,6 +33,14 @@ def item_add(request):
     item_add.save()
 
     return JsonResponse({'data': 'success'})
+
+@csrf_exempt
+def item_edit(request):
+    id = request.GET.get('id')
+    data = Items.objects.select_related().get(id=id)
+    json_str = json.dumps(data)
+    return JsonResponse({'data': json_str})
+    
 
 def item_load(request):
     item_data = Items.objects.select_related().order_by('-created_at').reverse()
@@ -79,3 +87,4 @@ def item_load(request):
     }
     return JsonResponse(response)
 
+    
