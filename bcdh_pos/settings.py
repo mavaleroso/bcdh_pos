@@ -43,6 +43,9 @@ INSTALLED_APPS = [
     'main',
     'inventory',
     'libraries',
+    'sales',
+    'management',
+
 ]
 
 MIDDLEWARE = [

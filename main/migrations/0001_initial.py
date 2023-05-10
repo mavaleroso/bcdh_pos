@@ -233,7 +233,7 @@ class Migration(migrations.Migration):
             },
         ),
         migrations.CreateModel(
-            name='Item',
+            name='Items',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('code', models.CharField(blank=True, max_length=128, null=True)),
@@ -385,13 +385,34 @@ class Migration(migrations.Migration):
                 ('quantity', models.IntegerField(blank=True, max_length=128, null=True)),
                 ('discounted_amount', models.DecimalField(blank=True, decimal_places=10, max_digits=30, null=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True, null=True)),
-                ('item', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='main.item')),
+                ('inpatient_sales', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='main.inpatientsales')),
+                ('item', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='main.items')),
                 ('sales', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='main.sales')),
             ],
             options={
                 'db_table': 'out_items',
                 'managed': True,
             },
+        ),
+        migrations.AddField(
+            model_name='items',
+            name='sub_generic',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='main.subgeneric'),
+        ),
+        migrations.AddField(
+            model_name='items',
+            name='type',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='main.itemtype'),
+        ),
+        migrations.AddField(
+            model_name='items',
+            name='unit',
+            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='main.unit'),
+        ),
+        migrations.AddField(
+            model_name='items',
+            name='user',
+            field=models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='main.authuser'),
         ),
         migrations.CreateModel(
             name='ItemLocation',
@@ -400,7 +421,7 @@ class Migration(migrations.Migration):
                 ('quantity', models.IntegerField(blank=True, max_length=128, null=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True, null=True)),
                 ('updated_at', models.DateTimeField(auto_now=True, null=True)),
-                ('item', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='main.item')),
+                ('item', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='main.items')),
                 ('location', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='main.location')),
             ],
             options={
@@ -408,33 +429,13 @@ class Migration(migrations.Migration):
                 'managed': True,
             },
         ),
-        migrations.AddField(
-            model_name='item',
-            name='sub_generic',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='main.subgeneric'),
-        ),
-        migrations.AddField(
-            model_name='item',
-            name='type',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='main.itemtype'),
-        ),
-        migrations.AddField(
-            model_name='item',
-            name='unit',
-            field=models.ForeignKey(blank=True, null=True, on_delete=django.db.models.deletion.DO_NOTHING, to='main.unit'),
-        ),
-        migrations.AddField(
-            model_name='item',
-            name='user',
-            field=models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='main.authuser'),
-        ),
         migrations.CreateModel(
             name='EditRequests',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
                 ('status', models.CharField(blank=True, max_length=128, null=True)),
                 ('created_at', models.DateTimeField(auto_now_add=True, null=True)),
-                ('item', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='main.item')),
+                ('item', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='main.items')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.DO_NOTHING, to='main.authuser')),
             ],
             options={

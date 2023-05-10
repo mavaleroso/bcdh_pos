@@ -52,11 +52,15 @@
         <link rel="stylesheet" href="{% static 'assets/vendor/libs/datatables-checkboxes-jquery/datatables.checkboxes.css' %}" />
         <link rel="stylesheet" href="{% static 'assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.css' %}" />
         <link rel="stylesheet" href="{% static 'assets/vendor/libs/node-waves/node-waves.css' %}" />
-        <link rel="stylesheet" href="{% static 'assets/vendor/libs/typeahead-js/typeahead.css' %}" />
         <link rel="stylesheet" href="{% static 'assets/vendor/libs/select2/select2.css' %}" />
         <link rel="stylesheet" href="{% static 'assets/vendor/libs/sweetalert2/sweetalert2' %}.css" />
         <link rel="stylesheet" href="{% static 'assets/vendor/libs/animate-css/animate.css' %}" />
         <link rel="stylesheet" href="{% static 'assets/vendor/libs/sweetalert2/sweetalert2.css' %}" />
+        <link rel="stylesheet" href="{% static 'assets/vendor/libs/toastr/toastr.css' %}" />
+
+         <!-- sales -->
+        <link rel="stylesheet" href="{% static 'assets/vendor/libs/bs-stepper/bs-stepper.css' %}" />
+        <link rel="stylesheet" href="{% static 'assets/vendor/css/pages/wizard-ex-checkout.css' %}" />
 
         <!-- Page CSS -->
         <link rel="stylesheet" href="{% static 'assets/vendor/css/pages/cards-advance.css' %}" />
@@ -80,7 +84,7 @@
 
                 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
                     <div class="app-brand demo">
-                        <a href="index.html" class="app-brand-link">
+                        <a href="#" class="app-brand-link">
                             <span class="app-brand-logo demo" style="width: 17% !important; height: 17% !important">
                                 <img class="w-100" src="{% static 'assets/img/logos/bcdh_logo.png' %}" />
                             </span>
@@ -138,8 +142,9 @@
                         <li class="menu-header small text-uppercase">
                             <span class="menu-header-text">Sales</span>
                         </li>
-                        <li class="menu-item">
-                            <a href="app-email.html" class="menu-link">
+
+                        <li class="menu-item {% if url_name == 'sales-transaction' %}active{% endif %}">
+                            <a href="{% url 'sales-transaction' %}" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-file-dollar"></i>
                                 <div data-i18n="Transaction">Transaction</div>
                             </a>
@@ -222,8 +227,14 @@
                         </li>
                         <li class="menu-item {% if url_name == 'units-list' %}active{% endif %}">
                             <a href="{% url 'units-list' %}" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-table"></i>
+                                <i class="menu-icon tf-icons ti ti-layout-kanban"></i>
                                 <div data-i18n="Units">Units</div>
+                            </a>
+                        </li>
+                        <li class="menu-item {% if url_name == 'clients-list' %}active{% endif %}">
+                            <a href="{% url 'clients-list' %}" class="menu-link">
+                                <i class="menu-icon tf-icons ti ti-color-swatch"></i>
+                                <div data-i18n="Clients">Clients</div>
                             </a>
                         </li>
                     </ul>
@@ -258,41 +269,7 @@
                             </div>
                             <!-- /Search -->
 
-                            <ul class="navbar-nav flex-row align-items-center ms-auto">
-                                <!-- Language -->
-                                <li class="nav-item dropdown-language dropdown me-2 me-xl-0">
-                                    <a class="nav-link dropdown-toggle hide-arrow" href="javascript:void(0);" data-bs-toggle="dropdown">
-                                        <i class="fi fi-us fis rounded-circle me-1 fs-3"></i>
-                                    </a>
-                                    <ul class="dropdown-menu dropdown-menu-end">
-                                        <li>
-                                            <a class="dropdown-item" href="javascript:void(0);" data-language="en">
-                                                <i class="fi fi-us fis rounded-circle me-1 fs-3"></i>
-                                                <span class="align-middle">English</span>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" href="javascript:void(0);" data-language="fr">
-                                                <i class="fi fi-fr fis rounded-circle me-1 fs-3"></i>
-                                                <span class="align-middle">French</span>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" href="javascript:void(0);" data-language="de">
-                                                <i class="fi fi-de fis rounded-circle me-1 fs-3"></i>
-                                                <span class="align-middle">German</span>
-                                            </a>
-                                        </li>
-                                        <li>
-                                            <a class="dropdown-item" href="javascript:void(0);" data-language="pt">
-                                                <i class="fi fi-pt fis rounded-circle me-1 fs-3"></i>
-                                                <span class="align-middle">Portuguese</span>
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </li>
-                                <!--/ Language -->
-
+                            <ul class="navbar-nav flex-row align-items-center ms-auto"> 
                                 <!-- Style Switcher -->
                                 <li class="nav-item me-2 me-xl-0">
                                     <a class="nav-link style-switcher-toggle hide-arrow" href="javascript:void(0);">
@@ -843,9 +820,17 @@
         <script src="{% static 'assets/vendor/libs/formvalidation/dist/js/plugins/Bootstrap5.min.js' %}"></script>
         <script src="{% static 'assets/vendor/libs/formvalidation/dist/js/plugins/AutoFocus.min.js' %}"></script>
         <script src="{% static 'assets/vendor/libs/sweetalert2/sweetalert2.js' %}"></script>
+        <script src="{% static 'assets/js/extended-ui-sweetalert2.js' %}"></script>
+        <script src="{% static 'assets/vendor/libs/toastr/toastr.js' %}"></script>
+        <script src="{% static 'assets/vendor/libs/bs-stepper/bs-stepper.js' %}"></script>
+        <script src="{% static 'assets/vendor/libs/rateyo/rateyo.js' %}"></script>
+        <script src="{% static 'assets/vendor/libs/cleavejs/cleave.js' %}"></script>
+        <script src="{% static 'assets/vendor/libs/cleavejs/cleave-phone.js' %}"></script>
 
         <!-- Main JS -->
         <script src="{% static 'assets/js/main.js' %}"></script>
+
+        <script src="{% static 'assets/js/ui-toasts.js' %}"></script>
 
         <!-- Page JS -->
         <script src="{% static 'assets/js/dashboards-analytics.js' %}"></script>
@@ -856,21 +841,22 @@
         <!-- Vendors JS -->
         <script src="{% static 'assets/vendor/libs/datatables-bs5/datatables-bootstrap5.js' %}"></script>
         <!-- Flat Picker -->
-        <script src="{% static 'assets/vendor/libs/moment/moment.js' %}"></script>
-        <script src="{% static 'assets/vendor/libs/flatpickr/flatpickr.js' %}"></script>
+        <!-- Data tables -->
+        <script src="{% static 'assets/js/tables-datatables-advanced.js' %}"></script>
+        <script src="{% static 'assets/js/tables-datatables-extensions.js' %}"></script>
 
-        <script src="{% static 'assets/vendor/libs/formvalidation/dist/js/FormValidation.min.js' %}"></script>
-        <script src="{% static 'assets/vendor/libs/formvalidation/dist/js/plugins/Bootstrap5.min.js' %}"></script>
-        <script src="{% static 'assets/vendor/libs/formvalidation/dist/js/plugins/AutoFocus.min.js' %}"></script>
+
 
         <script src="{% static 'assets/vendor/libs/sweetalert2/sweetalert2.js' %}"></script>
         <script src="{% static 'assets/js/extended-ui-sweetalert2.js' %}"></script>
 
-        <script src="{% static 'assets/vendor/libs/toastr/toastr.js' %}"></script>
-        <script src="{% static 'assets/js/ui-toasts.js' %}"></script>
+        <script src="{% static 'assets/js/modal-add-new-address.js' %}"></script>
+        <script src="{% static 'assets/js/wizard-ex-checkout.js' %}"></script>
+
+        <!-- <script src="../../assets/js/modal-add-new-address.js"></script>
+        <script src="../../assets/js/wizard-ex-checkout.js"></script> -->
 
         <!-- <script src="{% static 'assets/js/tables-datatables-basic.js' %}"></script> -->
-
         {% block footer_scripts %} {% endblock footer_scripts %}
     </body>
 </html>

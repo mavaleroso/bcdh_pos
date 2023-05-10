@@ -10,7 +10,7 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from main.models import ( ItemType, Company, Generic, SubGeneric, Brand, Unit, AuthUser, UserDetails )
+from main.models import ( ItemType, Company, Generic, SubGeneric, Brand, Unit, AuthUser, UserDetails, Clients )
 import json 
 from django.core import serializers
 import datetime
@@ -47,7 +47,7 @@ def subgeneric(request):
 
 def units(request):
     context = {
-		'units' : SubGeneric.objects.filter().order_by('name'),
+		'units' : Unit.objects.filter().order_by('name'),
 	}
     return render(request, 'admin/units.html', context)
 
@@ -56,6 +56,12 @@ def user(request):
 		'users' : AuthUser.objects.filter().exclude(id=1).order_by('first_name').select_related('userdetails')
 	}
     return render(request, 'admin/users.html', context)
+
+def clients(request):
+    context = {
+		'clients' : Clients.objects.filter().exclude(id=1).order_by('first_name').select_related()
+	}
+    return render(request, 'admin/clients.html', context)
 
 @csrf_exempt
 def addgeneric(request):
@@ -159,11 +165,7 @@ def adduser(request):
         sex_ = request.POST.get('sex')
         position_ = request.POST.get('position')
 
-        print("testing")
-        print(password_)
-
         if AuthUser.objects.filter(username=username_):
-            print("halasaroles")
             return JsonResponse({'data': 'error'})
         else:
             add_authuser = AuthUser(
@@ -282,5 +284,44 @@ def updateunits(request):
             check_units = True        
         if check_units:
             Units.objects.filter(id=units_id).update(name=units_name, is_active=status)
+            return JsonResponse({'data': 'success'})
+
+@csrf_exempt
+def addclients(request):
+    if request.method == 'POST':
+        first_name = request.POST.get('first_name')
+        middle_name_ = request.POST.get('middle_name')
+        last_name = request.POST.get('last_name')
+        birthdate = request.POST.get('username')
+        birthdate = request.POST.get('birthdate')
+        sex = request.POST.get('sex')
+        address = request.POST.get('address')
+        occupation = request.POST.get('occupation')
+        
+        if check_clients:
+            add = Clients(
+                first_name= first_name, middle_name = last_name)
+            add.save()
+            return JsonResponse({'data': 'success'})
+        
+@csrf_exempt
+def updateclients(request):
+    if request.method == 'POST':
+        clients_id = request.POST.get('clients_id')
+        first_name = request.POST.get('first_name')
+        middle_name = request.POST.get('middle')
+        last_name = request.POST.get('last_name')
+        birthdate = request.POST.get('birthdate')
+        sex = request.POST.get('sex')
+        address = request.POST.get('address')
+        occupation = request.POST.get('occupation')
+
+        check_first_name = False
+        if Clients.objects.filter(name=clients_name).exclude(id=clients_id):
+            return JsonResponse({'data': 'error'})
+        else:
+            check_clients = True        
+        if check_clients:
+            Clients.objects.filter(id=clients_id).update(name=first_name, middle_name = middle_name, last_name = last_name, birthdate = birthdate, sex = sex, address = address_, occupation = occupation)
             return JsonResponse({'data': 'success'})
 

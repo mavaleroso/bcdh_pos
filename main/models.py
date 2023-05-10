@@ -195,7 +195,7 @@ class ItemType(models.Model):
         db_table = 'item_type'
 
 
-class Item(models.Model):
+class Items(models.Model):
     code = models.CharField(max_length=128, blank=True, null=True)
     barcode = models.CharField(max_length=128, blank=True, null=True)
     type = models.ForeignKey(ItemType, models.DO_NOTHING)
@@ -229,7 +229,7 @@ class Item(models.Model):
 
 
 class EditRequests(models.Model):
-    item = models.ForeignKey(Item, models.DO_NOTHING)
+    item = models.ForeignKey(Items, models.DO_NOTHING)
     status = models.CharField(max_length=128, blank=True, null=True)
     user = models.ForeignKey(AuthUser, models.DO_NOTHING)
     created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
@@ -279,7 +279,7 @@ class Location(models.Model):
 
 
 class ItemLocation(models.Model):
-    item = models.ForeignKey(Item, models.DO_NOTHING)
+    item = models.ForeignKey(Items, models.DO_NOTHING)
     location = models.ForeignKey(Location, models.DO_NOTHING)
     quantity = models.IntegerField(max_length=128, blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
@@ -333,7 +333,8 @@ class Payment(models.Model):
 
 class OutItems(models.Model):
     sales = models.ForeignKey(Sales, models.DO_NOTHING)
-    item = models.ForeignKey(Item, models.DO_NOTHING)
+    inpatient_sales = models.ForeignKey(InpatientSales, models.DO_NOTHING)
+    item = models.ForeignKey(Items, models.DO_NOTHING)
     quantity = models.IntegerField(max_length=128, blank=True, null=True)
     discounted_amount = models.DecimalField(
         max_digits=30, decimal_places=10, blank=True, null=True)

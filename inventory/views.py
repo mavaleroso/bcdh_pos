@@ -16,6 +16,7 @@ from datetime import datetime
 import math
 
 
+
 def inventory_in(request):
     context = {
         'item_type': ItemType.objects.filter().order_by('name'),
@@ -143,6 +144,7 @@ def store_items(request):
 
         item_add = Item(code=code, barcode=barcode, type_id=item_type, company_id=company, generic_id=generic, sub_generic_id=sub_generic,
                         description=description, brand_id=brand, unit_price=unit_price, unit_id=item_unit, unit_quantity=item_quantity, unit_quantity_pcs=item_quantity_pcs, pcs_quantity=total_quantity_pcs, retail_price_unit=retail_price_unit, retail_price=retail_price_pcs, delivered_date=delivery_date, expiration_date=expiration_date, user_id=user_id)
+
 
         item_add.save()
 

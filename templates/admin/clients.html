@@ -5,7 +5,7 @@
 <div class="content-wrapper">
     <!-- Content -->
     <div class="container-xxl flex-grow-1 container-p-y">
-      <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Users /</span> List</h4>
+      <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Clients /</span> List</h4>
 
 <!-- DataTable with Buttons -->
         <div class="card">
@@ -13,29 +13,26 @@
             <table class="datatables-basic table">
                 <thead>
                 <tr>
-                  <th>Username</th>
-                  <th>Fullname</th>
-                  <th>Email</th>
-                  <th>Birthdate</th>
-                  <th>Sex</th>
-                  <th>Address</th>
-                  <th>Position</th>
-                  <th>Status</th>
-                  <th>Action</th>
+                  <th>first name</th>
+                  <th>middle name</th>
+                  <th>last name</th>
+                  <th>birthdate</th>
+                  <th>sex</th>
+                  <th>address</th>
+                  <th>occupation</th>
                 </tr>
                 </thead>
                 <tbody>
-                  {% for row in users %}
+                  {% for row in clients %}
                   <tr>
-                    <td>{{row.username}}</td>
-                    <td>{{row.first_name}} {{row.userdetails.middle_name}} {{row.last_name}}</td>
-                    <td>{{row.email}}</td>
-                    <td>{{row.userdetails.birthdate}}</td>
-                    <td>{{row.userdetails.sex}}</td>
-                    <td>{{row.userdetails.address}}</td>
-                    <td>{{row.userdetails.position}}</td>
-                    <td>{% if row.is_active == True %}<span class="badge bg-label-success">Active</span>{% else %}<span class="badge bg-label-danger">Inactive</span> {% endif %}</td>
-                    <td><a class="btn btn-sm btn-icon item-edit" id={{row.id}} firstname="{{row.first_name}}" email="{{row.email}}" middlename="{{row.userdetails.middle_name}}" lastname="{{row.last_name}}" username="{{row.username}}" password="{{row.password}}" status="{{row.is_active}}" address="{{row.userdetails.address}}" position = "{{row.userdetails.position}}" birthdate = "{{row.userdetails.birthdate|date:"Y-m-d"}}" roles = "{{row.is_superuser}}" ><i class="text-primary ti ti-pencil"></i></a></td>
+                    <td>{{row.first_name}} {{row.middle_name}} {{row.last_name}}</td>
+                    <td>{{row.birthdate}}</td>
+                    <td>{{row.sex}}</td>
+                    <td>{{row.address}}</td>
+                    <td>{{row.occupation}}</td>
+                    <td>{{row.client_type.name}}</td>
+                    <td>{{row.created_at}}</td>
+                    <td><a class="btn btn-sm btn-icon item-edit" id={{row.id}} first_name="{{row.first_name}}" middle_name="{{row.middle_name}}" last_name="{{row.last_name}}" birthdate="{{row.birthdate}}" sex="{{row.sex}}" address="{{row.address}}" occupation="{{row.occupation}}"><i class="text-primary ti ti-pencil"></i></a></td>
                   </tr>
                  {% endfor %}
                  </tbody> 
@@ -58,203 +55,105 @@
     <div class="offcanvas-body flex-grow-1">
       <form class="add-new-record pt-0 row g-2" id="form-add-new-record" action="javascript:;">
         <div class="col-sm-12">
-          <label class="form-label" for="Firstname">First Name</label>
+          <label class="form-label" for="first_name">First Name</label>
           <div class="input-group input-group-merge">
-            <span id="username2" class="input-group-text"><i class="ti ti-user"></i></span>
+            <span id="first_name2" class="input-group-text"><i class="ti ti-user"></i></span>
             <input
               type="text"
-              id="firstname"
+              id="first_name"
               class="form-control dt-first-name"
-              name="firstname"
-              placeholder="Enter firstname"
-              aria-describedby="firstname2"
+              name="first_name"
+              placeholder="Enter first name"
+              aria-describedby="first_name2"
             />
           </div>
         </div>
 
         <div class="col-sm-12">
-          <label class="form-label" for="Middlename">Middle Name</label>
+          <label class="form-label" for="middle_name">Middle Name</label>
           <div class="input-group input-group-merge">
-            <span id="middlename2" class="input-group-text"><i class="ti ti-user"></i></span>
+            <span id="middle_name2" class="input-group-text"><i class="ti ti-user"></i></span>
             <input
               type="text"
-              id="middlename"
+              id="middle_name"
               class="form-control dt-middle-name"
-              name="middlename"
-              placeholder="Enter Middlename"
-              aria-describedby="middlename2"
+              name="middle_name"
+              placeholder="Enter middle name"
+              aria-describedby="middle_name2"
             />
           </div>
         </div>
 
         <div class="col-sm-12">
-            <label class="form-label" for="Lastname">Last Name</label>
+            <label class="form-label" for="last_name">Last Name</label>
             <div class="input-group input-group-merge">
-              <span id="lastname2" class="input-group-text"><i class="ti ti-user"></i></span>
+              <span id="last_name2" class="input-group-text"><i class="ti ti-user"></i></span>
               <input
                 type="text"
-                id="lastname"
+                id="last_name"
                 class="form-control dt-last-name"
-                name="lastname"
-                placeholder="Enter Lastname"
-                aria-describedby="lastname2"
+                name="last_name"
+                placeholder="Enter last name"
+                aria-describedby="last_name2"
               />
             </div>
-        </div>
-
-        <div class="col-sm-12">
-            <label class="form-label" for="Lastname">User Name</label>
-            <div class="input-group input-group-merge">
-              <span id="user2" class="input-group-text"><i class="ti ti-user"></i></span>
-              <input
-                type="text"
-                id="username"
-                class="form-control dt-user-name"
-                name="username"
-                placeholder="Enter Username"
-                aria-describedby="user2"
-              />
-            </div>
-        </div>
-
-        <div class="col-sm-12 form-password-toggle">
-            <label class="form-label" for="Password">Password</label>
-            <div class="input-group input-group-merge">
-              <span id="password2" class="input-group-text"><i class="ti ti-user"></i></span>
-              
-              <input
-                type="password"
-                id="password"
-                class="form-control dt-password"
-                name="password"
-                placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
-                aria-describedby="password"
-              />
-                <span class="input-group-text cursor-pointer"><i class="ti ti-eye-off"></i></span>
-            </div>
-        </div>
-
-        <div class="col-sm-12 form-password-toggle">
-          <label class="form-label" for="Confirm_password">Confirm password</label>
-          <div class="input-group input-group-merge">
-            <span id="confirm_password2" class="input-group-text"><i class="ti ti-user"></i></span>
-            <input
-              type="password"
-              id="confirm_password"
-              class="form-control dt-confirm-password"
-              name="confirm_password"
-              placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
-              aria-describedby="confirm_password2"
-            />
-            <span class="input-group-text cursor-pointer"><i class="ti ti-eye-off"></i></span>
           </div>
-      </div>
 
-      <div class="col-sm-12 user-roles">
-        <label class="form-label" for="status">Roles</label>
-        <div class="input-group input-group-merge">
-          <span id="roles2" class="input-group-text"><i class="ti ti-user"></i></span>
+          <div class="col-sm-12">
+            <label class="form-label" for="Birthdate">Birthdate</label>
+            <div class="input-group input-group-merge">
+              <span id="birthdate2" class="input-group-text"><i class="ti ti-user"></i></span>
+              <input
+                type="date"
+                id="birthdate"
+                class="form-control dt-birthdate"
+                name="birthdate"
+                placeholder="Enter Birthdate"
+                aria-describedby="birthdate2"
+              />
+            </div>
+          </div>
 
-            <select class="form-select dt-roles" name="roles" id="roles">
-              <option value="2">Inventory staff</option>
-              <option value="3">Sales staff</option>
-              <option value="4">Management</option>
-              <option value="5">Admin</option>
-            </select>
+          <div class="col-sm-12 user-sex">
+            <label class="form-label" for="Sex">Sex</label>
+            <div class="input-group input-group-merge">
+              <span id="sex2" class="input-group-text"><i class="ti ti-user"></i></span>
   
-        </div>
-      </div>
-        
-        <div class="col-sm-12 user-status">
-          <label class="form-label" for="status">Status</label>
-          <div class="input-group input-group-merge">
-            <span id="status2" class="input-group-text"><i class="ti ti-user"></i></span>
-
-              <select class="form-select select-status" id="select">
-                <option value="1">Active</option>
-                <option value="0">Inactive</option>
-              </select>
-    
+                <select class="form-select dt-sex" id="sex">
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
+      
+            </div>
           </div>
-        </div>
-
-        <div class="col-sm-12">
-          <label class="form-label" for="Email">Email</label>
-          <div class="input-group input-group-merge">
-            <span id="email2" class="input-group-text"><i class="ti ti-user"></i></span>
-            <input
-              type="text"
-              id="email"
-              class="form-control dt-email"
-              name="email"
-              placeholder="Enter Email"
-              aria-describedby="email2"
-            />
-          </div>
-        </div>
-
-        <div class="col-sm-12">
-          <label class="form-label" for="Birthdate">Birthdate</label>
-          <div class="input-group input-group-merge">
-            <span id="birthdate2" class="input-group-text"><i class="ti ti-user"></i></span>
-            <input
-              type="date"
-              id="birthdate"
-              class="form-control dt-birthdate"
-              name="birthdate"
-              placeholder="Enter Birthdate"
-              aria-describedby="birthdate2"
-            />
-          </div>
-        </div>
-
-        <div class="col-sm-12 user-sex">
-          <label class="form-label" for="Sex">Sex</label>
-          <div class="input-group input-group-merge">
-            <span id="sex2" class="input-group-text"><i class="ti ti-user"></i></span>
-
-              <select class="form-select dt-sex" id="sex">
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-              </select>
-    
-          </div>
-        </div>
 
         <div class="col-sm-12">
           <label class="form-label" for="Address">Address</label>
           <div class="input-group input-group-merge">
-            <span id="address2" class="input-group-text"><i class="ti ti-user"></i></span>
-            <input
-              type="text"
-              id="address"
-              class="form-control dt-address"
-              name="address"
-              placeholder="Enter Address"
-              aria-describedby="address2"
-            />
+            <div class="input-group input-group-merge speech-to-text">
+              <textarea class="form-control dt-address" placeholder="Enter address" rows="2"></textarea>
+              <span class="input-group-text">
+                <i class="ti ti-microphone cursor-pointer text-to-speech-toggle"></i>
+              </span>
+            </div>  
           </div>
         </div>
 
         <div class="col-sm-12">
-          <label class="form-label" for="Position">Position</label>
+          <label class="form-label" for="Occupation">Occupation</label>
           <div class="input-group input-group-merge">
-            <span id="position2" class="input-group-text"><i class="ti ti-user"></i></span>
-            <input
-              type="text"
-              id="position"
-              class="form-control dt-position"
-              name="position"
-              placeholder="Enter Position"
-              aria-describedby="position2"
-            />
+            <div class="input-group input-group-merge speech-to-text">
+              <textarea class="form-control dt-occupation" placeholder="Enter occupation" rows="2"></textarea>
+              <span class="input-group-text">
+                <i class="ti ti-microphone cursor-pointer text-to-speech-toggle"></i>
+              </span>
+            </div>  
           </div>
         </div>
 
-
-        <div class="col-sm-12 update-div-user">
+        <div class="col-sm-12 update-div-clients">
           <br>
-          <button type="button" id="submit-user" class="btn btn-primary data-submit me-sm-3 me-1">Submit</button>
+          <button type="button" id="add-client" class="btn btn-primary data-submit me-sm-3 me-1 additional-record">Submit</button>
           <button type="reset" class="btn btn-outline-secondary" data-bs-dismiss="offcanvas">Cancel</button>
         </div>
       </form>
@@ -264,66 +163,50 @@
 {% endblock %} 
 {% block footer_scripts %}
 <script>
-let id,name,status,middlename,lastname,username,password,confirm_password,address,birthdate,email,position,roles,sex,identifier_swal;
+let id,first_name,middle_name, last_name, birthdate, sex, address, occupation, identifier_swal;
 $(document).ready(function(){
     $('.item-edit').click(function (event) {
-      $('.user-status').show();
       id = $(this).attr('id');
-      firstname = $(this).attr('firstname');
-      middlename = $(this).attr('middlename');
-      lastname = $(this).attr('lastname');
-      status = $(this).attr('status');
-      username = $(this).attr('username');
-      password = $(this).attr('password');
-      confirm_password = $(this).attr('confirm_password');
-      email = $(this).attr('email');
-      address = $(this).attr('address');
+      first_name = $(this).attr('first_name');
+      middle_name = $(this).attr('middle_name');
+      last_name = $(this).attr('last_name');
       birthdate = $(this).attr('birthdate');
-      position = $(this).attr('position');
-      sex = $('.dt-sex').find(":selected").val();
-      roles = $('.dt-roles').find(":selected").val();
-      
-      if (status == "True"){status =1}
-      else {status =0}
+      sex = $(this).attr('sex');
+      address = $(this).attr('address');
+      occupation = $(this).attr('occupation');
+
       $('.title-name').text('Update Record');
       $('.dt-first-name').text('Update Record');
       offCanvasElement = document.querySelector('#add-new-record'); 
       let fv, offCanvasEl;
       offCanvasEl = new bootstrap.Offcanvas(offCanvasElement);
-      (offCanvasElement.querySelector('.dt-first-name').value = firstname),
-      (offCanvasElement.querySelector('.dt-middle-name').value = middlename),
-      (offCanvasElement.querySelector('.select-status').value = status),
-      (offCanvasElement.querySelector('.dt-last-name').value = lastname),
-      (offCanvasElement.querySelector('.dt-user-name').value = username),
-      (offCanvasElement.querySelector('.dt-email').value = email),
-      (offCanvasElement.querySelector('.dt-address').value = address),
+      (offCanvasElement.querySelector('.dt-first-name').value = first_name),
+      (offCanvasElement.querySelector('.dt-middle-name').value = middle_name),
+      (offCanvasElement.querySelector('.dt-last-name').value = last_name),
       (offCanvasElement.querySelector('.dt-birthdate').value = birthdate),
-      (offCanvasElement.querySelector('.dt-position').value = position);
-      (offCanvasElement.querySelector('.dt-roles').value = roles);
+      (offCanvasElement.querySelector('.dt-sex').value = sex),
+      (offCanvasElement.querySelector('.dt-address').value = address),
+      (offCanvasElement.querySelector('.dt-occupation').value = occupation),
+
         offCanvasEl.show();
     });
 
-    $('#submit-user').on('click', function(){
-        $firstname = $('#firstname').val();
-        $middlename = $('#middlename').val();
-        $lastname = $('#lastname').val();
-        $username = $('#username').val();
-        $password = $('#password').val();
-        $confirm_password = $('#confirm_password').val();
-        $email = $('#firstname').val();
-        $birthdate = $('#birthdate').val();
-        $sex = $('.dt-sex').find(":selected").val();
-        $address = $('#address').val();
-        $position = $('#position').val();
-        $roles = $('#roles').val();
+    $('#add-clients').on('click', function(){
+        $first_name = $('#first_name').val();
+        $middle_name = $('#middle_name').val();
+        $last_name = $('.dt-last_name').val();
+        $birthdate = $('.dt-birthdate').val();
+        $sex = $('.dt-sex').val();
+        $address = $('.dt-address').val();
+        $occupation = $('.dt-occupation').val();
         $selectvalue = $('#select').find(":selected").val();
 
-        if(id){request_url = "{% url 'update-user' %}";identifier_swal = "Update";}
-        else{identifier_swal = "Add";request_url = "{% url 'add-user' %}";}
-        if($firstname !=""){
+        if(id){request_url = "{% url 'update-clients' %}";identifier_swal = "Update";}
+        else{identifier_swal = "Add";request_url = "{% url 'add-clients' %}";}
+        if($first_name !=""){
           Swal.fire({
             title: 'Are you sure?',
-            html: identifier_swal+" "+'<strong>'+$username+ " ?"+'</strong>',
+            html: identifier_swal+" "+'<strong>'+$clientsname+ " ?"+'</strong>',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Yes',
@@ -338,14 +221,14 @@ $(document).ready(function(){
                 type: "POST",
                 url: request_url,
                 data:{
-                    firstname: $firstname, middlename: $middlename,lastname: $lastname, username: $username, password: $password,sex:$sex, email:$email, birthdate:$birthdate, address:$address, position:$position, roles : $roles,is_active : $selectvalue, user_id: id
+                    first_name: $first_name, clients_id: id, middle_name : $middle_name, last_name: $last_name, birthdate: $birthdate, sex: $sex, address: $address, occupation: $occupation
                 }
             }).done(function(data){
               if(data.data == "success"){
                 Swal.fire({
                     icon: 'success',
                     title: 'Successfully save!',
-                    text: $username +' has been save.',
+                    text: $clientsname +' has been added.',
                     customClass: {
                       confirmButton: 'btn btn-success'
                     }
@@ -355,8 +238,8 @@ $(document).ready(function(){
               else{
                 Swal.fire({
                     icon: 'error',
-                    title: 'Invalid user Name',
-                    text: $username +' already exist',
+                    title: 'Invalid client Name',
+                    text: $clientsname +' already exist',
                     customClass: {
                       confirmButton: 'btn btn-success'
                     }});
@@ -380,22 +263,19 @@ document.addEventListener('DOMContentLoaded', function (e) {
       if (newRecord) {
         newRecord.addEventListener('click', function () {
           $('.title-name').text('Add Record');
-          $('.user-status').hide();
-          $('.update-div-user update-user').hide();
+          $('.update-div-clients update-clients').hide();
           id = "";         
           identifier_swal = "Add";   
           offCanvasEl = new bootstrap.Offcanvas(offCanvasElement);
           // Empty fields on offCanvas open
-          (offCanvasElement.querySelector('.dt-first-name').value = ''),
-          (offCanvasElement.querySelector('.dt-middle-name').value = '');
-          (offCanvasElement.querySelector('.dt-last-name').value = '');
-          (offCanvasElement.querySelector('.dt-user-name').value = '');
-          (offCanvasElement.querySelector('.dt-password').value = '');
-          (offCanvasElement.querySelector('.dt-confirm-password').value = '');
-          (offCanvasElement.querySelector('.dt-email').value = '');
-          (offCanvasElement.querySelector('.dt-birthdate').value = '');
-          (offCanvasElement.querySelector('.dt-address').value = '');
-          (offCanvasElement.querySelector('.dt-position').value = '');
+           (offCanvasElement.querySelector('.dt-first-name').value = ''),
+           (offCanvasElement.querySelector('.dt-middle-name').value = ''),
+           (offCanvasElement.querySelector('.dt-last-name').value = '');
+          // (offCanvasElement.querySelector('.dt-birthdate').value = '');
+          // (offCanvasElement.querySelector('.dt-sex').value = '');
+          // (offCanvasElement.querySelector('.dt-address').value = '');
+          // (offCanvasElement.querySelector('.dt-occupation').value = '');
+
  
           // Open offCanvas with form
           offCanvasEl.show();
@@ -406,17 +286,17 @@ document.addEventListener('DOMContentLoaded', function (e) {
     // Form validation for Add new record
     fv = FormValidation.formValidation(formAddNewRecord, {
       fields: {
-        username: {
+        first_name: {
           validators: {
             notEmpty: {
               message: 'The name is required'
             }
           }
         },
-        firstname: {
+        last_name: {
           validators: {
             notEmpty: {
-              message: 'The firstname is required'
+              message: 'The codename is required'
             }
           }
         },
@@ -618,7 +498,7 @@ $(function () {
           ]
         },
         {
-          text: '<i class="ti ti-plus me-sm-1"></i> <span class="d-none d-sm-inline-block">Add New User</span>',
+          text: '<i class="ti ti-plus me-sm-1"></i> <span class="d-none d-sm-inline-block">Add New Record</span>',
           className: 'create-new btn btn-primary'
         }
       ],
