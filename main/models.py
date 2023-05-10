@@ -273,8 +273,8 @@ class Discounts(models.Model):
 class Sales(models.Model):
     client = models.ForeignKey(Clients, models.DO_NOTHING)
     transaction_code = models.CharField(max_length=128, blank=True, null=True)
-    discount = models.ForeignKey(Discounts, models.DO_NOTHING)
-    is_er = models.BooleanField(default=False)
+    discount = models.ForeignKey(Discounts, models.DO_NOTHING,blank=True, null=True)
+    is_er = models.BooleanField()
     user = models.ForeignKey(AuthUser, models.DO_NOTHING)
     status = models.CharField(max_length=128, blank=True, null=True)
     remarks = models.CharField(max_length=255, blank=True, null=True)

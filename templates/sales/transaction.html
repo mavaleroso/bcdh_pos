@@ -36,16 +36,24 @@
 
               <div class="flex-grow-1">
                 <div class="row">
-                  <div class="col-md-6">
+                  <div class="col-md-4">
                     <p class="me-3">
-                      <a href="javascript:void(0)" class="text-body"><p id="count_items"></p></a>
-
-                      
+                      <a href="javascript:void(0)" class="text-body"><p id="count_items">0 item/s</p></a>
                     </p>
-                  
                   </div>
-                  <div class="col-md-6">
+                  <div class="col-md-5">
                     <div class="text-md-end">
+                      <button
+                      type="button"
+                      class="btn btn-warning remove-all"
+                      id = "remove-all"
+                    >
+                    <i class="ti ti-trash me-1"></i>Remove all
+                    </button>
+                    </div>
+                  </div>
+                  <div class="col-md-3">
+                    <div class="text-md-right">
                       <button
                       type="button"
                       class="btn btn-primary"
@@ -59,7 +67,8 @@
                 </div>
               </div>
 
-              <ul class="list-group mb-3 whole-div-class"></ul>
+              <ul class="list-group mb-3 row whole-div-class"></ul>
+              
 
               <!-- Wishlist -->
               <!-- <div class="list-group">
@@ -96,10 +105,6 @@
                     </div>
                   </div>
                 </div>
-
-
-
-
                 <div class="row g-3 mb-3">
                   <div class="col-8 col-xxl-8 col-xl-12">
                     <select id="selected-patient" class="select2 form-select" data-allow-clear="true">
@@ -128,7 +133,9 @@
                       <i class="ti ti-user-check me-1"></i>Discount
                   </button> 
 
+                  <span class="badge bg-label-warning ms-1 spn-discount">0</span>
                   <span class="badge bg-label-success ms-1 spn-patient-status">___</span>
+
 
                   <!-- <button type="button" class="btn btn-sm btn-label-warning">
                     59 item available
@@ -141,24 +148,22 @@
                 <!-- Price Details -->
                 <h6>Price Details</h6>
                 <dl class="row mb-0">
-                  <dt class="col-6 fw-normal">Bag Total</dt>
-                  <dd class="col-6 text-end">₱1198.00</dd>
+                  <dt class="col-6 fw-normal">Sub Total</dt>
+                  <dd class="col-6 text-end sub-total">₱ 0</dd>
 
                   <dt class="col-sm-6 fw-normal">Patient Discount</dt>
-                  <dd class="col-sm-6 text-success text-end">-₱98.00</dd>
+                  <dd class="col-sm-6 text-success text-end discount-value">-₱ 0</dd>
 
-                  <dt class="col-6 fw-normal">Order Total</dt>
-                  <dd class="col-6 text-end">₱1100.00</dd>
                 </dl>
 
                 <hr class="mx-n4" />
                 <dl class="row mb-0">
                   <dt class="col-6">Total</dt>
-                  <dd class="col-6 fw-semibold text-end mb-0">₱1100.00</dd>
+                  <dd class="col-6 fw-semibold text-end mb-0 total-place-order">₱ 0</dd>
                 </dl>
               </div>
               <div class="d-grid">
-                <button class="btn btn-primary btn-next">Place Order</button>
+                <button class="btn btn-primary btn-next place-order-items">Place Order</button>
               </div>
             </div>
           </div>
@@ -231,11 +236,77 @@
 
 {% block footer_scripts %}
 <script>
-$(".patient-details-div").hide();
       
 $(document).ready(function(){
+  var client_id = 0;
+  var discount_id = 0;
+  $(".patient-details-div").hide();
+  
+  //discounts ------------------------------------------------------->
+  $(".spn-discount").hide();
+  $('#select-discount').on('change', function() {
+    var value = $('.select-discount').find(":selected").text();
+    $('.special-percentage').val('');
+    if (value !="Special"){
+      $(".view-percentage").hide();
+    }
+    else{
+      $(".view-percentage").show();
+    }
+  });
+
+  $('.save-discount').click(function(event){
+    var percentage_value,discount_type;
+    discount_type = $('.select-discount').find(":selected").text();
+    discount_id = $('.select-discount').find(":selected").val();
+    
+    $.ajax({
+        type: "POST",
+        url: "{% url 'discount-details' %}",
+        data:{
+            dis_id: discount_id
+        }
+        }).done(function(data){
+          client_id = data.data[0].id;
+          discount_type = data.data[0].name;
+          percentage_value = data.data[0].percentage;
+          if (discount_type =="Special"){
+            percentage_value = $('#special-percentage').val();
+          }
+          $(".spn-discount").text(percentage_value +" %");
+          $(".spn-discount").show();
+          $('#onboardModal').modal('hide');
+          var original_price = $(".sub-total").text().slice(1);
+          var discount_price = parseFloat(original_price * percentage_value/100);
+          $('.discount-value').text("-₱ "+discount_price);
+          original_price =parseFloat(original_price) -parseFloat(discount_price);
+          $('.total-place-order').text("₱ "+original_price);
+         
+    });
+  });
+
+  $('.add-discount').click(function(event){
+    $('.special-percentage').val('');
+    var discount_type = $('.select-discount').find(":selected").text();
+    if (discount_type !="Special"){
+      $(".view-percentage").hide();
+    }
+    else{
+      $(".view-percentage").show();
+    }  
+  });
+
+
+
+  $('.remove-discount').click(function(event){
+    alert("No function yet");
+    
+  });
+  //end discounts ---------------------------------------------->
+  
     $('.add-patient').click(function (event) {
       $(".patient-details-div").show();
+      $(".spn-discount").hide();
 
       var patient_id = $('#selected-patient').find(":selected").val();
 
@@ -246,65 +317,69 @@ $(document).ready(function(){
             patient: patient_id
         }
         }).done(function(data){
-          console.log(data.data[0]);
-          console.log(data.data[0].client_type__name);
+          client_id = data.data[0].id;
           var first_name = data.data[0].first_name;
           var middle_name = data.data[0].middle_name;
           var last_name = data.data[0].last_name;
           var client_type_name = data.data[0].client_type__name;
           $('#patient-name').text(first_name + " " + middle_name + " " + last_name);
-
           $('.spn-patient-status').text(client_type_name);
-
-
-          
-          });
-
-    
-
-
-
-      // let patient_name;
-      // patient_name = $("#selected-patient :selected").text();
-      // if(patient_name){
-      //   $('#patient-name').text(patient_name);
-      // }
-      // else{
-      //   $('#patient-name').text("");
-      // }
-      // const toastAnimationExample = document.querySelector('.toast-ex');
-      // let selectedType, selectedAnimation, selectedPlacement, toast, toastAnimation, toastPlacement;
-
-      // if (toastAnimation) {
-      //   toastDispose(toastAnimation);
-      // }
-
-      // toastAnimationExample.classList.add('animate__fadeInRight');
-      // toastAnimationExample.querySelector('.ti').classList.add('text-success');
-      // toastAnimation = new bootstrap.Toast(toastAnimationExample);
-      // toastAnimation.show();
-
-        // Dispose toast when open another
-      // function toastDispose(toast) {
-      //   if (toast && toast._element !== null) {
-      //     if (toastPlacementExample) {
-      //       toastPlacementExample.classList.remove(selectedType);
-      //       toastPlacementExample.querySelector('.ti').classList.remove(selectedType);
-      //       DOMTokenList.prototype.remove.apply(toastPlacementExample.classList, selectedPlacement);
-      //     }
-      //     if (toastAnimationExample) {
-      //       toastAnimationExample.classList.remove(selectedType, selectedAnimation);
-      //       toastAnimationExample.querySelector('.ti').classList.remove(selectedType);
-      //     }
-      //     toast.dispose();
-      //   }
-      // }
+        });
     });
 
-    $('#add-item').click(function (event) {
-      
-
+    $('.place-order-items').click(function (event) {
+      var total_amount = $(".total-place-order").text().slice(1);
+      var item_total = $("#count_items").text();
+      if (item_total !="0 item/s"){
+        Swal.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Confirm',
+            customClass: {
+              confirmButton: 'btn btn-primary me-3',
+              cancelButton: 'btn btn-label-secondary'
+            },
+            buttonsStyling: false
+      }).then(function (result) {
+        if (result.value) {
+            event.preventDefault();
+            $.ajax({
+                type: "POST",
+                url: "{% url 'sales-item' %}",
+                data:{
+                  cl_id : client_id, dis_id : discount_id, amt_paid: total_amount
+                }
+            }).done(function(data){
+              if(data.data == "success"){
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Successfully save!',
+                    text:' Transaction has been saved.',
+                    customClass: {
+                      confirmButton: 'btn btn-success'
+                    }
+                  });
+              }
+              else{
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid company Name',
+                    text: $companyname +' already exist',
+                    customClass: {
+                      confirmButton: 'btn btn-success'
+                    }});
+                  }
+                });
+              }});
+      }
     });
+
+
+
+
+
 
 
     /**
@@ -527,25 +602,86 @@ $(function () {
   }, 300);
 });
 
+// $("#allcb").change(function() {
+//   $('tbody tr td input[type="checkbox"]').prop(
+//     "checked",
+//     $(this).prop("checked")
+//   );
+// });
 
-$(document).on( "keyup",  ".quantity-input",function() {
-  var value_input = $(".quantity-input").val();
-  var price_value = $(".price-value").html();
+var sub_total = 0;
+$(document).on( "change",  ".quantity-input",function() {
+
+  var $row = $(this).closest('.row');
+  var value_input = $(".quantity-input", $row).val();
+  var row_sub_total_old = $(".total-value", $row).text().slice(1);
+  
+  var price_value = $(".price-value", $row).html(); 
   let price = price_value.slice(1);
-  var total_value = parseInt(value_input) * parseInt(price);
-  if(value_input.length!=0){$(".total-value").text("₱ "+total_value);}
-  else{$(".total-value").text("₱ 0.00");}
+  var total_value = parseFloat(value_input) * parseFloat(price);
+
+  var tl_value = parseFloat(total_value) - parseFloat(price);
+  t1_value = parseFloat(tl_value) + parseFloat(sub_total);
+
+  if(value_input.length!=0){$(".total-value", $row).text("₱ "+total_value);}
+  else{$(".total-value", $row).text("₱ 0");}
+  var sub_total_spn_value = $(".sub-total").text().slice(1);
+  var onchangetotalvalue = parseFloat(total_value - row_sub_total_old);
+  var ot_total = parseFloat(sub_total_spn_value) + parseFloat(onchangetotalvalue);
+  $(".sub-total").html("₱ "+ot_total);
+  var percentage_value = $(".spn-discount").text().slice(0,-1);
+  var discount = parseFloat(ot_total * percentage_value/100);
+  $('.discount-value').text("-₱ "+discount);
+
+  ot_total =parseFloat(ot_total) -parseFloat(discount);
+  $('.total-place-order').text("₱ "+ot_total);
 });
 
-$(document).on("click",".remove_data" , function(){
-        alert("I've been clicked! remove the row item");
+$('.remove-all').click(function(event){
+  alert("No function yet");
+  // var $row = $(this).closest('.li');
+  // var checkboxName = $row.data('for');
+  // var $checkbox = $(`input[type="checkbox"][name="${checkboxName}"]`);
+
+  // $row.remove();
+  // $checkbox.prop('checked', false);
+  // $checkbox.get(0).hasCovered = false;
+    
+});
+
+$(document).on("click", ".remove_data", function() {
+  cart_count--;
+  $('#count_items').text(cart_count + " item/s");
+  var $row = $(this).closest('.li');
+  var checkboxName = $row.data('for');
+  
+  var $checkbox = $(`input[type="checkbox"][name="${checkboxName}"]`);
+  
+  $row.remove();
+  $checkbox.prop('checked', false);
+  $checkbox.get(0).hasCovered = false;
+
+
+  var $row_li = $(this).closest('.row');
+  var row_sub_total_old = $(".total-value", $row_li).text().slice(1);
+  var original_price = $(".sub-total").text().slice(1);
+  original_price = parseFloat(original_price - row_sub_total_old);
+  $('.sub-total').text("₱ " + original_price);
+  var percentage_value = $(".spn-discount").text().slice(0,-1);
+  var patient_discount  = parseFloat(original_price * percentage_value/100);
+
+  var total = parseFloat(original_price - patient_discount );
+  $('.total-place-order').text("₱ "+total);
+  $('.discount-value').text("-₱ "+patient_discount);
+
 });
 
 
-$("#add_data").click(function () {
+$("#add_data").click(function() {
     var grid = document.getElementById("Table1");
     var checkBoxes = grid.getElementsByTagName("INPUT");
-    var str = ''
+    var str = '';
+
 
     for (var i = 0; i < checkBoxes.length; i++) {
       if (
@@ -554,11 +690,12 @@ $("#add_data").click(function () {
         !checkBoxes[i].hasCovered
       ) {
         var row = checkBoxes[i].parentNode.parentNode;
+        cart_count++;
         str +=
-          '<li class="list-group-item p-4">'+
+          '<li class="list-group-item p-4 li" data-for="' + checkBoxes[i].id + '">'+
             '<div class="d-flex gap-3">'+
               '<div class="flex-grow-1 append-item">'+
-                '<div class="row">'+
+                '<div class="row" >'+
                   '<div class="col-md-8">'+
                     '<p class="me-3">'+
                       '<a href="javascript:void(0)" class="text-body">'+
@@ -570,13 +707,13 @@ $("#add_data").click(function () {
                       '<span class="badge bg-label-success">In Stock</span>'+
                     '</div>' +
                     '<span class="text-primary sub-total-row price-value">'+ row.cells[4].innerHTML +'</span><br><br>'+
-                    '<input type="number" class="form-control form-control-sm w-px-75 quantity-input" value="1" min="1"/>' +
+                    '<input type="number" class="form-control form-control-sm w-px-75 quantity-input" value="1" min="1" />' +
                   '</div>'+
                   '<div class="col-md-4">'+
                     '<div class="text-md-end">'+
-                      '<button type="button" class="btn-close btn-pinned" aria-label="Close"></button>'+
+                      '<button type="button" class="btn-close btn-pinned remove_data" aria-label="Close"></button>'+
                       '<div class="my-2 my-md-4 mb-md-5">'+
-                        '<span class="text-primary sub-total-row total-value">'+ row.cells[4].innerHTML +'</span>'+
+                        '<span class="text-success sub-total-row total-value">'+ row.cells[4].innerHTML +'</span>'+
                       '</div>'+
                       '<button type="button" class="btn btn-sm btn-label-primary">'+ row.cells[3].innerHTML +' available</button>'+
                     '</div>'+
@@ -584,22 +721,22 @@ $("#add_data").click(function () {
                 '</div>'+
               '</div>'+
             '</div>'+
-          '</li>';        
-          cart_count ++;
-          checkBoxes[i].hasCovered = true;
-        }
+          '</li>';
+          var sb_total = parseFloat(row.cells[4].innerHTML.slice(1));
+          sub_total = parseFloat(sub_total + sb_total);
+        checkBoxes[i].hasCovered = true;
       }
+    }
       $(".whole-div-class").append(str);
       $('#exLargeModal').modal('hide');
-      $('#count_items').text(cart_count + " items");
+      $('#count_items').text(cart_count + " item/s");
+      $('.sub-total').text("₱ " + sub_total);
+      var percentage_value = $(".spn-discount").text().slice(0,-1);
+      var patient_discount  = parseFloat(sub_total * percentage_value/100);
+      $('.discount-value').text("-₱ "+patient_discount);
+      var total = parseFloat(sub_total - patient_discount);
+      $('.total-place-order').text("₱ "+total);
   });
-
-
-
-
-
-
-
 });
 </script>
 {% endblock footer_scripts %}
