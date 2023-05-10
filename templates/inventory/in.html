@@ -3,7 +3,7 @@
 <div class="container-xxl flex-grow-1 container-p-y">
     <h4 class="fw-bold py-3 mb-4">
         <span class="text-muted fw-light">Inventory/</span>
-        Receive
+        Incoming
     </h4>
     <!-- Sticky Actions -->
     <div class="row">
@@ -13,184 +13,257 @@
                     <div
                         class="card-header sticky-element bg-label-secondary d-flex justify-content-sm-between align-items-sm-center flex-column flex-sm-row"
                     >
-                        <h5 class="card-title mb-sm-0 me-2">Receive Item/s Form</h5>
+                        <h5 class="card-title mb-sm-0 me-2">Incoming Form</h5>
                         <div class="action-btns">
                             <button class="btn btn-label-primary me-3">
                                 <span class="align-middle"> Reset</span>
                             </button>
-                            <button type="submit" name="submitButton" class="btn btn-primary">Submit</button>
+                            <button name="submitButton" class="btn btn-primary">Submit</button>
                         </div>
                     </div>
                     <div class="card-body">
-                        <div class="row g-3">
-                            <div class="col-md-4">
-                                <label class="form-label" for="barcode">Barcode<span class="text-red">*</span></label>
-                                <div class="input-group input-group-merge">
-                                    <span class="input-group-text" id="basic-addon"><i class="ti ti-barcode"></i></span>
-                                    <input type="text" id="barcode" name="Barcode" class="form-control" />
+                        <div class="row">
+                            <div class="col-12 row mt-3">
+                                <div class="col-md-4">
+                                    <div class="d-flex">
+                                        <div class="form-group">
+                                            <label class="form-label" for="barcode">Barcode</label>
+                                            <div class="input-group input-group-merge">
+                                                <span class="input-group-text"><i class="ti ti-barcode"></i></span>
+                                                <input type="text" id="barcode" name="Barcode" class="form-control" />
+                                            </div>
+                                        </div>
+                                        <button
+                                            onclick="fetch_barcode()"
+                                            type="button"
+                                            class="btn btn-icon mt-4 ms-2 btn-primary waves-effect waves-light"
+                                        >
+                                            <span class="ti ti-search"></span>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label class="form-label" for="quick-search">Quick Search</label>
+                                        <div class="input-group input-group-merge">
+                                            <span class="input-group-text"><i class="ti ti-search"></i></span>
+                                            <input type="text" id="quick-search" name="quick_search" class="form-control" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <button class="btn btn-secondary create-new btn-primary mt-4 ms-auto d-block" type="button">
+                                        <span><i class="ti ti-plus me-sm-1"></i> <span class="d-none d-sm-inline-block">Add New Item</span></span>
+                                    </button>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <label class="form-label" for="delivered-date">Delivery Date<span class="text-red">*</span></label>
-                                <input type="date" id="delivered-date" name="DeliveredDate" class="form-control" />
+                            <div class="col-12">
+                                <table class="table mt-4">
+                                    <thead>
+                                        <tr>
+                                            <th>Barcode</th>
+                                            <th>Item Type</th>
+                                            <th>Brand</th>
+                                            <th>Details</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbl-item"></tbody>
+                                </table>
                             </div>
-                            <div class="col-md-4">
-                                <label class="form-label" for="expiration-date">Expiration Date<span class="text-red">*</span></label>
-                                <input type="date" id="expiration-date" name="ExpirationDate" class="form-control" />
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label" for="item-type">Item type<span class="text-red">*</span></label>
-                                <select id="item-type" name="ItemType" class="select2 form-select" data-allow-clear="true">
-                                    <option></option>
-                                    {% for row in item_type %}
-                                    <option value="{{ row.id }}">{{ row.name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label" for="company">Company<span class="text-red">*</span></label>
-                                <select id="company" name="Company" class="select2 form-select" data-allow-clear="true">
-                                    <option></option>
-                                    {% for row in company %}
-                                    <option value="{{ row.id }}">{{ row.name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label" for="brand">Brand<span class="text-red">*</span></label>
-                                <select id="brand" name="Brand" class="select2 form-select" data-allow-clear="true">
-                                    <option></option>
-                                    {% for row in brand %}
-                                    <option value="{{ row.id }}">{{ row.name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label" for="generic">Generic<span class="text-red">*</span></label>
-                                <select id="generic" name="Generic" class="select2 form-select" data-allow-clear="true">
-                                    <option></option>
-                                    {% for row in generic %}
-                                    <option value="{{ row.id }}">{{ row.name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label" for="sub-generic">Sub-generic<span class="text-red">*</span></label>
-                                <select id="sub-generic" name="SubGeneric" class="select2 form-select" data-allow-clear="true">
-                                    <option></option>
-                                    {% for row in sub_generic %}
-                                    <option value="{{ row.id }}">{{ row.name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label" for="description">Description<span class="text-red">*</span></label>
-                                <input type="text" name="Description" id="description" class="form-control" />
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label" for="unit-price">Unit Price<span class="text-red">*</span></label>
-                                <input dir="rtl" type="number" name="UnitPrice" id="unit-price" class="form-control" />
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label" for="item-unit">Item unit</label>
-                                <select id="item-unit" class="select2 form-select" data-allow-clear="true">
-                                    <option></option>
-                                    {% for row in item_unit %}
-                                    <option value="{{ row.id }}">{{ row.name }}</option>
-                                    {% endfor %}
-                                </select>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label" for="item-quantity">Item Quantity</label>
-                                <div class="input-group input-group-merge">
-                                    <input type="number" id="item-quantity" name="ItemQuantity" class="form-control" />
-                                    <span id="item-quantity-unit" class="input-group-text"></span>
+                            <div class="col-12">
+                                <div class="divider divider-dashed my-4">
+                                    <div class="divider-text">Incoming Details</div>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                <label class="form-label" for="item-quantity-pcs"
-                                    >Quantity Per Item Unit in PC/s<span class="text-red">*</span></label
-                                >
-                                <div class="input-group input-group-merge">
-                                    <input type="number" id="item-quantity-pcs" name="ItemQuantityPcs" class="form-control" />
-                                    <span class="input-group-text">PC/s</span>
+                            <div class="col-12 row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label" for="item-quantity-pcs">Quantity</label>
+                                    <div class="input-group input-group-merge">
+                                        <input type="number" id="item-quantity-pcs" name="ItemQuantityPcs" class="form-control" />
+                                        <span class="input-group-text">PC/s</span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label" for="total-quantity-pcs">Total Quantity in PC/s<span class="text-red">*</span></label>
-                                <div class="input-group input-group-merge">
-                                    <input type="text" id="total-quantity-pcs" name="TotalQuantityPcs" class="form-control" readonly />
-                                    <span class="input-group-text">PC/s</span>
+                                <div class="col-md-4">
+                                    <label class="form-label" for="unit-price">Unit Price</label>
+                                    <input dir="rtl" type="number" name="UnitPrice" id="unit-price" class="form-control" />
                                 </div>
-                            </div>
-                            <div class="col-md-4">
-                                <label class="form-label" for="retail-price-pcs">Retail Price Per PC/s<span class="text-red">*</span></label>
-                                <input type="number" dir="rtl" id="retail-price-pcs" name="RetailPricePcs" class="form-control" />
+                                <div class="col-md-4">
+                                    <label class="form-label" for="retail-price-pcs">Retail Price Per PC/s</label>
+                                    <input type="number" dir="rtl" id="retail-price-pcs" name="RetailPricePcs" class="form-control" />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label" for="company">Company</label>
+                                    <select id="company" name="Company" class="select2 form-select" data-allow-clear="true">
+                                        <option></option>
+                                        {% for row in company %}
+                                        <option value="{{ row.id }}">{{ row.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label" for="delivered-date">Delivery Date</label>
+                                    <input type="date" id="delivered-date" name="DeliveredDate" class="form-control" />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label" for="expiration-date">Expiration Date</label>
+                                    <input type="date" id="expiration-date" name="ExpirationDate" class="form-control" />
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </form>
         </div>
+        <div class="col-12">
+            <div class="card mt-4 p-3">
+                <h5 class="card-header">Received Item/s Today</h5>
+                <div class="table-responsive text-nowrap">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Type</th>
+                                <th>Details</th>
+                                <th>Delivered Date</th>
+                                <th>Expiration Date</th>
+                                <th>Created By</th>
+                            </tr>
+                        </thead>
+                        <tbody class="table-border-bottom-0">
+                            <tr>
+                                <td>1</td>
+                                <td>Medicine</td>
+                                <td>Amoxicillin (Altomox) 100mg/ml Oral Drops 10ml</td>
+                                <td>03-04-2023</td>
+                                <td>03-04-2023</td>
+                                <td>Marwen Valeroso</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
     </div>
     <!-- /Sticky Actions -->
+</div>
+
+<!-- Modal to add new record -->
+<div class="offcanvas offcanvas-end" id="add-new-record">
+    <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title" id="exampleModalLabel"><p class="title-name">Add Record</p></h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body flex-grow-1">
+        <form class="add-new-record pt-0 row g-2" id="item-form">
+            <input type="hidden" id="item-id" name="ItemID" />
+            <div class="col-sm-12">
+                <label class="form-label" for="item-barcode">Barcode</label>
+                <input type="text" id="item-barcode" class="form-control" name="ItemBarcode" placeholder="Enter Barcode" />
+            </div>
+
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="form-label" for="item-type">Item Type</label>
+                    <select id="item-type" name="ItemType" class="select2 form-select" data-allow-clear="true">
+                        <option></option>
+                        {% for row in item_type %}
+                        <option value="{{ row.id }}">{{ row.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="form-label" for="generic">Generic</label>
+                    <select id="generic" name="Generic" class="select2 form-select" data-allow-clear="true">
+                        <option></option>
+                        {% for row in generic %}
+                        <option value="{{ row.id }}">{{ row.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="form-label" for="sub-generic">Sub Generic</label>
+                    <select id="sub-generic" name="SubGeneric" class="select2 form-select" data-allow-clear="true">
+                        <option></option>
+                        {% for row in sub_generic %}
+                        <option value="{{ row.id }}">{{ row.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <label class="form-label" for="classification">Classification<span class="ms-1 text-secondary">(Optional)</span></label>
+                <input
+                    type="text"
+                    id="classification"
+                    class="form-control dt-classification-name"
+                    name="Classification"
+                    placeholder="Enter Classification"
+                />
+            </div>
+
+            <div class="col-sm-12">
+                <label class="form-label" for="description">Description<span class="ms-1 text-secondary">(Optional)</span></label>
+                <input type="text" id="description" class="form-control" name="Description" placeholder="Enter Description" />
+            </div>
+
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="form-label" for="brand">Brand<span class="ms-1 text-secondary">(Optional)</span></label>
+                    <select id="brand" name="Brand" class="select2 form-select" data-allow-clear="true">
+                        <option></option>
+                        {% for row in brand %}
+                        <option value="{{ row.id }}">{{ row.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-sm-12 mt-4">
+                <button name="submitButton" class="btn btn-primary data-submit me-sm-3 me-1 additional-record">Submit</button>
+                <button type="reset" class="btn btn-outline-secondary" data-bs-dismiss="offcanvas">Cancel</button>
+            </div>
+        </form>
+    </div>
 </div>
 <!-- / Content -->
 {% endblock %} {% block footer_scripts %}
 <script>
     $(document).ready(function () {
-        let item_unit_id = $('#item-unit')
-        let item_quantity_unit_id = $('#item-quantity-unit')
-        let item_quantity_id = $('#item-quantity')
         let tbl_item_details = $('#tbl-item-details')
         let item_quantity_pcs = $('#item-quantity-pcs')
-        let total_quantity_pcs = $('#total-quantity-pcs')
+        let delivered_date = $('#delivered-date')
 
-        item_unit_id.on('change', function () {
-            let item_unit_selected = $('#item-unit option:selected')
-            item_quantity_id.val('')
-        })
-
-        item_quantity_pcs.on('keyup', function () {
-            total_quantity()
-        })
-
-        item_quantity_id.on('keyup', function () {
-            total_quantity()
-        })
-
-        function total_quantity() {
-            let quan_pcs = item_quantity_pcs.val() ? Number(item_quantity_pcs.val()) : 0
-            let quan_pcs2 = item_quantity_id.val() ? Number(item_quantity_id.val()) : 1
-            let total = quan_pcs * quan_pcs2
-            total_quantity_pcs.val(total)
-        }
+        delivered_date.val(dateToday())
 
         const InFormValidation = document.getElementById('in-frm'),
-            ItemType = jQuery(InFormValidation.querySelector('[name="ItemType"]')),
+            ItemFormValidation = document.getElementById('item-form'),
             Company = jQuery(InFormValidation.querySelector('[name="Company"]')),
-            Generic = jQuery(InFormValidation.querySelector('[name="Generic"]')),
-            SubGeneric = jQuery(InFormValidation.querySelector('[name="SubGeneric"]')),
-            Brand = jQuery(InFormValidation.querySelector('[name="Brand"]')),
-            ItemUnit = jQuery(InFormValidation.querySelector('[name="ItemUnit"]'))
+            ItemType = jQuery(document.querySelector('[name="ItemType"]')),
+            Generic = jQuery(document.querySelector('[name="Generic"]')),
+            SubGeneric = jQuery(document.querySelector('[name="SubGeneric"]')),
+            Brand = jQuery(document.querySelector('[name="Brand"]')),
+            offCanvasElement = document.querySelector('#add-new-record'),
+            newRecord = document.querySelector('.create-new')
 
-        const ExpirationDateValidation = {
-            validators: {
-                notEmpty: {
-                    message: 'Expiration Date is required',
-                },
-            },
-        }
+        const offCanvasEl = new bootstrap.Offcanvas(offCanvasElement)
+
+        newRecord.addEventListener('click', function () {
+            $('.title-name').text('Add Item Record')
+            ItemType.val('').trigger('change')
+            Generic.val('').trigger('change')
+            SubGeneric.val('').trigger('change')
+            $('.form-control').val('')
+            Brand.val('').trigger('change')
+            offCanvasEl.show()
+        })
 
         const fv = FormValidation.formValidation(InFormValidation, {
             fields: {
-                Barcode: {
-                    validators: {
-                        notEmpty: {
-                            message: 'Please enter barcode',
-                        },
-                    },
-                },
                 DeliveredDate: {
                     validators: {
                         notEmpty: {
@@ -201,14 +274,7 @@
                 ExpirationDate: {
                     validators: {
                         notEmpty: {
-                            message: 'Please delivery date',
-                        },
-                    },
-                },
-                ItemType: {
-                    validators: {
-                        notEmpty: {
-                            message: 'Please select item type',
+                            message: 'Please expiration date',
                         },
                     },
                 },
@@ -216,27 +282,6 @@
                     validators: {
                         notEmpty: {
                             message: 'Please select company',
-                        },
-                    },
-                },
-                Generic: {
-                    validators: {
-                        notEmpty: {
-                            message: 'Please select generic',
-                        },
-                    },
-                },
-                SubGeneric: {
-                    validators: {
-                        notEmpty: {
-                            message: 'Please select sub-generic',
-                        },
-                    },
-                },
-                Brand: {
-                    validators: {
-                        notEmpty: {
-                            message: 'Please select brand',
                         },
                     },
                 },
@@ -254,24 +299,10 @@
                         },
                     },
                 },
-                TotalQuantityPcs: {
-                    validators: {
-                        notEmpty: {
-                            message: 'Please enter total quantity in pcs',
-                        },
-                    },
-                },
                 RetailPricePcs: {
                     validators: {
                         notEmpty: {
                             message: 'Please enter retail price per pcs',
-                        },
-                    },
-                },
-                Description: {
-                    validators: {
-                        notEmpty: {
-                            message: 'Please enter your description',
                         },
                     },
                 },
@@ -347,17 +378,95 @@
             })
         })
 
-        // Select2 (ItemType)
-        if (ItemType.length) {
-            ItemType.wrap('<div class="position-relative"></div>')
-            ItemType.select2({
-                placeholder: 'Select Item Type',
-                dropdownParent: ItemType.parent(),
-            }).on('change.select2', function () {
-                // Revalidate the color field when an option is chosen
-                fv.revalidateField('ItemType')
+        const offCanvasFV = FormValidation.formValidation(ItemFormValidation, {
+            fields: {
+                ItemBarcode: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Please barcode',
+                        },
+                    },
+                },
+                ItemType: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Please select item type',
+                        },
+                    },
+                },
+                Generic: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Please select generic',
+                        },
+                    },
+                },
+                SubGeneric: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Please select generic',
+                        },
+                    },
+                },
+            },
+            plugins: {
+                trigger: new FormValidation.plugins.Trigger(),
+                bootstrap5: new FormValidation.plugins.Bootstrap5(),
+                submitButton: new FormValidation.plugins.SubmitButton(),
+                autoFocus: new FormValidation.plugins.AutoFocus(),
+            },
+            init: (instance) => {
+                instance.on('plugins.message.placed', function (e) {
+                    if (e.element.parentElement.classList.contains('input-group')) {
+                        e.element.parentElement.insertAdjacentElement('afterend', e.messageElement)
+                    }
+                })
+            },
+        }).on('core.form.valid', function () {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, save it!',
+                customClass: {
+                    confirmButton: 'btn btn-primary me-3',
+                    cancelButton: 'btn btn-label-secondary',
+                },
+                buttonsStyling: false,
+            }).then(function (result) {
+                if (result.value) {
+                    var form_data = $('#item-form').serialize()
+
+                    $.ajax({
+                        type: 'POST',
+                        url: "{% url 'item-add' %}",
+                        data: form_data,
+                    }).done(function (data) {
+                        if (data.data == 'success') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Successfully save!',
+                                text: 'Item has been added.',
+                                customClass: {
+                                    confirmButton: 'btn btn-success',
+                                },
+                            })
+                            offCanvasEl.hide()
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error saving!',
+                                text: data.message,
+                                customClass: {
+                                    confirmButton: 'btn btn-success',
+                                },
+                            })
+                        }
+                    })
+                }
             })
-        }
+        })
 
         // Select2 (Company)
         if (Company.length) {
@@ -371,15 +480,27 @@
             })
         }
 
+        // Select2 (Item Type)
+        if (ItemType.length) {
+            ItemType.wrap('<div class="position-relative"></div>')
+            ItemType.select2({
+                placeholder: 'Select Item Type',
+                dropdownParent: ItemType.parent(),
+                allowClear: true,
+            }).on('change.select2', function () {
+                offCanvasFV.revalidateField('ItemType')
+            })
+        }
+
         // Select2 (Generic)
         if (Generic.length) {
             Generic.wrap('<div class="position-relative"></div>')
             Generic.select2({
                 placeholder: 'Select Generic',
                 dropdownParent: Generic.parent(),
+                allowClear: true,
             }).on('change.select2', function () {
-                // Revalidate the color field when an option is chosen
-                fv.revalidateField('Generic')
+                offCanvasFV.revalidateField('Generic')
             })
         }
 
@@ -389,9 +510,9 @@
             SubGeneric.select2({
                 placeholder: 'Select Sub-generic',
                 dropdownParent: SubGeneric.parent(),
+                allowClear: true,
             }).on('change.select2', function () {
-                // Revalidate the color field when an option is chosen
-                fv.revalidateField('SubGeneric')
+                offCanvasFV.revalidateField('SubGeneric')
             })
         }
 
@@ -401,59 +522,44 @@
             Brand.select2({
                 placeholder: 'Select Brand',
                 dropdownParent: Brand.parent(),
-            }).on('change.select2', function () {
-                // Revalidate the color field when an option is chosen
-                fv.revalidateField('Brand')
+                allowClear: true,
             })
         }
-
-        // Select2 (ItemUnit)
-        if (ItemUnit.length) {
-            ItemUnit.wrap('<div class="position-relative"></div>')
-            ItemUnit.select2({
-                placeholder: 'Select Item Unit',
-                dropdownParent: ItemUnit.parent(),
-            })
-        }
-
-        // item_quantity_id.on('keyup', function () {
-        //     if (!item_unit_id.val()) return
-        //     let item_quantity_val = item_quantity_id.val() ?? 0
-        //     append_item_details(item_quantity_val)
-        // })
-        //
-        // item_quantity_pcs.on('keyup', function () {
-        //     if (item_quantity_id.val() && item_unit_id.val()) return
-        //     let item_quantity_val = item_quantity_pcs.val() ?? 0
-        //     append_item_details(item_quantity_val)
-        // })
-
-        //function append_item_details(quantity) {
-        //    let tbl_item_details_html = ''
-        //    tbl_item_details.empty()
-        //    for (let i = 0; i < quantity; i++) {
-        //        tbl_item_details_html =
-        //            '<tr>' +
-        //            '<td>' +
-        //            (i + 1) +
-        //            '</td>' +
-        //            '<td>' +
-        //            '<div class="input-group input-group-merge">' +
-        //            '<input type="date" name="expiryDate[' +
-        //            i +
-        //            ']" class="form-control"/>' +
-        //            '</div>' +
-        //            '</td>' +
-        //            '</tr>'
-        //
-        //        tbl_item_details.append(tbl_item_details_html)
-        //        // Add new fields
-        //        // Note that we also pass the validator rules for new field as the third parameter
-        //        fv.addField('expiryDate[' + i + ']', ExpirationDateValidation)
-        //    }
-        //}
     })
 
-    document.addEventListener('DOMContentLoaded', function (e) {})
+    function fetch_barcode() {
+        let barcode = $('#barcode').val()
+        let tblItem = $('#tbl-item')
+
+        if (!barcode) {
+            Swal.fire({
+                icon: 'info',
+                title: 'No barcode entry!',
+                text: 'Please entry barcode first to be fetch',
+                customClass: {
+                    confirmButton: 'btn btn-info',
+                },
+            })
+
+            return false
+        }
+
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'fetch-item-by-barcode' %}?barcode=" + barcode,
+        }).done(function (data) {
+            if (data.status == 'success') {
+                let field = data.data
+                tblItem.html(`<tr>
+                                <td>${field.barcode}</td>
+                                <td>${field.item_type}</td>
+                                <td>${field.brand}</td>
+                                <td>${field.details}</td>
+                            </tr>`)
+            } else if (data.status == 'error') {
+            } else {
+            }
+        })
+    }
 </script>
 {% endblock footer_scripts %}

@@ -2,31 +2,171 @@
 
 <!-- Content wrapper -->
 <div class="content-wrapper">
-  <!-- Content -->
-  <div class="container-xxl flex-grow-1 container-p-y">
-    <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Inventory /</span> List</h4>
+    <!-- Content -->
+    <div class="container-fluid flex-grow-1 container-p-y">
+        <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Inventory /</span> List</h4>
 
-    <div class="card">
-      <!-- <h5 class="card-header"></h5> -->
-      <div class="card-datatable text-nowrap">
-        <table class="dt-scrollableTable table">
-          <thead>
-            <tr>
-              <th>Brand</th>
-              <th>Generic</th>
-              <th>Sub-generic</th>
-              <th>Description</th>
-              <th>Expiry Date</th>
-              <th>Retail Price</th>
-              <th>Unit</th>
-              <th>Unit_Qty</th>
-              <th>Status</th>
-              <th>Action</th>
-            </tr>
-          </thead>
-        </table>
-      </div>
+        <div class="card">
+            <div class="card-datatable text-nowrap">
+                <table id="tbl-items" class="dt-scrollableTable table">
+                    <thead>
+                        <tr>
+                            <th>Action</th>
+                            <th>Inv-code</th>
+                            <th>Barcode</th>
+                            <th>Generic</th>
+                            <th>Sub-generic</th>
+                            <th>Description</th>
+                            <th>Unit</th>
+                            <th>Unit Qty</th>
+                            <th>Total Qty</th>
+                            <th>Available Stock</th>
+                            <th>Unit Price</th>
+                            <th>Retail Price</th>
+                            <th>Expiration Date</th>
+                            <th>Aging</th>
+                            <th>Delivery Date</th>
+                            <th>Status</th>
+                            <th>created_at</th>
+                            <th>updated_at</th>
+                            <th>created_by</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
-  {% endblock %}
+{% endblock %} {% block footer_scripts %}
+<script>
+    $(document).ready(function () {
+        const table = $('#tbl-items')
+
+        var itemTable = table.DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: "{% url 'inventory-load' %}",
+            columns: [
+                { data: 'id' },
+                { data: 'barcode' },
+                { data: 'generic' },
+                { data: 'sub_generic' },
+                { data: 'classification' },
+                { data: 'description' },
+                { data: 'brand' },
+                { data: 'created_at', className: 'text-end' },
+                { data: 'updated_at', className: 'text-end' },
+                { data: 'created_by' },
+            ],
+            columnDefs: [
+                {
+                    targets: 0,
+                    title: 'Actions',
+                    orderable: false,
+                    searchable: false,
+                    render: function (data, type, full, meta) {
+                        return (
+                            '<div class="d-inline-block">' +
+                            '<a href="javascript:;" class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="text-primary ti ti-dots-vertical"></i></a>' +
+                            '<div class="dropdown-menu dropdown-menu-end m-0">' +
+                            '<a href="javascript:;" class="dropdown-item">Details</a>' +
+                            '<a href="javascript:;" class="dropdown-item">Archive</a>' +
+                            '<div class="dropdown-divider"></div>' +
+                            '<a href="javascript:;" class="dropdown-item text-danger delete-record">Delete</a>' +
+                            '</div>' +
+                            '</div>' +
+                            '<a href="javascript:;" class="item-edit text-body"><i class="text-primary ti ti-pencil"></i></a>'
+                        )
+                    },
+                },
+                {
+                    targets: 1,
+                    render: function (data) {
+                        return '<span class="badge bg-primary">' + data + '</span>'
+                    },
+                },
+                {
+                    targets: 2,
+                    render: function (data) {
+                        return '<span class="badge bg-label-primary">' + data + '</span>'
+                    },
+                },
+                {
+                    targets: 6,
+                    render: function (data, type, full, meta) {
+                        return `${full['unit_quantity']} ${data}`
+                    },
+                },
+                {
+                    targets: 7,
+                    render: function (data) {
+                        let elem = data ?? ''
+                        if (elem) {
+                            elem = `${data} pcs`
+                        }
+                        return elem
+                    },
+                },
+                {
+                    targets: 9,
+                    render: function (data, type, full, meta) {
+                        let background_color = 'bg-secondary'
+                        let pending_percent_val = full['pcs_quantity'] * 0.2
+                        pending_percent_val = Math.trunc(pending_percent_val)
+                        if (data > 0 && pending_percent_val >= 0 && data > pending_percent_val) {
+                            background_color = 'bg-success'
+                        } else if (data > 0 && pending_percent_val > 0 && data <= pending_percent_val) {
+                            background_color = 'bg-pending'
+                        } else if (data == 0 && data < pending_percent_val) {
+                            background_color = 'bg-danger'
+                        }
+                        return `<span class="badge ${background_color}">${data} pcs</span>`
+                    },
+                },
+                {
+                    targets: 8,
+                    render: function (data) {
+                        return `${data} pcs`
+                    },
+                },
+                {
+                    targets: [10, 11],
+                    render: function (data) {
+                        return currencyFormat(data)
+                    },
+                },
+                {
+                    targets: 12,
+                    render: function (data, type, full, meta) {
+                        let background_color = 'bg-secondary'
+                        let aging = full['expiration_aging']
+                        if (aging > 30) {
+                            background_color = 'bg-success'
+                        } else if (aging <= 30 && aging > 0) {
+                            background_color = 'bg-pending'
+                        } else if (aging <= 0) {
+                            background_color = 'bg-danger'
+                        }
+                        return `<span class="badge ${background_color}">${moment(data).format('LLL')}</span>`
+                    },
+                },
+                {
+                    targets: 13,
+                    render: function (data) {
+                        return `<span class="badge bg-secondary">${data}</span>`
+                    },
+                },
+                {
+                    targets: [14, 16, 17],
+                    render: function (data) {
+                        return moment(data).format('LLL')
+                    },
+                },
+            ],
+            order: [13, 'asc'],
+            scrollY: '300px',
+            scrollX: true,
+        })
+    })
+</script>
+{% endblock footer_scripts %}

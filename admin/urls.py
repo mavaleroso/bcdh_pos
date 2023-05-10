@@ -4,6 +4,7 @@ from . import views
 
 urlpatterns = [
     path('company', views.company, name='company-list'),
+    path('clients', views.clients, name='clients-list'),
     path('user', views.user, name='user-list'),
     path('brand', views.brand, name='brand-list'),
     path('generic', views.generic, name='generic-list'),
@@ -21,4 +22,6 @@ urlpatterns = [
     path('updatecompany', views.updatecompany, name='update-company'),
     path('adduser', views.adduser, name='add-user'),
     path('updateuser', views.updateuser, name='update-user'),
+    path('addclients', views.addclients, name='add-clients'),
+    path('updateclients', views.updateclients, name='update-clients'),
 ]
