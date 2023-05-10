@@ -216,6 +216,7 @@ class Items(models.Model):
 class Stocks(models.Model):
     code = models.CharField(max_length=128, blank=True, null=True)
     item = models.ForeignKey(Items, models.DO_NOTHING)
+    company = models.ForeignKey(Company, models.DO_NOTHING)
     pcs_quantity = models.IntegerField(max_length=128, blank=True, null=True)
     unit_price = models.DecimalField(
         max_digits=30, decimal_places=10, blank=True, null=True)

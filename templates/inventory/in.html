@@ -34,7 +34,7 @@
                                             </div>
                                         </div>
                                         <button
-                                            onclick="fetch_barcode()"
+                                            id="btn-fetch-barcode"
                                             type="button"
                                             class="btn btn-icon mt-4 ms-2 btn-primary waves-effect waves-light"
                                         >
@@ -67,13 +67,27 @@
                                             <th>Details</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="tbl-item"></tbody>
+                                    <tbody id="tbl-item">
+                                        <tr>
+                                            <td colspan="4">
+                                                <div class="alert alert-info d-flex align-items-center" role="alert">
+                                                    <span class="alert-icon text-info me-2">
+                                                        <i class="ti ti-info-circle ti-xs"></i>
+                                                    </span>
+                                                    Select item first
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
                                 </table>
                             </div>
                             <div class="col-12">
                                 <div class="divider divider-dashed my-4">
                                     <div class="divider-text">Incoming Details</div>
                                 </div>
+                            </div>
+                            <div class="col-12">
+                                <input type="hidden" id="item-id" name="ItemID" />
                             </div>
                             <div class="col-12 row g-3">
                                 <div class="col-md-4">
@@ -118,27 +132,19 @@
             <div class="card mt-4 p-3">
                 <h5 class="card-header">Received Item/s Today</h5>
                 <div class="table-responsive text-nowrap">
-                    <table class="table table-striped">
+                    <table id="tbl-received-items-today" class="table table-striped">
                         <thead>
                             <tr>
                                 <th>#</th>
                                 <th>Type</th>
                                 <th>Details</th>
+                                <th>Quantity</th>
                                 <th>Delivered Date</th>
                                 <th>Expiration Date</th>
                                 <th>Created By</th>
                             </tr>
                         </thead>
-                        <tbody class="table-border-bottom-0">
-                            <tr>
-                                <td>1</td>
-                                <td>Medicine</td>
-                                <td>Amoxicillin (Altomox) 100mg/ml Oral Drops 10ml</td>
-                                <td>03-04-2023</td>
-                                <td>03-04-2023</td>
-                                <td>Marwen Valeroso</td>
-                            </tr>
-                        </tbody>
+                        <tbody class="table-border-bottom-0"></tbody>
                     </table>
                 </div>
             </div>
@@ -234,11 +240,21 @@
 {% endblock %} {% block footer_scripts %}
 <script>
     $(document).ready(function () {
-        let tbl_item_details = $('#tbl-item-details')
+        let tbl_received_items_today = $('#tbl-received-items-today')
         let item_quantity_pcs = $('#item-quantity-pcs')
         let delivered_date = $('#delivered-date')
 
         delivered_date.val(dateToday())
+
+        const toast_options = (toastr.options = {
+            maxOpened: 1,
+            autoDismiss: true,
+            closeButton: true,
+            newestOnTop: true,
+            progressBar: true,
+            positionClass: 'toast-top-right',
+            rtl: isRtl,
+        })
 
         const InFormValidation = document.getElementById('in-frm'),
             ItemFormValidation = document.getElementById('item-form'),
@@ -525,41 +541,85 @@
                 allowClear: true,
             })
         }
-    })
 
-    function fetch_barcode() {
-        let barcode = $('#barcode').val()
-        let tblItem = $('#tbl-item')
+        $('#btn-fetch-barcode').on('click', function () {
+            let barcode = $('#barcode').val()
+            let tblItem = $('#tbl-item')
+            let itemID = $('#item-id')
 
-        if (!barcode) {
-            Swal.fire({
-                icon: 'info',
-                title: 'No barcode entry!',
-                text: 'Please entry barcode first to be fetch',
-                customClass: {
-                    confirmButton: 'btn btn-info',
-                },
-            })
+            if (!barcode) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'No barcode entry!',
+                    text: 'Please entry barcode first to be fetch',
+                    customClass: {
+                        confirmButton: 'btn btn-info',
+                    },
+                })
 
-            return false
-        }
+                return false
+            }
 
-        $.ajax({
-            type: 'GET',
-            url: "{% url 'fetch-item-by-barcode' %}?barcode=" + barcode,
-        }).done(function (data) {
-            if (data.status == 'success') {
-                let field = data.data
-                tblItem.html(`<tr>
+            $.ajax({
+                type: 'GET',
+                url: "{% url 'fetch-item-by-barcode' %}?barcode=" + barcode,
+            }).done(function (data) {
+                if (data.status == 'success') {
+                    let field = data.data
+                    itemID.val(field.id)
+                    toastr.success('Item fetch successfully!', 'Search Barcode', toast_options)
+                    tblItem.html(`<tr>
                                 <td>${field.barcode}</td>
                                 <td>${field.item_type}</td>
                                 <td>${field.brand}</td>
                                 <td>${field.details}</td>
                             </tr>`)
-            } else if (data.status == 'error') {
-            } else {
-            }
+                } else if (data.status == 'error') {
+                    let message = data.message
+                    toastr.warning('Item fetch failed!', 'Search Barcode', toast_options)
+                    tblItem.html(`<tr>
+                                <td colspan="4"">
+                                    <div class="alert alert-warning d-flex align-items-center" role="alert">
+                                        <span class="alert-icon text-warning me-2">
+                                        <i class="ti ti-bell ti-xs"></i>
+                                        </span>
+                                        ${message}
+                                    </div>
+                                </td>
+                            </tr>`)
+                } else {
+                }
+            })
         })
-    }
+
+        let dataTable = tbl_received_items_today.DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: "{% url 'received-item-load' %}",
+            columns: [
+                { data: 'id' },
+                { data: 'item_type' },
+                { data: 'details' },
+                { data: 'quantity' },
+                { data: 'delivered_date', className: 'text-end' },
+                { data: 'expiration_date', className: 'text-end' },
+                { data: 'created_by' },
+            ],
+            columnDefs: [
+                {
+                    targets: 3,
+                    render: function (data) {
+                        return `${data} pcs`
+                    },
+                },
+                {
+                    targets: [4, 5],
+                    render: function (data) {
+                        return moment(data).format('LLL')
+                    },
+                },
+            ],
+        })
+    })
 </script>
 {% endblock footer_scripts %}
