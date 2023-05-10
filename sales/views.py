@@ -8,7 +8,7 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from main.models import (Clients, Items, Discounts, Sales, Payment)
+from main.models import (Stocks, Clients, Items, Discounts, Sales, Payment)
 import json 
 from django.core import serializers
 import datetime
@@ -20,7 +20,7 @@ from django.db.models import F
 def salestransaction(request):
     context = {
 		'clients' : Clients.objects.filter().order_by('first_name'),
-        'items' : Items.objects.filter().exclude(pcs_quantity=0).select_related(),
+        'items' : Stocks.objects.filter().exclude(pcs_quantity=0).select_related(),
         'discount' : Discounts.objects.filter()
         
 	}

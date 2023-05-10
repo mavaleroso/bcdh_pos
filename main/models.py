@@ -1,4 +1,5 @@
 from django.db import models
+
 from datetime import datetime
 
 
@@ -196,24 +197,29 @@ class ItemType(models.Model):
 
 
 class Items(models.Model):
-    code = models.CharField(max_length=128, blank=True, null=True)
-    barcode = models.CharField(max_length=128, blank=True, null=True)
+    barcode = models.CharField(max_length=128, blank=True, null=True, unique=True)
     type = models.ForeignKey(ItemType, models.DO_NOTHING)
     generic = models.ForeignKey(Generic, models.DO_NOTHING)
     sub_generic = models.ForeignKey(SubGeneric, models.DO_NOTHING)
     description = models.CharField(max_length=300, blank=True, null=True)
-    brand = models.ForeignKey(Brand, models.DO_NOTHING)
-    company = models.ForeignKey(Company, models.DO_NOTHING)
-    unit = models.ForeignKey(Unit, models.DO_NOTHING, blank=True, null=True)
-    unit_quantity = models.IntegerField(max_length=128, blank=True, null=True)
-    unit_quantity_pcs = models.IntegerField(
-        max_length=128, blank=True, null=True)
+    classification = models.CharField(max_length=128, blank=True, null=True)
+    brand = models.ForeignKey(Brand, models.DO_NOTHING, blank=True, null=True)
+    user = models.ForeignKey(AuthUser, models.DO_NOTHING)
+    created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
+    updated_at = models.DateTimeField(blank=True, null=True, auto_now=True)
+    deleted_at = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'items'
+
+class Stocks(models.Model):
+    code = models.CharField(max_length=128, blank=True, null=True)
+    item = models.ForeignKey(Items, models.DO_NOTHING)
     pcs_quantity = models.IntegerField(max_length=128, blank=True, null=True)
     unit_price = models.DecimalField(
         max_digits=30, decimal_places=10, blank=True, null=True)
     retail_price = models.DecimalField(
-        max_digits=30, decimal_places=10, blank=True, null=True)
-    retail_price_unit = models.DecimalField(
         max_digits=30, decimal_places=10, blank=True, null=True)
     is_damaged = models.CharField(max_length=128, blank=True, null=True)
     user = models.ForeignKey(AuthUser, models.DO_NOTHING)
@@ -225,11 +231,11 @@ class Items(models.Model):
 
     class Meta:
         managed = True
-        db_table = 'item'
+        db_table = 'stocks'
 
 
 class EditRequests(models.Model):
-    item = models.ForeignKey(Items, models.DO_NOTHING)
+    stocks = models.ForeignKey(Stocks, models.DO_NOTHING)
     status = models.CharField(max_length=128, blank=True, null=True)
     user = models.ForeignKey(AuthUser, models.DO_NOTHING)
     created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
@@ -279,7 +285,7 @@ class Location(models.Model):
 
 
 class ItemLocation(models.Model):
-    item = models.ForeignKey(Items, models.DO_NOTHING)
+    stock = models.ForeignKey(Stocks, models.DO_NOTHING)
     location = models.ForeignKey(Location, models.DO_NOTHING)
     quantity = models.IntegerField(max_length=128, blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
@@ -333,8 +339,7 @@ class Payment(models.Model):
 
 class OutItems(models.Model):
     sales = models.ForeignKey(Sales, models.DO_NOTHING)
-    inpatient_sales = models.ForeignKey(InpatientSales, models.DO_NOTHING)
-    item = models.ForeignKey(Items, models.DO_NOTHING)
+    stock = models.ForeignKey(Stocks, models.DO_NOTHING)
     quantity = models.IntegerField(max_length=128, blank=True, null=True)
     discounted_amount = models.DecimalField(
         max_digits=30, decimal_places=10, blank=True, null=True)

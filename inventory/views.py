@@ -10,8 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.core import serializers
-from main.models import (Item, SystemConfiguration,
-                         ItemType, Company, Generic, SubGeneric, Brand, Unit, AuthUser, OutItems)
+from main.models import (Items, SystemConfiguration, ItemType, Company, Generic, SubGeneric, Brand, Unit, AuthUser, OutItems)
 from datetime import datetime
 import math
 
