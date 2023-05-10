@@ -25,12 +25,21 @@
                         <div class="row">
                             <div class="col-12 row mt-3">
                                 <div class="col-md-4">
-                                    <div class="form-group">
-                                        <label class="form-label" for="barcode">Barcode</label>
-                                        <div class="input-group input-group-merge">
-                                            <span class="input-group-text"><i class="ti ti-barcode"></i></span>
-                                            <input type="text" id="barcode" name="Barcode" class="form-control" />
+                                    <div class="d-flex">
+                                        <div class="form-group">
+                                            <label class="form-label" for="barcode">Barcode</label>
+                                            <div class="input-group input-group-merge">
+                                                <span class="input-group-text"><i class="ti ti-barcode"></i></span>
+                                                <input type="text" id="barcode" name="Barcode" class="form-control" />
+                                            </div>
                                         </div>
+                                        <button
+                                            onclick="fetch_barcode()"
+                                            type="button"
+                                            class="btn btn-icon mt-4 ms-2 btn-primary waves-effect waves-light"
+                                        >
+                                            <span class="ti ti-search"></span>
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
@@ -52,18 +61,13 @@
                                 <table class="table mt-4">
                                     <thead>
                                         <tr>
+                                            <th>Barcode</th>
                                             <th>Item Type</th>
                                             <th>Brand</th>
                                             <th>Details</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <tr>
-                                            <td>Medicine</td>
-                                            <td>Unilab</td>
-                                            <td>Oxytocin (GYNE-TOCIN/AMBTOCYN) 10iu/ml Solution for Injection</td>
-                                        </tr>
-                                    </tbody>
+                                    <tbody id="tbl-item"></tbody>
                                 </table>
                             </div>
                             <div class="col-12">
@@ -142,6 +146,90 @@
     </div>
     <!-- /Sticky Actions -->
 </div>
+
+<!-- Modal to add new record -->
+<div class="offcanvas offcanvas-end" id="add-new-record">
+    <div class="offcanvas-header border-bottom">
+        <h5 class="offcanvas-title" id="exampleModalLabel"><p class="title-name">Add Record</p></h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body flex-grow-1">
+        <form class="add-new-record pt-0 row g-2" id="item-form">
+            <input type="hidden" id="item-id" name="ItemID" />
+            <div class="col-sm-12">
+                <label class="form-label" for="item-barcode">Barcode</label>
+                <input type="text" id="item-barcode" class="form-control" name="ItemBarcode" placeholder="Enter Barcode" />
+            </div>
+
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="form-label" for="item-type">Item Type</label>
+                    <select id="item-type" name="ItemType" class="select2 form-select" data-allow-clear="true">
+                        <option></option>
+                        {% for row in item_type %}
+                        <option value="{{ row.id }}">{{ row.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="form-label" for="generic">Generic</label>
+                    <select id="generic" name="Generic" class="select2 form-select" data-allow-clear="true">
+                        <option></option>
+                        {% for row in generic %}
+                        <option value="{{ row.id }}">{{ row.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="form-label" for="sub-generic">Sub Generic</label>
+                    <select id="sub-generic" name="SubGeneric" class="select2 form-select" data-allow-clear="true">
+                        <option></option>
+                        {% for row in sub_generic %}
+                        <option value="{{ row.id }}">{{ row.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="col-sm-12">
+                <label class="form-label" for="classification">Classification<span class="ms-1 text-secondary">(Optional)</span></label>
+                <input
+                    type="text"
+                    id="classification"
+                    class="form-control dt-classification-name"
+                    name="Classification"
+                    placeholder="Enter Classification"
+                />
+            </div>
+
+            <div class="col-sm-12">
+                <label class="form-label" for="description">Description<span class="ms-1 text-secondary">(Optional)</span></label>
+                <input type="text" id="description" class="form-control" name="Description" placeholder="Enter Description" />
+            </div>
+
+            <div class="col-sm-12">
+                <div class="form-group">
+                    <label class="form-label" for="brand">Brand<span class="ms-1 text-secondary">(Optional)</span></label>
+                    <select id="brand" name="Brand" class="select2 form-select" data-allow-clear="true">
+                        <option></option>
+                        {% for row in brand %}
+                        <option value="{{ row.id }}">{{ row.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-sm-12 mt-4">
+                <button name="submitButton" class="btn btn-primary data-submit me-sm-3 me-1 additional-record">Submit</button>
+                <button type="reset" class="btn btn-outline-secondary" data-bs-dismiss="offcanvas">Cancel</button>
+            </div>
+        </form>
+    </div>
+</div>
 <!-- / Content -->
 {% endblock %} {% block footer_scripts %}
 <script>
@@ -153,17 +241,29 @@
         delivered_date.val(dateToday())
 
         const InFormValidation = document.getElementById('in-frm'),
-            Company = jQuery(InFormValidation.querySelector('[name="Company"]'))
+            ItemFormValidation = document.getElementById('item-form'),
+            Company = jQuery(InFormValidation.querySelector('[name="Company"]')),
+            ItemType = jQuery(document.querySelector('[name="ItemType"]')),
+            Generic = jQuery(document.querySelector('[name="Generic"]')),
+            SubGeneric = jQuery(document.querySelector('[name="SubGeneric"]')),
+            Brand = jQuery(document.querySelector('[name="Brand"]')),
+            offCanvasElement = document.querySelector('#add-new-record'),
+            newRecord = document.querySelector('.create-new')
+
+        const offCanvasEl = new bootstrap.Offcanvas(offCanvasElement)
+
+        newRecord.addEventListener('click', function () {
+            $('.title-name').text('Add Item Record')
+            ItemType.val('').trigger('change')
+            Generic.val('').trigger('change')
+            SubGeneric.val('').trigger('change')
+            $('.form-control').val('')
+            Brand.val('').trigger('change')
+            offCanvasEl.show()
+        })
 
         const fv = FormValidation.formValidation(InFormValidation, {
             fields: {
-                Barcode: {
-                    validators: {
-                        notEmpty: {
-                            message: 'Please provide barcode',
-                        },
-                    },
-                },
                 DeliveredDate: {
                     validators: {
                         notEmpty: {
@@ -278,6 +378,96 @@
             })
         })
 
+        const offCanvasFV = FormValidation.formValidation(ItemFormValidation, {
+            fields: {
+                ItemBarcode: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Please barcode',
+                        },
+                    },
+                },
+                ItemType: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Please select item type',
+                        },
+                    },
+                },
+                Generic: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Please select generic',
+                        },
+                    },
+                },
+                SubGeneric: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Please select generic',
+                        },
+                    },
+                },
+            },
+            plugins: {
+                trigger: new FormValidation.plugins.Trigger(),
+                bootstrap5: new FormValidation.plugins.Bootstrap5(),
+                submitButton: new FormValidation.plugins.SubmitButton(),
+                autoFocus: new FormValidation.plugins.AutoFocus(),
+            },
+            init: (instance) => {
+                instance.on('plugins.message.placed', function (e) {
+                    if (e.element.parentElement.classList.contains('input-group')) {
+                        e.element.parentElement.insertAdjacentElement('afterend', e.messageElement)
+                    }
+                })
+            },
+        }).on('core.form.valid', function () {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, save it!',
+                customClass: {
+                    confirmButton: 'btn btn-primary me-3',
+                    cancelButton: 'btn btn-label-secondary',
+                },
+                buttonsStyling: false,
+            }).then(function (result) {
+                if (result.value) {
+                    var form_data = $('#item-form').serialize()
+
+                    $.ajax({
+                        type: 'POST',
+                        url: "{% url 'item-add' %}",
+                        data: form_data,
+                    }).done(function (data) {
+                        if (data.data == 'success') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Successfully save!',
+                                text: 'Item has been added.',
+                                customClass: {
+                                    confirmButton: 'btn btn-success',
+                                },
+                            })
+                            offCanvasEl.hide()
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error saving!',
+                                text: data.message,
+                                customClass: {
+                                    confirmButton: 'btn btn-success',
+                                },
+                            })
+                        }
+                    })
+                }
+            })
+        })
+
         // Select2 (Company)
         if (Company.length) {
             Company.wrap('<div class="position-relative"></div>')
@@ -289,6 +479,87 @@
                 fv.revalidateField('Company')
             })
         }
+
+        // Select2 (Item Type)
+        if (ItemType.length) {
+            ItemType.wrap('<div class="position-relative"></div>')
+            ItemType.select2({
+                placeholder: 'Select Item Type',
+                dropdownParent: ItemType.parent(),
+                allowClear: true,
+            }).on('change.select2', function () {
+                offCanvasFV.revalidateField('ItemType')
+            })
+        }
+
+        // Select2 (Generic)
+        if (Generic.length) {
+            Generic.wrap('<div class="position-relative"></div>')
+            Generic.select2({
+                placeholder: 'Select Generic',
+                dropdownParent: Generic.parent(),
+                allowClear: true,
+            }).on('change.select2', function () {
+                offCanvasFV.revalidateField('Generic')
+            })
+        }
+
+        // Select2 (SubGeneric)
+        if (SubGeneric.length) {
+            SubGeneric.wrap('<div class="position-relative"></div>')
+            SubGeneric.select2({
+                placeholder: 'Select Sub-generic',
+                dropdownParent: SubGeneric.parent(),
+                allowClear: true,
+            }).on('change.select2', function () {
+                offCanvasFV.revalidateField('SubGeneric')
+            })
+        }
+
+        // Select2 (Brand)
+        if (Brand.length) {
+            Brand.wrap('<div class="position-relative"></div>')
+            Brand.select2({
+                placeholder: 'Select Brand',
+                dropdownParent: Brand.parent(),
+                allowClear: true,
+            })
+        }
     })
+
+    function fetch_barcode() {
+        let barcode = $('#barcode').val()
+        let tblItem = $('#tbl-item')
+
+        if (!barcode) {
+            Swal.fire({
+                icon: 'info',
+                title: 'No barcode entry!',
+                text: 'Please entry barcode first to be fetch',
+                customClass: {
+                    confirmButton: 'btn btn-info',
+                },
+            })
+
+            return false
+        }
+
+        $.ajax({
+            type: 'GET',
+            url: "{% url 'fetch-item-by-barcode' %}?barcode=" + barcode,
+        }).done(function (data) {
+            if (data.status == 'success') {
+                let field = data.data
+                tblItem.html(`<tr>
+                                <td>${field.barcode}</td>
+                                <td>${field.item_type}</td>
+                                <td>${field.brand}</td>
+                                <td>${field.details}</td>
+                            </tr>`)
+            } else if (data.status == 'error') {
+            } else {
+            }
+        })
+    }
 </script>
 {% endblock footer_scripts %}

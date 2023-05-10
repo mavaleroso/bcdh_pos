@@ -5,8 +5,10 @@ from django.http import JsonResponse
 from django.shortcuts import render
 from libraries.models import (Items)
 from main.models import (ItemType, Generic, SubGeneric, Brand, AuthUser)
+from django.core.serializers import serialize
+from django.http import HttpResponse
+from django.db import IntegrityError
 import math, json
-
 
 def item(request):
     context = {
@@ -27,19 +29,45 @@ def item_add(request):
     brand_id = request.POST.get('Brand')
     type_id = request.POST.get('ItemType')
     user_id = request.session.get('user_id', 0)
-    
+
     item_add = Items(barcode=barcode, description=description, classification=classification, generic_id=generic_id, sub_generic_id=sub_generic_id, brand_id=brand_id, type_id=type_id, user_id=user_id)
+    
+    try:
+        item_add.save()
+        return JsonResponse({'data': 'success'})
+    except IntegrityError as e:
+        if 1062 in e.args:
+            return JsonResponse({'data': 'error', 'message': 'Duplicate Barcode'})
+        else:
+            return JsonResponse({'data': 'error', 'message': 'Data Error'})
 
-    item_add.save()
 
-    return JsonResponse({'data': 'success'})
 
 @csrf_exempt
+def item_update(request):
+    id = request.POST.get('ItemID')
+    barcode = request.POST.get('ItemBarcode')
+    description = request.POST.get('Description')
+    classification = request.POST.get('Classification')
+    generic_id = request.POST.get('Generic')
+    sub_generic_id = request.POST.get('SubGeneric')
+    brand_id = request.POST.get('Brand')
+    type_id = request.POST.get('ItemType')
+
+    check_barcode = False
+    if Items.objects.filter(barcode=barcode).exclude(id=id):
+        return JsonResponse({'data': 'error', 'message': 'Duplicate Barcode'})
+    else:
+        check_barcode = True        
+    if check_barcode:
+        Items.objects.filter(id=id).update(barcode=barcode, description=description, classification=classification, generic_id=generic_id, sub_generic_id=sub_generic_id, brand_id=brand_id, type_id=type_id)
+        return JsonResponse({'data': 'success'})
+    
 def item_edit(request):
     id = request.GET.get('id')
-    data = Items.objects.select_related().get(id=id)
-    json_str = json.dumps(data)
-    return JsonResponse({'data': json_str})
+    items = Items.objects.get(pk=id)
+    data = serialize("json", [items])
+    return HttpResponse(data, content_type="application/json")
     
 
 def item_load(request):
@@ -87,4 +115,36 @@ def item_load(request):
     }
     return JsonResponse(response)
 
+
+def fetch_item_by_barcode(request):
+    barcode = request.GET.get('barcode', '')
+    item_data = Items.objects.select_related().filter(barcode=barcode)
+
+
+    if item_data:
+        item_data = item_data[0]
+        
+        item = {
+            'id': item_data.id,
+            'barcode': item_data.barcode,
+            'item_type': item_data.type.name,
+            'brand': item_data.brand.name if item_data.brand_id is not None else '',
+            'details': item_data.generic.name + ' ' + item_data.sub_generic.name + ' ' + item_data.classification + ' ' + item_data.description,
+        }
+
+        response = {
+            'status': 'success',
+            'data': item,
+        }
+    else:
+        response = {
+            'status': 'error',
+            'message': 'no data found',
+        }
+
+    return JsonResponse(response)
+
+    # print(items)
+    # data = serialize("json", [items])
+    # return HttpResponse(data, content_type="application/json")
     
