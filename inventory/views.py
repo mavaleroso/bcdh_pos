@@ -4,10 +4,9 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from django.http import JsonResponse
-from main.models import (Stocks, Items, SystemConfiguration, ItemType, Company, Generic, SubGeneric, Brand, Unit, AuthUser, OutItems)
+from main.models import (Stocks, Items, ItemLocation, SystemConfiguration, ItemType, Company, Generic, SubGeneric, Brand, Unit, AuthUser, OutItems)
 from datetime import date, datetime
 import math
-
 
 
 def inventory_in(request):
@@ -29,6 +28,7 @@ def inventory_list(request):
 def inventory_load(request):
     stock_data = Stocks.objects.select_related().order_by('-delivered_date').reverse()
     total = stock_data.count()
+    
 
     _start = request.GET.get('start')
     _length = request.GET.get('length')
@@ -44,25 +44,40 @@ def inventory_load(request):
 
     for stock in stock_data:
         userData = AuthUser.objects.filter(id=stock.user.id)
-        outItemsData=OutItems.objects.filter(item_id=stock.id)
+        outItemsData=OutItems.objects.filter(stock_id=stock.id)
+        itemLocation = ItemLocation.objects.select_related().filter(stock_id=stock.id)
         full_name = userData[0].first_name + ' ' + userData[0].last_name
 
+        location_data = []
+
+        for il in itemLocation:
+            il_obj = {
+                'name': il.location.name,
+                'quantity': il.quantity
+            }
+            location_data.append(il_obj)
+
         expended_stock = 0
+        damage_stock = stock.is_damaged if stock.is_damaged else 0
 
         for outItem in outItemsData:
             expended_stock = expended_stock + outItem.quantity
 
-        available = stock.pcs_quantity - expended_stock
+        available = stock.pcs_quantity - expended_stock - damage_stock
 
         expiration_aging = stock.expiration_date - datetime.now().date()
 
-        item = {
+        stock_obj = {
             'id': stock.id,
             'code': stock.code,
-            'barcode': stock.items.barcode,
-            'details': stock.items.generic.name + ' ' + stock.items.sub_generic.name + ' ' + stock.items.classification + ' ' + stock.items.description, 
+            'barcode': stock.item.barcode,
+            'brand': stock.item.brand.name,
+            'company': stock.company.name,
+            'location': location_data,
+            'details': stock.item.generic.name + ' ' + stock.item.sub_generic.name + ' ' + stock.item.classification + ' ' + stock.item.description, 
             'pcs_quantity': stock.pcs_quantity,
-            'available_stock': stock,
+            'damage_stock': stock.is_damaged,
+            'available_stock': available,
             'unit_price': stock.unit_price,
             'retail_price': stock.retail_price,
             'expiration_date': stock.expiration_date,
@@ -73,8 +88,7 @@ def inventory_load(request):
             'created_by': full_name
         }
 
-        if available > 0:
-            data.append(item)
+        data.append(stock_obj)
 
     response = {
         'data': data,
@@ -83,6 +97,7 @@ def inventory_load(request):
         'recordsTotal': total,
         'recordsFiltered': total,
     }
+
     return JsonResponse(response)
 
 

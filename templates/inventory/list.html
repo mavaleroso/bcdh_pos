@@ -7,27 +7,64 @@
         <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Inventory /</span> List</h4>
 
         <div class="card">
-            <div class="card-datatable text-nowrap">
-                <table id="tbl-items" class="dt-scrollableTable table">
-                    <thead>
-                        <tr>
-                            <th>Action</th>
-                            <th>Inv-code</th>
-                            <th>Barcode</th>
-                            <th>Item Description</th>
-                            <th>Quantity</th>
-                            <th>Available Stock</th>
-                            <th>Unit Price</th>
-                            <th>Retail Price</th>
-                            <th>Expiration Date</th>
-                            <th>Aging</th>
-                            <th>Delivery Date</th>
-                            <th>created_at</th>
-                            <th>updated_at</th>
-                            <th>created_by</th>
-                        </tr>
-                    </thead>
-                </table>
+            <div class="card-body">
+                <div class="form-group">
+                    <label class="form-label" for="column_name">Toggle Columns</label>
+                    <select
+                        name="column_name"
+                        id="column_name"
+                        class="form-control"
+                        data-style="btn-default"
+                        data-icon-base="ti"
+                        data-tick-icon="ti-check text-white"
+                        multiple
+                    >
+                        <option value="1">Inv-code</option>
+                        <option value="2">Barcode</option>
+                        <option value="3">Item Description</option>
+                        <option value="4">Brand</option>
+                        <option value="5">Company</option>
+                        <option value="6">Location</option>
+                        <option value="7">Quantity</option>
+                        <option value="8">Damage Stock</option>
+                        <option value="9">Available Stock</option>
+                        <option value="10">Unit Price</option>
+                        <option value="11">Retail Price</option>
+                        <option value="12">Expiration Date</option>
+                        <option value="13">Aging</option>
+                        <option value="14">Delivery Date</option>
+                        <option value="15">created_at</option>
+                        <option value="16">updated_at</option>
+                        <option value="17">created_by</option>
+                    </select>
+                </div>
+
+                <div class="card-datatable text-nowrap">
+                    <table id="tbl-items" class="table">
+                        <thead>
+                            <tr>
+                                <th>Action</th>
+                                <th>Inv-code</th>
+                                <th>Barcode</th>
+                                <th>Item Description</th>
+                                <th>Brand</th>
+                                <th>Company</th>
+                                <th>Location</th>
+                                <th>Quantity</th>
+                                <th>Damage Stock</th>
+                                <th>Available Stock</th>
+                                <th>Unit Price</th>
+                                <th>Retail Price</th>
+                                <th>Expiration Date</th>
+                                <th>Aging</th>
+                                <th>Delivery Date</th>
+                                <th>created_at</th>
+                                <th>updated_at</th>
+                                <th>created_by</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
             </div>
         </div>
     </div>
@@ -36,6 +73,7 @@
 <script>
     $(document).ready(function () {
         const table = $('#tbl-items')
+        const columns_name = $('select[name=column_name]')
 
         var itemTable = table.DataTable({
             processing: true,
@@ -46,12 +84,16 @@
                 { data: 'code' },
                 { data: 'barcode' },
                 { data: 'details' },
+                { data: 'brand' },
+                { data: 'company' },
+                { data: 'location' },
                 { data: 'pcs_quantity', className: 'text-end' },
+                { data: 'damage_stock', className: 'text-end' },
                 { data: 'available_stock', className: 'text-end' },
                 { data: 'unit_price', className: 'text-end' },
                 { data: 'retail_price', className: 'text-end' },
                 { data: 'expiration_date', className: 'text-end' },
-                { data: 'expiration_aging', className: 'text-end' },
+                { data: 'expiration_aging' },
                 { data: 'delivered_date', className: 'text-end' },
                 { data: 'created_at', className: 'text-end' },
                 { data: 'updated_at', className: 'text-end' },
@@ -90,81 +132,129 @@
                         return '<span class="badge bg-label-primary">' + data + '</span>'
                     },
                 },
-                //{
-                //    targets: 6,
-                //    render: function (data, type, full, meta) {
-                //        return `${full['unit_quantity']} ${data}`
-                //    },
-                //},
-                //{
-                //    targets: 7,
-                //    render: function (data) {
-                //        let elem = data ?? ''
-                //        if (elem) {
-                //            elem = `${data} pcs`
-                //        }
-                //        return elem
-                //    },
-                //},
-                //{
-                //    targets: 9,
-                //    render: function (data, type, full, meta) {
-                //        let background_color = 'bg-secondary'
-                //        let pending_percent_val = full['pcs_quantity'] * 0.2
-                //        pending_percent_val = Math.trunc(pending_percent_val)
-                //        if (data > 0 && pending_percent_val >= 0 && data > pending_percent_val) {
-                //            background_color = 'bg-success'
-                //        } else if (data > 0 && pending_percent_val > 0 && data <= pending_percent_val) {
-                //            background_color = 'bg-pending'
-                //        } else if (data == 0 && data < pending_percent_val) {
-                //            background_color = 'bg-danger'
-                //        }
-                //        return `<span class="badge ${background_color}">${data} pcs</span>`
-                //    },
-                //},
-                //{
-                //    targets: 8,
-                //    render: function (data) {
-                //        return `${data} pcs`
-                //    },
-                //},
-                //{
-                //    targets: [10, 11],
-                //    render: function (data) {
-                //        return currencyFormat(data)
-                //    },
-                //},
-                //{
-                //    targets: 12,
-                //    render: function (data, type, full, meta) {
-                //        let background_color = 'bg-secondary'
-                //        let aging = full['expiration_aging']
-                //        if (aging > 30) {
-                //            background_color = 'bg-success'
-                //        } else if (aging <= 30 && aging > 0) {
-                //            background_color = 'bg-pending'
-                //        } else if (aging <= 0) {
-                //            background_color = 'bg-danger'
-                //        }
-                //        return `<span class="badge ${background_color}">${moment(data).format('LLL')}</span>`
-                //    },
-                //},
-                //{
-                //    targets: 13,
-                //    render: function (data) {
-                //        return `<span class="badge bg-secondary">${data}</span>`
-                //    },
-                //},
-                //{
-                //    targets: [14, 16, 17],
-                //    render: function (data) {
-                //        return moment(data).format('LLL')
-                //    },
-                //},
+                {
+                    targets: 6,
+                    render: function (data) {
+                        let elem = ''
+                        if (data.length > 0) {
+                            data.forEach(function (e) {
+                                elem += `<button type="button" class="btn btn-sm btn-label-dark waves-effect me-2 mt-1">
+                                            ${e.name}
+                                            <span class="badge bg-white text-dark badge-center ms-1">${e.quantity}</span>
+                                        </button>
+                                        </br>`
+                            })
+                        }
+                        return elem
+                    },
+                },
+                {
+                    targets: 7,
+                    render: function (data) {
+                        let elem = data ?? ''
+                        if (elem) {
+                            elem = `<span class="badge bg-info">${data} pcs</span>`
+                        }
+                        return elem
+                    },
+                },
+                {
+                    targets: 8,
+                    render: function (data) {
+                        let elem = ''
+                        if (data) {
+                            elem = `<span class="badge bg-danger">${data} pcs</span>`
+                        }
+                        return elem
+                    },
+                },
+                {
+                    targets: 9,
+                    render: function (data) {
+                        let elem = ''
+                        if (data) {
+                            elem = `<span class="badge bg-success">${data} pcs</span>`
+                        }
+                        return elem
+                    },
+                },
+                {
+                    targets: 10,
+                    render: function (data) {
+                        let elem = ''
+                        if (data) {
+                            elem = `<span class="badge bg-label-secondary">${currencyFormat(data)} pcs</span>`
+                        }
+                        return elem
+                    },
+                },
+                {
+                    targets: 11,
+                    render: function (data) {
+                        let elem = ''
+                        if (data) {
+                            elem = `<span class="badge bg-label-dark">${currencyFormat(data)} pcs</span>`
+                        }
+                        return elem
+                    },
+                },
+                {
+                    targets: 13,
+                    render: function (data) {
+                        let background_color = 'bg-secondary'
+                        if (data > 30) {
+                            background_color = 'bg-success'
+                        } else if (data <= 30 && data > 0) {
+                            background_color = 'bg-warning'
+                        } else if (data <= 0) {
+                            background_color = 'bg-danger'
+                        }
+                        return `<span class="badge ${background_color}">${data}</span>`
+                    },
+                },
+                {
+                    targets: [15, 16],
+                    render: function (data) {
+                        return moment(data).format('LLL')
+                    },
+                },
             ],
+
             scrollY: '300px',
             scrollX: true,
         })
+
+        itemTable.on('draw', function () {
+            let toggled_column = localStorage.getItem('toggled_column')
+            console.log(toggled_column)
+            if (toggled_column != '') {
+                columns_name.val(toggled_column.split(','))
+            } else {
+                columns_name.val([2, 4, 5, 6, 7, 8, 10, 11, 15, 16, 17])
+            }
+            toggle_columns()
+            columns_name.selectpicker()
+        })
+
+        columns_name.change(function () {
+            toggle_columns()
+        })
+
+        function toggle_columns() {
+            var all_column = Array.from({ length: 17 }, (_, i) => (i + 1).toString())
+
+            var remove_column = columns_name.val()
+
+            localStorage.setItem('toggled_column', remove_column)
+
+            var remaining_column = all_column.filter(function (obj) {
+                return remove_column.indexOf(obj) == -1
+            })
+
+            itemTable.columns(remove_column).visible(false)
+
+            itemTable.columns(remaining_column).visible(true)
+        }
     })
 </script>
 {% endblock footer_scripts %}
