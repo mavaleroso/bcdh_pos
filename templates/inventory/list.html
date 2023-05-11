@@ -14,19 +14,14 @@
                             <th>Action</th>
                             <th>Inv-code</th>
                             <th>Barcode</th>
-                            <th>Generic</th>
-                            <th>Sub-generic</th>
-                            <th>Description</th>
-                            <th>Unit</th>
-                            <th>Unit Qty</th>
-                            <th>Total Qty</th>
+                            <th>Item Description</th>
+                            <th>Quantity</th>
                             <th>Available Stock</th>
                             <th>Unit Price</th>
                             <th>Retail Price</th>
                             <th>Expiration Date</th>
                             <th>Aging</th>
                             <th>Delivery Date</th>
-                            <th>Status</th>
                             <th>created_at</th>
                             <th>updated_at</th>
                             <th>created_by</th>
@@ -48,12 +43,16 @@
             ajax: "{% url 'inventory-load' %}",
             columns: [
                 { data: 'id' },
+                { data: 'code' },
                 { data: 'barcode' },
-                { data: 'generic' },
-                { data: 'sub_generic' },
-                { data: 'classification' },
-                { data: 'description' },
-                { data: 'brand' },
+                { data: 'details' },
+                { data: 'pcs_quantity', className: 'text-end' },
+                { data: 'available_stock', className: 'text-end' },
+                { data: 'unit_price', className: 'text-end' },
+                { data: 'retail_price', className: 'text-end' },
+                { data: 'expiration_date', className: 'text-end' },
+                { data: 'expiration_aging', className: 'text-end' },
+                { data: 'delivered_date', className: 'text-end' },
                 { data: 'created_at', className: 'text-end' },
                 { data: 'updated_at', className: 'text-end' },
                 { data: 'created_by' },
@@ -91,79 +90,78 @@
                         return '<span class="badge bg-label-primary">' + data + '</span>'
                     },
                 },
-                {
-                    targets: 6,
-                    render: function (data, type, full, meta) {
-                        return `${full['unit_quantity']} ${data}`
-                    },
-                },
-                {
-                    targets: 7,
-                    render: function (data) {
-                        let elem = data ?? ''
-                        if (elem) {
-                            elem = `${data} pcs`
-                        }
-                        return elem
-                    },
-                },
-                {
-                    targets: 9,
-                    render: function (data, type, full, meta) {
-                        let background_color = 'bg-secondary'
-                        let pending_percent_val = full['pcs_quantity'] * 0.2
-                        pending_percent_val = Math.trunc(pending_percent_val)
-                        if (data > 0 && pending_percent_val >= 0 && data > pending_percent_val) {
-                            background_color = 'bg-success'
-                        } else if (data > 0 && pending_percent_val > 0 && data <= pending_percent_val) {
-                            background_color = 'bg-pending'
-                        } else if (data == 0 && data < pending_percent_val) {
-                            background_color = 'bg-danger'
-                        }
-                        return `<span class="badge ${background_color}">${data} pcs</span>`
-                    },
-                },
-                {
-                    targets: 8,
-                    render: function (data) {
-                        return `${data} pcs`
-                    },
-                },
-                {
-                    targets: [10, 11],
-                    render: function (data) {
-                        return currencyFormat(data)
-                    },
-                },
-                {
-                    targets: 12,
-                    render: function (data, type, full, meta) {
-                        let background_color = 'bg-secondary'
-                        let aging = full['expiration_aging']
-                        if (aging > 30) {
-                            background_color = 'bg-success'
-                        } else if (aging <= 30 && aging > 0) {
-                            background_color = 'bg-pending'
-                        } else if (aging <= 0) {
-                            background_color = 'bg-danger'
-                        }
-                        return `<span class="badge ${background_color}">${moment(data).format('LLL')}</span>`
-                    },
-                },
-                {
-                    targets: 13,
-                    render: function (data) {
-                        return `<span class="badge bg-secondary">${data}</span>`
-                    },
-                },
-                {
-                    targets: [14, 16, 17],
-                    render: function (data) {
-                        return moment(data).format('LLL')
-                    },
-                },
+                //{
+                //    targets: 6,
+                //    render: function (data, type, full, meta) {
+                //        return `${full['unit_quantity']} ${data}`
+                //    },
+                //},
+                //{
+                //    targets: 7,
+                //    render: function (data) {
+                //        let elem = data ?? ''
+                //        if (elem) {
+                //            elem = `${data} pcs`
+                //        }
+                //        return elem
+                //    },
+                //},
+                //{
+                //    targets: 9,
+                //    render: function (data, type, full, meta) {
+                //        let background_color = 'bg-secondary'
+                //        let pending_percent_val = full['pcs_quantity'] * 0.2
+                //        pending_percent_val = Math.trunc(pending_percent_val)
+                //        if (data > 0 && pending_percent_val >= 0 && data > pending_percent_val) {
+                //            background_color = 'bg-success'
+                //        } else if (data > 0 && pending_percent_val > 0 && data <= pending_percent_val) {
+                //            background_color = 'bg-pending'
+                //        } else if (data == 0 && data < pending_percent_val) {
+                //            background_color = 'bg-danger'
+                //        }
+                //        return `<span class="badge ${background_color}">${data} pcs</span>`
+                //    },
+                //},
+                //{
+                //    targets: 8,
+                //    render: function (data) {
+                //        return `${data} pcs`
+                //    },
+                //},
+                //{
+                //    targets: [10, 11],
+                //    render: function (data) {
+                //        return currencyFormat(data)
+                //    },
+                //},
+                //{
+                //    targets: 12,
+                //    render: function (data, type, full, meta) {
+                //        let background_color = 'bg-secondary'
+                //        let aging = full['expiration_aging']
+                //        if (aging > 30) {
+                //            background_color = 'bg-success'
+                //        } else if (aging <= 30 && aging > 0) {
+                //            background_color = 'bg-pending'
+                //        } else if (aging <= 0) {
+                //            background_color = 'bg-danger'
+                //        }
+                //        return `<span class="badge ${background_color}">${moment(data).format('LLL')}</span>`
+                //    },
+                //},
+                //{
+                //    targets: 13,
+                //    render: function (data) {
+                //        return `<span class="badge bg-secondary">${data}</span>`
+                //    },
+                //},
+                //{
+                //    targets: [14, 16, 17],
+                //    render: function (data) {
+                //        return moment(data).format('LLL')
+                //    },
+                //},
             ],
-            order: [13, 'asc'],
             scrollY: '300px',
             scrollX: true,
         })

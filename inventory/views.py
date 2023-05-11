@@ -5,7 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from django.http import JsonResponse
 from main.models import (Stocks, Items, SystemConfiguration, ItemType, Company, Generic, SubGeneric, Brand, Unit, AuthUser, OutItems)
-from datetime import date
+from datetime import date, datetime
 import math
 
 
@@ -27,8 +27,8 @@ def inventory_list(request):
 
 
 def inventory_load(request):
-    item_data = Item.objects.select_related().order_by('-delivered_date').reverse()
-    total = item_data.count()
+    stock_data = Stocks.objects.select_related().order_by('-delivered_date').reverse()
+    total = stock_data.count()
 
     _start = request.GET.get('start')
     _length = request.GET.get('length')
@@ -38,13 +38,13 @@ def inventory_load(request):
         page = math.ceil(start / length) + 1
         per_page = length
 
-        item_data = item_data[start:start + length]
+        stock_data = stock_data[start:start + length]
 
     data = []
 
-    for item in item_data:
-        userData = AuthUser.objects.filter(id=item.user.id)
-        outItemsData=OutItems.objects.filter(item_id=item.id)
+    for stock in stock_data:
+        userData = AuthUser.objects.filter(id=stock.user.id)
+        outItemsData=OutItems.objects.filter(item_id=stock.id)
         full_name = userData[0].first_name + ' ' + userData[0].last_name
 
         expended_stock = 0
@@ -52,30 +52,24 @@ def inventory_load(request):
         for outItem in outItemsData:
             expended_stock = expended_stock + outItem.quantity
 
-        available = item.pcs_quantity - expended_stock
+        available = stock.pcs_quantity - expended_stock
 
-        expiration_aging = item.expiration_date - datetime.now().date()
+        expiration_aging = stock.expiration_date - datetime.now().date()
 
         item = {
-            'id': item.id,
-            'code': item.code,
-            'barcode': item.barcode,
-            'generic': item.generic.name,
-            'sub_generic': item.sub_generic.name,
-            'description': item.description,
-            'unit': item.unit.name if item.unit_id is not None else '',
-            'unit_quantity': item.unit_quantity if item.unit_id is not None else '',
-            'unit_quantity_pcs': item.unit_quantity_pcs if item.unit_id is not None else '',
-            'pcs_quantity': item.pcs_quantity,
-            'available_stock': available,
-            'unit_price': item.unit_price,
-            'retail_price': item.retail_price,
-            'expiration_date': item.expiration_date,
+            'id': stock.id,
+            'code': stock.code,
+            'barcode': stock.items.barcode,
+            'details': stock.items.generic.name + ' ' + stock.items.sub_generic.name + ' ' + stock.items.classification + ' ' + stock.items.description, 
+            'pcs_quantity': stock.pcs_quantity,
+            'available_stock': stock,
+            'unit_price': stock.unit_price,
+            'retail_price': stock.retail_price,
+            'expiration_date': stock.expiration_date,
             'expiration_aging': expiration_aging.days,
-            'delivered_date': item.delivered_date,
-            'status': item.id,
-            'created_at': item.created_at,
-            'updated_at': item.updated_at,
+            'delivered_date': stock.delivered_date,
+            'created_at': stock.created_at,
+            'updated_at': stock.updated_at,
             'created_by': full_name
         }
 
