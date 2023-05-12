@@ -60,55 +60,24 @@ def salesitem(request):
         usr_id = request.session.get('user_id', 0)
         amt_paid = request.POST.get('amt_paid')
         sales_remarks = request.POST.get('remarks')
-        item_size = request.POST.get('item_size')
-
-        out_items1 = request.POST.get('out_stocks')
-        print("testniha")
-
-        print(out_items1)
-        for i in out_items1:
-            print("onee")
-            print(out_items1[i])
-
+        discount_amount = request.POST.get('discounted_amt')
+        stock_list = json.loads(request.POST.get('out_stocks'))
         
-
-        # item_list  = request.POST["out_stocks"]
-        # item_list = item_list.split(",")
-        # print("itemmlistthisaaa")
-        # print(out_items1)
-
-
-
-        # for i in out_items1:
-            
-        #     # out_items = request.POST.getlist('out_stocks['+i+']')
-        #     print("data_testa11")
-        #     print(i)
-        #     print("items ni")
-        #     print(out_items1)
-            
-
-        
-
-        # for i in range(item_size):
-        #     out_items = request.POST.getlist('out_stocks['+i+']')
-        #     print("data_testa")
-        #     print(out_items)
-        # print(item_size)
-        # print(request.POST.getlist('out_stocks[]'))
         if disc_id =="0":
             disc_id = None
-            print("zero ni")
-            print(disc_id)
-
         addsales = Sales(is_er=0,remarks=sales_remarks,client_id = clie_id,discount_id=disc_id,user_id = usr_id)
         addsales.save()
         addpayment = Payment(amount_paid = amt_paid,sales_id = Sales.objects.last().id)
         addpayment.save()
-
-
-        # stock = OutItems(quantity=qty,discounted_amount=sales_remarks,stock_id = clie_id)
-        # stock.save()
+        
+        for stock_list_item in stock_list:
+            obj, was_created_bool = OutItems.objects.get_or_create(
+            stock_id=stock_list_item['stock_id'],
+            quantity=stock_list_item['quantity'],
+            discounted_amount=discount_amount,
+            sales_id = Sales.objects.last().id
+        )
+        
 
         return JsonResponse({'data': 'success'})
     else:

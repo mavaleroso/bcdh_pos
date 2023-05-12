@@ -478,6 +478,9 @@ $(document).ready(function(){
         var total_amount = $(".total-place-order").text().slice(1);
         var item_total = $("#count_items").text();
         var sales_remarks = $(".dt-sales-remarks").val();
+
+        var discounted_amount = $(".discount-value").text().slice(2);
+
   
         if (item_total !="0 item/s" && client_id!=0){
           Swal.fire({
@@ -495,13 +498,11 @@ $(document).ready(function(){
           
           if (result.value) {
               event.preventDefault();
-              console.log("bebe");
-              console.log(selected_items);
               $.ajax({
                   type: "POST",
                   url: "{% url 'sales-item' %}",
                   data:{
-                    cl_id : client_id, dis_id : discount_id, amt_paid: total_amount, remarks:sales_remarks, out_stocks : JSON.stringify(selected_items), item_size: selected_items.length
+                    cl_id : client_id, dis_id : discount_id, amt_paid: total_amount, remarks:sales_remarks, out_stocks : JSON.stringify(selected_items), discounted_amt : discounted_amount
                   }
               }).done(function(data){
                 if(data.data == "success"){
@@ -827,6 +828,7 @@ $(document).ready(function(){
       var checkBoxes = grid.getElementsByTagName("INPUT");
       var str = '';
 
+
       selected_items = [];      
       // var addedCheckboxes = $(".whole-div-class ");
 
@@ -839,6 +841,8 @@ $(document).ready(function(){
       // });
 
       for (var i = 0; i < checkBoxes.length; i++) {
+
+        console.log(checkBoxes[i].id)
         if (
           checkBoxes[i].checked &&
           checkBoxes[i].name !== "allcb" &&
@@ -851,9 +855,9 @@ $(document).ready(function(){
         ) {
           var row = checkBoxes[i].parentNode.parentNode;
           cart_count++;
-
+          var result_checkboxes = checkBoxes[i].id.slice(2, 3);
           var selected_obj ={ 
-            stock_id: checkBoxes[i].id,
+            stock_id: result_checkboxes,
             quantity: row.cells[3].innerHTML
           }
           selected_items.push(selected_obj);
