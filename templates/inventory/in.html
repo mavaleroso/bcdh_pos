@@ -576,7 +576,7 @@
                             </tr>`)
                 } else if (data.status == 'error') {
                     let message = data.message
-                    toastr.warning('Item fetch failed!', 'Search Barcode', toast_options)
+                    toastr.warning('No barcode found', 'Search Barcode', toast_options)
                     tblItem.html(`<tr>
                                 <td colspan="4"">
                                     <div class="alert alert-warning d-flex align-items-center" role="alert">

@@ -40,7 +40,7 @@
                 </div>
 
                 <div class="card-datatable text-nowrap">
-                    <table id="tbl-items" class="table">
+                    <table id="tbl-items" class="table display compact">
                         <thead>
                             <tr>
                                 <th>Action</th>
@@ -225,7 +225,7 @@
         })
 
         itemTable.on('draw', function () {
-            let toggled_column = localStorage.getItem('toggled_column')
+            let toggled_column = localStorage.getItem('toggled_column') ?? ''
             console.log(toggled_column)
             if (toggled_column != '') {
                 columns_name.val(toggled_column.split(','))
