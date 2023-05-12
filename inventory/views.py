@@ -4,9 +4,11 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from django.http import JsonResponse
-from main.models import (Stocks, Items, ItemLocation, SystemConfiguration, ItemType, Company, Generic, SubGeneric, Brand, Unit, AuthUser, OutItems)
+from main.models import (Stocks, Items, ItemLocation, SystemConfiguration,
+                         ItemType, Company, Generic, SubGeneric, Brand, Unit, AuthUser, OutItems)
 from datetime import date, datetime
 import math
+from django.db.models import Q
 
 
 def inventory_in(request):
@@ -26,12 +28,31 @@ def inventory_list(request):
 
 
 def inventory_load(request):
-    stock_data = Stocks.objects.select_related().order_by('-delivered_date').reverse()
-    total = stock_data.count()
-    
 
+    _search = request.GET.get('search[value]')
     _start = request.GET.get('start')
     _length = request.GET.get('length')
+    _order_col = request.GET.get('order[0][column]')
+    _order_dir = request.GET.get('order[0][dir]')
+
+    stock_data = Stocks.objects.select_related().filter(
+        Q(code__icontains=_search) |
+        Q(item__barcode__icontains=_search) |
+        Q(item__brand__name__icontains=_search) |
+        Q(company__name__icontains=_search) |
+        Q(item__generic__name__icontains=_search) |
+        Q(item__sub_generic__name__icontains=_search) |
+        Q(item__classification__icontains=_search) |
+        Q(item__description__icontains=_search) |
+        Q(pcs_quantity__icontains=_search) |
+        Q(is_damaged__icontains=_search) |
+        Q(unit_price__icontains=_search) |
+        Q(retail_price__icontains=_search) |
+        Q(expiration_date__icontains=_search) |
+        Q(delivered_date__icontains=_search)
+    ).order_by('-delivered_date').reverse()
+    total = stock_data.count()
+
     if _start and _length:
         start = int(_start)
         length = int(_length)
@@ -44,7 +65,7 @@ def inventory_load(request):
 
     for stock in stock_data:
         userData = AuthUser.objects.filter(id=stock.user.id)
-        outItemsData=OutItems.objects.filter(stock_id=stock.id)
+        outItemsData = OutItems.objects.filter(stock_id=stock.id)
         itemLocation = ItemLocation.objects.select_related().filter(stock_id=stock.id)
         full_name = userData[0].first_name + ' ' + userData[0].last_name
 
@@ -74,7 +95,7 @@ def inventory_load(request):
             'brand': stock.item.brand.name,
             'company': stock.company.name,
             'location': location_data,
-            'details': stock.item.generic.name + ' ' + stock.item.sub_generic.name + ' ' + stock.item.classification + ' ' + stock.item.description, 
+            'details': stock.item.generic.name + ' ' + stock.item.sub_generic.name + ' ' + stock.item.classification + ' ' + stock.item.description,
             'pcs_quantity': stock.pcs_quantity,
             'damage_stock': stock.is_damaged,
             'available_stock': available,
@@ -133,8 +154,8 @@ def store_items(request):
         user_id = request.session.get('user_id', 0)
         code = generate_code()
 
-        stocks = Stocks(code=code, item_id=item_id, company_id=company, unit_price=unit_price, pcs_quantity=item_quantity_pcs, retail_price=retail_price, delivered_date=delivery_date, expiration_date=expiration_date, user_id=user_id)
-
+        stocks = Stocks(code=code, item_id=item_id, company_id=company, unit_price=unit_price, pcs_quantity=item_quantity_pcs,
+                        retail_price=retail_price, delivered_date=delivery_date, expiration_date=expiration_date, user_id=user_id)
 
         stocks.save()
 
@@ -144,7 +165,8 @@ def store_items(request):
             system_config.save()
 
         return JsonResponse({'data': 'success'})
-    
+
+
 def received_item_load(request):
     dateToday = date.today()
 
@@ -168,7 +190,8 @@ def received_item_load(request):
         itemData = Items.objects.select_related().filter(id=stock.item.id)
 
         full_name = userData[0].first_name + ' ' + userData[0].last_name
-        item_details = itemData[0].generic.name + ' ' + itemData[0].sub_generic.name + ' ' + itemData[0].classification + ' ' + itemData[0].description
+        item_details = itemData[0].generic.name + ' ' + itemData[0].sub_generic.name + \
+            ' ' + itemData[0].classification + ' ' + itemData[0].description
 
         stock_item = {
             'id': stock.id,
