@@ -8,35 +8,221 @@
 
         <div class="card">
             <div class="card-body">
-                <div class="form-group">
-                    <label class="form-label" for="column_name">Toggle Columns</label>
-                    <select
-                        name="column_name"
-                        id="column_name"
-                        class="form-control"
-                        data-style="btn-default"
-                        data-icon-base="ti"
-                        data-tick-icon="ti-check text-white"
-                        multiple
-                    >
-                        <option value="1">Inv-code</option>
-                        <option value="2">Barcode</option>
-                        <option value="3">Item Description</option>
-                        <option value="4">Brand</option>
-                        <option value="5">Company</option>
-                        <option value="6">Location</option>
-                        <option value="7">Quantity</option>
-                        <option value="8">Damage Stock</option>
-                        <option value="9">Available Stock</option>
-                        <option value="10">Unit Price</option>
-                        <option value="11">Retail Price</option>
-                        <option value="12">Expiration Date</option>
-                        <option value="13">Aging</option>
-                        <option value="14">Delivery Date</option>
-                        <option value="15">created_at</option>
-                        <option value="16">updated_at</option>
-                        <option value="17">created_by</option>
-                    </select>
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="form-group">
+                            <label class="form-label" for="column_name">Toggle Columns</label>
+                            <select
+                                name="column_name"
+                                id="column_name"
+                                class="form-control"
+                                data-style="btn-default"
+                                data-icon-base="ti"
+                                data-tick-icon="ti-check text-white"
+                                multiple
+                            >
+                                <option value="1">Inv-code</option>
+                                <option value="2">Barcode</option>
+                                <option value="3">Item Description</option>
+                                <option value="4">Brand</option>
+                                <option value="5">Company</option>
+                                <option value="6">Location</option>
+                                <option value="7">Quantity</option>
+                                <option value="8">Damage Stock</option>
+                                <option value="9">Available Stock</option>
+                                <option value="10">Unit Price</option>
+                                <option value="11">Retail Price</option>
+                                <option value="12">Expiration Date</option>
+                                <option value="13">Aging</option>
+                                <option value="14">Delivery Date</option>
+                                <option value="15">created_at</option>
+                                <option value="16">updated_at</option>
+                                <option value="17">created_by</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="p-1 fit-content ms-auto d-block">
+                            <label class="switch switch-lg mt-4 fit-content">
+                                <input id="advance-filter-switch" type="checkbox" class="switch-input" />
+                                <span class="switch-toggle-slider">
+                                    <span class="switch-on">
+                                        <i class="ti ti-check"></i>
+                                    </span>
+                                    <span class="switch-off">
+                                        <i class="ti ti-x"></i>
+                                    </span>
+                                </span>
+                                <span class="switch-label">Advance Search</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="py-4">
+                            <button type="button" class="btn btn-primary waves-effect waves-light ms-auto d-block">
+                                <span class="ti-xs ti ti-file-export me-1"></span>Export Excel
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="advance-filter-card" class="card my-3 shadow-sm">
+                    <div class="card-header">
+                        <div class="card-title h6">Advance Filter</div>
+                    </div>
+                    <div class="card-body">
+                        <form id="advance-filter-form">
+                            <div class="row">
+                                <div class="col-12">
+                                    <div class="row g-3">
+                                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                                            <label class="form-label">Inventory Code</label>
+                                            <select
+                                                id="inventory-code-filter"
+                                                name="inventory_code_filter"
+                                                class="select2-filter form-select"
+                                                multiple
+                                            >
+                                                <option></option>
+                                                {% for row in inventory_code %}
+                                                <option value="{{ row.code }}">{{ row.code }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                                            <label class="form-label">Barcode</label>
+                                            <select id="barcode-filter" name="barcode_filter" class="select2-filter form-select" multiple>
+                                                <option></option>
+                                                {% for row in barcode %}
+                                                <option value="{{ row.barcode }}">{{ row.barcode }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                                            <label class="form-label">Generic</label>
+                                            <select id="generic-filter" name="generic_filter" class="select2-filter form-select" multiple>
+                                                <option></option>
+                                                {% for row in generic %}
+                                                <option value="{{ row.id }}">{{ row.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                                            <label class="form-label">Sub-generic</label>
+                                            <select id="subgeneric-filter" name="subgeneric_filter" class="select2-filter form-select" multiple>
+                                                <option></option>
+                                                {% for row in sub_generic %}
+                                                <option value="{{ row.id }}">{{ row.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                                            <label class="form-label">Classification</label>
+                                            <input type="text" id="classification-filter" name="classification_filter" class="form-control" />
+                                        </div>
+                                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                                            <label class="form-label">Description</label>
+                                            <input type="text" id="description-filter" name="description_filter" class="form-control" />
+                                        </div>
+                                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                                            <label class="form-label">Brand</label>
+                                            <select id="brand-filter" name="brand_filter" class="select2-filter form-select" multiple>
+                                                <option></option>
+                                                {% for row in brand %}
+                                                <option value="{{ row.id }}">{{ row.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                                            <label class="form-label">Company</label>
+                                            <select id="company-filter" name="company_filter" class="select2-filter form-select" multiple>
+                                                <option></option>
+                                                {% for row in company %}
+                                                <option value="{{ row.id }}">{{ row.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                                            <label class="form-label">Location</label>
+                                            <select id="location-filter" name="location_filter" class="select2-filter form-select" multiple>
+                                                <option></option>
+                                                {% for row in location %}
+                                                <option value="{{ row.id }}">{{ row.name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                                            <label class="form-label">Is damaged</label>
+                                            <select
+                                                name="is_damage_filter"
+                                                id="is-damage-filter"
+                                                class="form-control"
+                                                data-style="btn-default"
+                                                data-icon-base="ti"
+                                                data-tick-icon="ti-check text-white"
+                                            >
+                                                <option value=""></option>
+                                                <option value="yes">Yes</option>
+                                                <option value="no">No</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                                            <label class="form-label">Is available</label>
+                                            <select
+                                                name="is_available_filter"
+                                                id="is-available-filter"
+                                                class="form-control"
+                                                data-style="btn-default"
+                                                data-icon-base="ti"
+                                                data-tick-icon="ti-check text-white"
+                                            >
+                                                <option value=""></option>
+                                                <option value="yes">Yes</option>
+                                                <option value="no">No</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                                            <label class="form-label">Is expired</label>
+                                            <select
+                                                name="is_expired_filter"
+                                                id="is-expired-filter"
+                                                class="form-control"
+                                                data-style="btn-default"
+                                                data-icon-base="ti"
+                                                data-tick-icon="ti-check text-white"
+                                            >
+                                                <option value=""></option>
+                                                <option value="yes">Yes</option>
+                                                <option value="no">No</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                                            <label class="form-label">Expiration Date</label>
+                                            <input type="date" id="expiration-date-filter" name="expiration_date_filter" class="form-control" />
+                                        </div>
+                                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                                            <label class="form-label">Delivered Date</label>
+                                            <input type="date" id="delivered-date-filter" name="delivered_date_filter" class="form-control" />
+                                        </div>
+                                        <div class="col-12 col-sm-6 col-md-4 col-lg-3 offset-md-3">
+                                            <div class="mt-4 fit-content d-flex ms-auto d-block">
+                                                <button
+                                                    id="reset-advance-filter"
+                                                    type="button"
+                                                    class="btn btn-light-secondary waves-effect waves-light me-1"
+                                                >
+                                                    Reset
+                                                </button>
+                                                <button id="search-advance-filter" type="button" class="btn btn-primary waves-effect waves-light">
+                                                    <span class="ti-xs ti ti-search me-1"></span>Search
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
                 </div>
 
                 <div class="card-datatable text-nowrap">
@@ -74,11 +260,75 @@
     $(document).ready(function () {
         const table = $('#tbl-items')
         const columns_name = $('select[name=column_name]')
+        const advance_filter_switch = $('#advance-filter-switch')
+        const advance_filter_card = $('#advance-filter-card')
+        const datepicker_field = document.querySelectorAll('.dob-picker')
+        const select2_filter = $('.select2-filter')
+        const advance_filter_form = $('#advance-filter-form')
+        const search_advance_filter = $('#search-advance-filter')
+        const reset_advance_filter = $('#reset-advance-filter')
 
-        var itemTable = table.DataTable({
+        const inventory_code_filter = $('#inventory-code-filter')
+        const barcode_filter = $('#barcode-filter')
+        const generic_filter = $('#generic-filter')
+        const subgeneric_filter = $('#subgeneric-filter')
+        const classification_filter = $('#classification-filter')
+        const description_filter = $('#description-filter')
+        const brand_filter = $('#brand-filter')
+        const company_filter = $('#company-filter')
+        const location_filter = $('#location-filter')
+        const is_damage_filter = $('select[name=is_damage_filter]')
+        const is_available_filter = $('select[name=is_available_filter]')
+        const is_expired_filter = $('select[name=is_expired_filter]')
+        const expiration_date_filter = $('#expiration-date-filter')
+        const delivered_date_filter = $('#delivered-date-filter')
+
+        advance_filter_switch.on('change', () => {
+            let val = advance_filter_switch.is(':checked')
+            val ? advance_filter_card.show('500') : advance_filter_card.hide('500')
+        })
+
+        datepicker_field.forEach(function (datepicker) {
+            datepicker.flatpickr({
+                monthSelectorType: 'static',
+            })
+        })
+
+        is_damage_filter.selectpicker()
+        is_available_filter.selectpicker()
+        is_expired_filter.selectpicker()
+
+        if (select2_filter.length) {
+            select2_filter.select2({
+                allowClear: false,
+                placeholder: 'Select Filter',
+            })
+        }
+
+        advance_filter_card.hide()
+
+        var stocksTable = table.DataTable({
             processing: true,
             serverSide: true,
-            ajax: "{% url 'inventory-load' %}",
+            ajax: {
+                url: "{% url 'inventory-load' %}",
+                data: function (d) {
+                    d.inventory_code_filter = inventory_code_filter.val()
+                    d.barcode_filter = barcode_filter.val()
+                    d.generic_filter = generic_filter.val()
+                    d.subgeneric_filter = subgeneric_filter.val()
+                    d.classification_filter = classification_filter.val()
+                    d.description_filter = description_filter.val()
+                    d.brand_filter = brand_filter.val()
+                    d.company_filter = company_filter.val()
+                    d.location_filter = location_filter.val()
+                    d.is_damage_filter = is_damage_filter.val()
+                    d.is_available_filter = is_available_filter.val()
+                    d.is_expired_filter = is_expired_filter.val()
+                    d.expiration_date_filter = expiration_date_filter.val()
+                    d.delivered_date_filter = delivered_date_filter.val()
+                },
+            },
             columns: [
                 { data: 'id' },
                 { data: 'code' },
@@ -133,16 +383,23 @@
                     },
                 },
                 {
+                    targets: [3, 5, 17],
+                    orderable: false,
+                    searchable: false,
+                },
+                {
                     targets: 6,
+                    orderable: false,
+                    searchable: false,
                     render: function (data) {
                         let elem = ''
                         if (data.length > 0) {
                             data.forEach(function (e) {
                                 elem += `<button type="button" class="btn btn-sm btn-label-dark waves-effect me-2 mt-1">
-                                            ${e.name}
-                                            <span class="badge bg-white text-dark badge-center ms-1">${e.quantity}</span>
-                                        </button>
-                                        </br>`
+                                              ${e.name}
+                                              <span class="badge bg-white text-dark badge-center ms-1">${e.quantity}</span>
+                                          </button>
+                                          </br>`
                             })
                         }
                         return elem
@@ -160,6 +417,8 @@
                 },
                 {
                     targets: 8,
+                    orderable: false,
+                    searchable: false,
                     render: function (data) {
                         let elem = ''
                         if (data) {
@@ -170,11 +429,11 @@
                 },
                 {
                     targets: 9,
+                    orderable: false,
+                    searchable: false,
                     render: function (data) {
-                        let elem = ''
-                        if (data) {
-                            elem = `<span class="badge bg-success">${data} pcs</span>`
-                        }
+                        let elem = data ?? 0
+                        elem = `<span class="badge bg-success">${data} pcs</span>`
                         return elem
                     },
                 },
@@ -183,7 +442,7 @@
                     render: function (data) {
                         let elem = ''
                         if (data) {
-                            elem = `<span class="badge bg-label-secondary">${currencyFormat(data)} pcs</span>`
+                            elem = `<span class="badge bg-label-secondary">${currencyFormat(data)}</span>`
                         }
                         return elem
                     },
@@ -193,13 +452,15 @@
                     render: function (data) {
                         let elem = ''
                         if (data) {
-                            elem = `<span class="badge bg-label-dark">${currencyFormat(data)} pcs</span>`
+                            elem = `<span class="badge bg-label-dark">${currencyFormat(data)}</span>`
                         }
                         return elem
                     },
                 },
                 {
                     targets: 13,
+                    orderable: false,
+                    searchable: false,
                     render: function (data) {
                         let background_color = 'bg-secondary'
                         if (data > 30) {
@@ -219,14 +480,23 @@
                     },
                 },
             ],
-            order: [[14, 'desc']],
+            order: [[14, 'asc']],
             scrollY: '300px',
             scrollX: true,
         })
 
-        itemTable.on('draw', function () {
+        search_advance_filter.on('click', function () {
+            stocksTable.ajax.reload()
+        })
+
+        reset_advance_filter.on('click', function () {
+            select2_filter.val([]).trigger('change')
+            advance_filter_form.trigger('reset')
+            stocksTable.ajax.reload()
+        })
+
+        stocksTable.on('draw', function () {
             let toggled_column = localStorage.getItem('toggled_column') ?? ''
-            console.log(toggled_column)
             if (toggled_column != '') {
                 columns_name.val(toggled_column.split(','))
             } else {
@@ -251,9 +521,9 @@
                 return remove_column.indexOf(obj) == -1
             })
 
-            itemTable.columns(remove_column).visible(false)
+            stocksTable.columns(remove_column).visible(false)
 
-            itemTable.columns(remaining_column).visible(true)
+            stocksTable.columns(remaining_column).visible(true)
         }
     })
 </script>

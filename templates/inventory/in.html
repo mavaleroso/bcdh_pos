@@ -107,7 +107,7 @@
                                 </div>
                                 <div class="col-md-4">
                                     <label class="form-label" for="company">Company</label>
-                                    <select id="company" name="Company" class="select2 form-select" data-allow-clear="true">
+                                    <select id="company" name="Company" class="form-select" data-allow-clear="true">
                                         <option></option>
                                         {% for row in company %}
                                         <option value="{{ row.id }}">{{ row.name }}</option>
@@ -170,7 +170,7 @@
             <div class="col-sm-12">
                 <div class="form-group">
                     <label class="form-label" for="item-type">Item Type</label>
-                    <select id="item-type" name="ItemType" class="select2 form-select" data-allow-clear="true">
+                    <select id="item-type" name="ItemType" class="form-select" data-allow-clear="true">
                         <option></option>
                         {% for row in item_type %}
                         <option value="{{ row.id }}">{{ row.name }}</option>
@@ -182,7 +182,7 @@
             <div class="col-sm-12">
                 <div class="form-group">
                     <label class="form-label" for="generic">Generic</label>
-                    <select id="generic" name="Generic" class="select2 form-select" data-allow-clear="true">
+                    <select id="generic" name="Generic" class="form-select" data-allow-clear="true">
                         <option></option>
                         {% for row in generic %}
                         <option value="{{ row.id }}">{{ row.name }}</option>
@@ -193,7 +193,7 @@
             <div class="col-sm-12">
                 <div class="form-group">
                     <label class="form-label" for="sub-generic">Sub Generic</label>
-                    <select id="sub-generic" name="SubGeneric" class="select2 form-select" data-allow-clear="true">
+                    <select id="sub-generic" name="SubGeneric" class="form-select" data-allow-clear="true">
                         <option></option>
                         {% for row in sub_generic %}
                         <option value="{{ row.id }}">{{ row.name }}</option>
@@ -220,7 +220,7 @@
             <div class="col-sm-12">
                 <div class="form-group">
                     <label class="form-label" for="brand">Brand<span class="ms-1 text-secondary">(Optional)</span></label>
-                    <select id="brand" name="Brand" class="select2 form-select" data-allow-clear="true">
+                    <select id="brand" name="Brand" class="form-select" data-allow-clear="true">
                         <option></option>
                         {% for row in brand %}
                         <option value="{{ row.id }}">{{ row.name }}</option>
@@ -273,7 +273,7 @@
             ItemType.val('').trigger('change')
             Generic.val('').trigger('change')
             SubGeneric.val('').trigger('change')
-            $('.form-control').val('')
+            $('#item-form .form-control').val('')
             Brand.val('').trigger('change')
             offCanvasEl.show()
         })
