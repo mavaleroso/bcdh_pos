@@ -72,11 +72,15 @@ def salesitem(request):
         
         for stock_list_item in stock_list:
             obj, was_created_bool = OutItems.objects.get_or_create(
-            stock_id=stock_list_item['stock_id'],
+            stock_id=stock_list_item['id'],
             quantity=stock_list_item['quantity'],
             discounted_amount=discount_amount,
             sales_id = Sales.objects.last().id
         )
+            mainquantity=stock_list_item['stocksquantity']
+            newquantity = stock_list_item['quantity']
+            total_quantity = (int(mainquantity) - int(newquantity))
+            Stocks.objects.filter(id=stock_list_item['id']).update(pcs_quantity=total_quantity)
         
 
         return JsonResponse({'data': 'success'})

@@ -67,7 +67,7 @@
                 </div>
               </div>
 
-              <ul class="list-group mb-3 row-data whole-div-class"></ul>
+              <ul class="list-group mb-3 row whole-div-class"></ul>
               
 
               <!-- Wishlist -->
@@ -478,10 +478,23 @@ $(document).ready(function(){
         var total_amount = $(".total-place-order").text().slice(1);
         var item_total = $("#count_items").text();
         var sales_remarks = $(".dt-sales-remarks").val();
+        const selectedId = $('input[name=checkboxtype]').map((i, el) => ({id: el.id.slice(2)})).get();
+        const selectedItemsQty = $('.quantity-input').map((i, el) => ({quantity: el.value})).get();
+        const selectedMainQuantity = $('.quantity-input').map((i, el) => ({quantity: el.value})).get();
+        const quantityStocks = $('.main-quantity').map((i, el) => ({qtystocks: el.innerHTML.slice(0,-10)})).get();
 
-        var discounted_amount = $(".discount-value").text().slice(2);
-
-  
+        var item_selected = [];
+        if (selectedId.length < selectedItemsQty.length){
+          for(var i = 0; i < selectedId.length; i++){
+            let obj = {id: selectedId[i]['id'], quantity: selectedItemsQty[i]?.quantity, stocksquantity:quantityStocks[i]?.qtystocks};
+            item_selected.push(obj);
+          } 
+        }
+        else{
+          for(var i = 0; i < selectedItemsQty.length; i++){
+            let obj = {id: selectedId[i]['id'], quantity: selectedItemsQty[i]?.quantity, stocksquantity:quantityStocks[i]?.qtystocks};
+            item_selected.push(obj);
+        }}
         if (item_total !="0 item/s" && client_id!=0){
           Swal.fire({
               title: 'Are you sure?',
@@ -498,11 +511,12 @@ $(document).ready(function(){
           
           if (result.value) {
               event.preventDefault();
+              console.log("bebe");
               $.ajax({
                   type: "POST",
                   url: "{% url 'sales-item' %}",
                   data:{
-                    cl_id : client_id, dis_id : discount_id, amt_paid: total_amount, remarks:sales_remarks, out_stocks : JSON.stringify(selected_items), discounted_amt : discounted_amount
+                    cl_id : client_id, dis_id : discount_id, amt_paid: total_amount, remarks:sales_remarks, out_stocks : JSON.stringify(item_selected)
                   }
               }).done(function(data){
                 if(data.data == "success"){
@@ -670,7 +684,7 @@ $(document).ready(function(){
             responsivePriority: 3,
             checkboxes: true,
             render: function (data) {
-              return '<input type="checkbox" class="dt-checkboxes form-check-input" id="cb'+data+'" name="cb'+data+'">';
+              return '<input type="checkbox" class="dt-checkboxes meow form-check-input" id="cb'+data+'" name="checkboxtype">';
             },
             checkboxes: {
               selectAllRender: '<input type="checkbox" class="form-check-input" id="allcb" name="allcb">'
@@ -765,8 +779,15 @@ $(document).ready(function(){
   var sub_total = 0;
   $(document).on( "change",  ".quantity-input",function() {
 
-    var $row = $(this).closest('-data');
+    var $row = $(this).closest('.row');
+
+
+
+
+
     var value_input = $(".quantity-input", $row).val();
+    
+    console.log( $(".quantity-input").val());
     var row_sub_total_old = $(".total-value", $row).text().slice(1);
     
     var price_value = $(".price-value", $row).html(); 
@@ -827,9 +848,7 @@ $(document).ready(function(){
       var grid = document.getElementById("Table1");
       var checkBoxes = grid.getElementsByTagName("INPUT");
       var str = '';
-
-
-      selected_items = [];      
+    
       // var addedCheckboxes = $(".whole-div-class ");
 
       // var checkBoxes = $("input");
@@ -841,8 +860,6 @@ $(document).ready(function(){
       // });
 
       for (var i = 0; i < checkBoxes.length; i++) {
-
-        console.log(checkBoxes[i].id)
         if (
           checkBoxes[i].checked &&
           checkBoxes[i].name !== "allcb" &&
@@ -851,17 +868,11 @@ $(document).ready(function(){
           // checkBoxes[i].checked &&
           // checkBoxes[i].name !== "allcb"
 
-
         ) {
           var row = checkBoxes[i].parentNode.parentNode;
           cart_count++;
-          var result_checkboxes = checkBoxes[i].id.slice(2, 3);
-          var selected_obj ={ 
-            stock_id: result_checkboxes,
-            quantity: row.cells[3].innerHTML
-          }
-          selected_items.push(selected_obj);
-
+          var stck_id = checkBoxes[i].id.slice(2);
+         
           str +=
             '<li class="list-group-item p-4 li" data-for="' + checkBoxes[i].id + '">'+
               '<div class="d-flex gap-3">'+
@@ -886,7 +897,9 @@ $(document).ready(function(){
                         '<div class="my-2 my-md-4 mb-md-5">'+
                           '<span class="text-success sub-total-row total-value">'+ row.cells[4].innerHTML +'</span>'+
                         '</div>'+
-                        '<button type="button" class="btn btn-sm btn-label-primary">'+ row.cells[3].innerHTML +' available</button>'+
+                        // '<input type="number" class="form-control form-control-sm w-px-75 old-quantity" id="old-quantity">'+row.cells[3].innerHTML+'</input>' +
+                        '<span class="badge bg-label-primary cordoba main-quantity" id="stocks_quantity" name="stocks_quantity">'+row.cells[3].innerHTML+' Available</span>'+
+                        // '<button type="button" class="btn btn-sm btn-label-primary">'+ row.cells[3].innerHTML +' available</button>'+
                       '</div>'+
                     '</div>'+
                   '</div>'+
