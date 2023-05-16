@@ -8,7 +8,7 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from main.models import (Stocks, Clients, Items, Discounts, Sales, Payment)
+from main.models import (Stocks, Clients, Items, Discounts, Sales, Payment,OutItems)
 import json 
 from django.core import serializers
 import datetime
@@ -59,20 +59,29 @@ def salesitem(request):
         disc_id = request.POST.get('dis_id')
         usr_id = request.session.get('user_id', 0)
         amt_paid = request.POST.get('amt_paid')
-
+        sales_remarks = request.POST.get('remarks')
+        discount_amount = request.POST.get('discounted_amt')
+        stock_list = json.loads(request.POST.get('out_stocks'))
+        
         if disc_id =="0":
             disc_id = None
-            print("zero ni")
-            print(disc_id)
 
-        print("zero ni111")
-        print(disc_id)
-        
-        addsales = Sales(is_er=False,client_id = clie_id,discount_id=disc_id,user_id = usr_id)
+        addsales = Sales(is_er=0,remarks=sales_remarks,client_id = clie_id,user_id = usr_id)
         addsales.save()
         addpayment = Payment(amount_paid = amt_paid,sales_id = Sales.objects.last().id)
         addpayment.save()
-
+        
+        for stock_list_item in stock_list:
+            obj, was_created_bool = OutItems.objects.get_or_create(
+            stock_id=stock_list_item['id'],
+            quantity=stock_list_item['quantity'],
+            discounted_amount=discount_amount,
+            sales_id = Sales.objects.last().id
+        )
+            mainquantity=stock_list_item['stocksquantity']
+            newquantity = stock_list_item['quantity']
+            total_quantity = (int(mainquantity) - int(newquantity))
+            Stocks.objects.filter(id=stock_list_item['id']).update(pcs_quantity=total_quantity)
         return JsonResponse({'data': 'success'})
     else:
         return JsonResponse({'data': 'error'})
