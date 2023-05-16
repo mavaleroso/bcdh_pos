@@ -220,8 +220,7 @@ class Stocks(models.Model):
     item = models.ForeignKey(Items, models.DO_NOTHING)
     company = models.ForeignKey(Company, models.DO_NOTHING)
     pcs_quantity = models.IntegerField(max_length=128, blank=True, null=True)
-    unit_price = models.DecimalField(
-    max_digits=30, decimal_places=10, blank=True, null=True)
+    unit_price = models.DecimalField(max_digits=30, decimal_places=10, blank=True, null=True)
     retail_price = models.DecimalField(max_digits=30, decimal_places=10, blank=True, null=True)
     is_damaged = models.IntegerField(max_length=50, default=0, blank=False, null=False)
     user = models.ForeignKey(AuthUser, models.DO_NOTHING)
