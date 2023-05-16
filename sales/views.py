@@ -65,7 +65,8 @@ def salesitem(request):
         
         if disc_id =="0":
             disc_id = None
-        addsales = Sales(is_er=0,remarks=sales_remarks,client_id = clie_id,discount_id=disc_id,user_id = usr_id)
+
+        addsales = Sales(is_er=0,remarks=sales_remarks,client_id = clie_id,user_id = usr_id)
         addsales.save()
         addpayment = Payment(amount_paid = amt_paid,sales_id = Sales.objects.last().id)
         addpayment.save()
@@ -81,8 +82,6 @@ def salesitem(request):
             newquantity = stock_list_item['quantity']
             total_quantity = (int(mainquantity) - int(newquantity))
             Stocks.objects.filter(id=stock_list_item['id']).update(pcs_quantity=total_quantity)
-        
-
         return JsonResponse({'data': 'success'})
     else:
         return JsonResponse({'data': 'error'})

@@ -220,9 +220,9 @@ class Stocks(models.Model):
     company = models.ForeignKey(Company, models.DO_NOTHING)
     pcs_quantity = models.IntegerField(max_length=128, blank=True, null=True)
     unit_price = models.DecimalField(
-        max_digits=30, decimal_places=10, blank=True, null=True)
+    max_digits=30, decimal_places=10, blank=True, null=True)
     retail_price = models.DecimalField(
-        max_digits=30, decimal_places=10, blank=True, null=True)
+    max_digits=30, decimal_places=10, blank=True, null=True)
     is_damaged = models.CharField(max_length=128, blank=True, null=True)
     user = models.ForeignKey(AuthUser, models.DO_NOTHING)
     expiration_date = models.DateField(blank=True, null=True)

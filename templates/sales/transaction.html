@@ -435,7 +435,7 @@ $(document).ready(function(){
     });
 
     function remove_all(){
-      var $checkbox = $(`input[type='checkbox']`);
+      var $checkbox = $(`input[type="checkbox"]`);
       $('#count_items').text("0 item/s");
       $('.dt-sales-remarks').val("");
       $(".li").remove();
@@ -445,6 +445,7 @@ $(document).ready(function(){
       $(".total-place-order").html("₱ 0");
       $(".discount-value").html("₱ 0");
       $("#selected-patient").find('option:selected').prop("selected",false);
+      sub_total = 0;
     }
 
 
@@ -495,6 +496,7 @@ $(document).ready(function(){
             let obj = {id: selectedId[i]['id'], quantity: selectedItemsQty[i]?.quantity, stocksquantity:quantityStocks[i]?.qtystocks};
             item_selected.push(obj);
         }}
+
         if (item_total !="0 item/s" && client_id!=0){
           Swal.fire({
               title: 'Are you sure?',
@@ -684,7 +686,7 @@ $(document).ready(function(){
             responsivePriority: 3,
             checkboxes: true,
             render: function (data) {
-              return '<input type="checkbox" class="dt-checkboxes meow form-check-input" id="cb'+data+'" name="checkboxtype">';
+              return '<input type="checkbox" class="dt-checkboxes form-check-input" id="cb'+data+'" name="checkboxtype">';
             },
             checkboxes: {
               selectAllRender: '<input type="checkbox" class="form-check-input" id="allcb" name="allcb">'
@@ -822,13 +824,11 @@ $(document).ready(function(){
     var checkboxName = $row.data('for');
     
     var $checkbox = $(`input[type="checkbox"][name="${checkboxName}"]`);
-    
     $row.remove();
     $checkbox.prop('checked', false);
-    $checkbox.get(0).hasCovered = false;
+    // $checkbox.get(0).hasCovered = false;
 
-
-    var $row_li = $(this).closest('-data');
+    var $row_li = $(this).closest('.li');
     var row_sub_total_old = $(".total-value", $row_li).text().slice(1);
     var original_price = $(".sub-total").text().slice(1);
     original_price = parseFloat(original_price - row_sub_total_old);
@@ -846,28 +846,21 @@ $(document).ready(function(){
 
   $("#add_data").click(function() {
       var grid = document.getElementById("Table1");
-      var checkBoxes = grid.getElementsByTagName("INPUT");
+      var addedCheckboxes = $(".whole-div-class .row");
+
+      var checkBoxes = $(`input[type=checkbox][name=checkboxtype]`);
       var str = '';
-    
-      // var addedCheckboxes = $(".whole-div-class ");
 
-      // var checkBoxes = $("input");
-
-      // addedCheckboxes.map((i, addedCheckbox) => {
-      //     checkBoxes = checkBoxes.filter((j, checkbox) => {
-      //         return $(addedCheckbox).data('for') != $(checkbox).prop("name");
-      //     });
-      // });
+      addedCheckboxes.map((i, addedCheckbox) => {
+          checkBoxes = checkBoxes.filter((j, checkbox) => {
+              return $(addedCheckbox).data('for') != $(checkbox).prop("name");
+          });
+      });
 
       for (var i = 0; i < checkBoxes.length; i++) {
         if (
           checkBoxes[i].checked &&
-          checkBoxes[i].name !== "allcb" &&
-          !checkBoxes[i].hasCovered
-
-          // checkBoxes[i].checked &&
-          // checkBoxes[i].name !== "allcb"
-
+          checkBoxes[i].name !== "allcb"
         ) {
           var row = checkBoxes[i].parentNode.parentNode;
           cart_count++;
@@ -877,7 +870,7 @@ $(document).ready(function(){
             '<li class="list-group-item p-4 li" data-for="' + checkBoxes[i].id + '">'+
               '<div class="d-flex gap-3">'+
                 '<div class="flex-grow-1 append-item">'+
-                  '<div class="row" >'+
+                  '<div class="row" class="row" data-for="' + checkBoxes[i].id + '">'+
                     '<div class="col-md-8">'+
                       '<p class="me-3">'+
                         '<a href="javascript:void(0)" class="text-body">'+
