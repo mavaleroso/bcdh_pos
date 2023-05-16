@@ -31,9 +31,6 @@
             <!-- Cart left -->
             <div class="col-xl-8 mb-3 mb-xl-0">
               <!-- Shopping bag -->
-              
-
-
               <div class="flex-grow-1">
                 <div class="row">
                   <div class="col-md-4">
@@ -260,25 +257,26 @@
             
            </div>
            <div class="col mb-4">
-             <label for="nameBackdrop" class="form-label">Address</label>
-             <input
-               type="text"
-               id="ct-address"
-               name="ct-address"
-               class="form-control ct-address"
-               placeholder="Enter Address"
-             />
+             <label for="nameBackdrop" class="form-label">Client type</label>
+
+             <select id="ct-client-type" class="select2 form-select ct-client-type" data-allow-clear="true">
+                <option></option>
+                {% for row in client_type %}
+                <option value="{{ row.id }}">{{ row.name }}</option>
+                {% endfor %}
+            </select>
            </div>
          </div>
 
          <div class="row">
-          <div class="col mb-4">
-           <label for="nameBackdrop" class="form-label">Occupation</label>
-           <textarea class="form-control ct-occupation" placeholder="Enter occupation" rows="3"></textarea>
+          <div class="col mb-6">
+           <label for="nameBackdrop" class="form-label">Occupation (Optional)</label>
+           <textarea class="form-control ct-occupation" id="ct-occupation" placeholder="Enter occupation" rows="3"></textarea>
          </div>
+
+        
         <div class="col mb-4"></div>
         <div class="col mb-4"></div>
-      
         </div>
 
         </div>
@@ -286,7 +284,7 @@
           <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
             Close
           </button>
-          <button type="button" class="btn btn-primary" id="add_client">Add Client</button>
+          <button type="button" class="btn btn-primary add-client" id="add-client">Add Client</button>
         </div>
       </div>
     </div>
@@ -434,6 +432,62 @@ $(document).ready(function(){
       
     });
 
+    $('.add-client').click(function(event){
+      let fname = $('#ct-first-name').val();
+      let mname = $('#ct-middle-name').val();
+      let lname = $('#ct-last-name').val();
+      let bdate = $('#ct-birth-date').val();
+      let sex_ = $('#ct-sex').val();
+      let cl_type = $('#ct-client-type').find(":selected").val();
+      let occpt = $('#ct-occupation').val();
+
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Confirm',
+        customClass: {
+          confirmButton: 'btn btn-primary me-3',
+          cancelButton: 'btn btn-label-secondary'
+        },
+        buttonsStyling: false
+    }).then(function (result) {
+    
+      if (result.value) {
+          event.preventDefault();
+          console.log("bebe");
+          $.ajax({
+              type: "POST",
+              url: "{% url 'add-client' %}",
+              data:{
+                firstname : fname, middlename : mname, lastname: lname, birthdate: bdate, sex : sex_, client_type: cl_type, occupation: occpt
+              }
+          }).done(function(data){
+            if(data.data == "success"){
+              Swal.fire({
+                  icon: 'success',
+                  title: 'Successfully save!',
+                  text:' Client has been saved.',
+                  customClass: {
+                    confirmButton: 'btn btn-success'
+                  }
+                });
+                remove_all();
+            }
+            else{
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Invalid Client details',
+                  text: fname + lname +' cannot added',
+                  customClass: {
+                    confirmButton: 'btn btn-success'
+                  }});
+                }
+              });
+            }});
+    });
+
     function remove_all(){
       var $checkbox = $(`input[type="checkbox"]`);
       $('#count_items').text("0 item/s");
@@ -453,7 +507,6 @@ $(document).ready(function(){
     
       $('.add-patient').click(function (event) {
         $(".patient-details-div").show();
-        $(".spn-discount").hide();
 
         var patient_id = $('#selected-patient').find(":selected").val();
 
@@ -483,17 +536,20 @@ $(document).ready(function(){
         const selectedItemsQty = $('.quantity-input').map((i, el) => ({quantity: el.value})).get();
         const selectedMainQuantity = $('.quantity-input').map((i, el) => ({quantity: el.value})).get();
         const quantityStocks = $('.main-quantity').map((i, el) => ({qtystocks: el.innerHTML.slice(0,-10)})).get();
+        const amount = $('.price-value').map((i, el) => ({price: el.innerHTML.slice(2)})).get();;
+        var percentage_value = $(".spn-discount").text().slice(0,-1);
 
         var item_selected = [];
         if (selectedId.length < selectedItemsQty.length){
           for(var i = 0; i < selectedId.length; i++){
-            let obj = {id: selectedId[i]['id'], quantity: selectedItemsQty[i]?.quantity, stocksquantity:quantityStocks[i]?.qtystocks};
+            let obj = {id: selectedId[i]['id'], quantity: selectedItemsQty[i]?.quantity, stocksquantity:quantityStocks[i]?.qtystocks, price: amount[i]?.price, discount:percentage_value};
             item_selected.push(obj);
-          } 
+          }
+
         }
         else{
           for(var i = 0; i < selectedItemsQty.length; i++){
-            let obj = {id: selectedId[i]['id'], quantity: selectedItemsQty[i]?.quantity, stocksquantity:quantityStocks[i]?.qtystocks};
+            let obj = {id: selectedId[i]['id'], quantity: selectedItemsQty[i]?.quantity, stocksquantity:quantityStocks[i]?.qtystocks, price: amount[i]?.price, discount:percentage_value};
             item_selected.push(obj);
         }}
 
@@ -510,7 +566,6 @@ $(document).ready(function(){
               },
               buttonsStyling: false
         }).then(function (result) {
-          
           if (result.value) {
               event.preventDefault();
               console.log("bebe");
@@ -881,7 +936,7 @@ $(document).ready(function(){
                         '<a href="javascript:void(0)" class="me-3">'+ row.cells[2].innerHTML +'</a>'+
                         '<span class="badge bg-label-success">In Stock</span>'+
                       '</div>' +
-                      '<span class="text-primary sub-total-row price-value">'+ row.cells[4].innerHTML +'</span><br><br>'+
+                      '<span class="text-primary sub-total-row price-value" name="price-value">'+ row.cells[4].innerHTML +'</span><br><br>'+
                       '<input type="number" class="form-control form-control-sm w-px-75 quantity-input" value="1" min="1" />' +
                     '</div>'+
                     '<div class="col-md-4">'+
