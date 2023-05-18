@@ -8,10 +8,10 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from main.models import (Stocks, Clients, ClientType, Discounts, Sales, Payment,OutItems)
+from main.models import (Stocks, Clients, ClientType, Discounts, Sales, Payment,OutItems,SystemConfiguration)
 import json 
 from django.core import serializers
-import datetime
+from datetime import date, datetime
 from django.contrib.auth.hashers import make_password
 
 from django.db.models import F
@@ -59,6 +59,22 @@ def discountdetails(request):
     )
     return JsonResponse({'data': qs_list})
 
+def generate_code():
+    inventory_code = SystemConfiguration.objects.values_list(
+        'inventory_code', flat=True).first()
+    last_code = inventory_code.split('-')
+    sampleDate = date.today()
+    year = sampleDate.strftime("%y")
+    month = sampleDate.strftime("%m")
+    series = 1
+
+    if last_code[1] == month:
+        series = int(last_code[2]) + 1
+
+    code = year + '-' + month + '-' + f'{series:05d}'
+
+    return code
+
 
 @csrf_exempt
 def salesitem(request):
@@ -70,18 +86,13 @@ def salesitem(request):
         sales_remarks = request.POST.get('remarks')
         discount_amount = request.POST.get('discounted_amt')
         stock_list = json.loads(request.POST.get('out_stocks'))
+        code = generate_code()
         
         if disc_id =="0":
             disc_id = None
-
-        # print("sales_remarks11")
-        # print(sales_remarks)
-        # print(clie_id)
-        # print(usr_id)
-        # print(disc_id)
         
 
-        addsales = Sales(is_er=0,remarks=sales_remarks,client_id = clie_id,discount_id = disc_id, user_id = usr_id)
+        addsales = Sales(transaction_code = code,is_er=0,remarks=sales_remarks,client_id = clie_id,discount_id = disc_id, user_id = usr_id)
         addsales.save()
         addpayment = Payment(amount_paid = amt_paid,sales_id = Sales.objects.last().id)
         addpayment.save()
