@@ -31,9 +31,6 @@
             <!-- Cart left -->
             <div class="col-xl-8 mb-3 mb-xl-0">
               <!-- Shopping bag -->
-              
-
-
               <div class="flex-grow-1">
                 <div class="row">
                   <div class="col-md-4">
@@ -60,9 +57,9 @@
                       data-bs-toggle="modal"
                       data-bs-target="#exLargeModal"
                     >
-                    <i class="ti ti-user-check me-1"></i>Add item
+                    <i class="fa-solid fa-cart-plus"></i>&nbsp;&nbsp;Add item
                     </button>
-                    </div>
+                    </div> 
                   </div>
                 </div>
               </div>
@@ -83,8 +80,7 @@
             <div class="col-xl-4">
               <div class="border rounded p-4 mb-3 pb-3">
                 <!-- Offer -->
-                
-
+              
 
                 <div class="row g-3 mb-3">
                   <div class="col-8 col-xxl-8 col-xl-3">
@@ -96,7 +92,7 @@
                       type="button"
                       class="btn btn-primary"
                       data-bs-toggle="modal"
-                    data-bs-target="#onboardModal"
+                    data-bs-target="#clientomodal"
                     >
                     <i class="ti ti-user-check me-1"></i>Add
                     </button>
@@ -165,6 +161,20 @@
               <div class="d-grid">
                 <button class="btn btn-primary btn-next place-order-items">Place Order</button>
               </div>
+
+              <br>
+
+              <div class="col-sm-12">
+                <!-- <label class="form-label" for="Remarks">Remarks</label> -->
+                <div class="input-group input-group-merge">
+                  <div class="input-group input-group-merge speech-to-text">
+                    <textarea class="form-control dt-sales-remarks" placeholder="Enter remarks (optional)" rows="3"></textarea>
+                    <span class="input-group-text">
+                      <i class="ti ti-microphone cursor-pointer text-to-speech-toggle"></i>
+                    </span>
+                  </div>  
+                </div>
+              </div>
             </div>
           </div>
         </div>
@@ -172,6 +182,118 @@
     </div>
   </div>
   <!--/ Checkout Wizard -->
+
+  <!--add new client modal-->
+
+  <div class="modal fade" id="clientomodal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-xl" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel4">Add Client</h5>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="modal"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="modal-body">
+
+          <div class="row">
+             <div class="col mb-4">
+              <label for="nameBackdrop" class="form-label">FirstName</label>
+              <input
+                type="text"
+                id="ct-first-name"
+                name="ct-first-name"
+                class="form-control ct-first-name"
+                placeholder="Enter name"
+              />
+            </div>
+
+            <div class="col mb-4">
+              <label for="nameBackdrop" class="form-label">Middlename</label>
+              <input
+                type="text"
+                id="ct-middle-name"
+                name="ct-middle-name"
+                class="form-control ct-middle-name"
+                placeholder="Enter Middle name"
+              />
+            </div>
+            <div class="col mb-4">
+              <label for="nameBackdrop" class="form-label">Lastname</label>
+              <input
+                type="text"
+                id="ct-last-name"
+                name="ct-last-name"
+                class="form-control ct-last-name"
+                placeholder="Enter Last name"
+              />
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col mb-4">
+             <label for="nameBackdrop" class="form-label">Birthdate</label>
+             <input
+               type="date"
+               id="ct-birth-date"
+               name="ct-birth-date"
+               class="form-control ct-birth-date"
+               placeholder="Enter Birthdate"
+             />
+           </div>
+
+           <div class="col mb-4">
+             <label for="nameBackdrop" class="form-label">Sex</label>
+
+             <select id="ct-sex" class="select2 form-select" data-allow-clear="true">
+              <option></option>
+              <option value="male">Male</option>	
+              <option value="female">Female</option>	
+             
+            </select>
+            
+           </div>
+           <div class="col mb-4">
+             <label for="nameBackdrop" class="form-label">Client type</label>
+
+             <select id="ct-client-type" class="select2 form-select ct-client-type" data-allow-clear="true">
+                <option></option>
+                {% for row in client_type %}
+                <option value="{{ row.id }}">{{ row.name }}</option>
+                {% endfor %}
+            </select>
+           </div>
+         </div>
+
+         <div class="row">
+          <div class="col mb-6">
+           <label for="nameBackdrop" class="form-label">Occupation (Optional)</label>
+           <textarea class="form-control ct-occupation" id="ct-occupation" placeholder="Enter occupation" rows="3"></textarea>
+         </div>
+
+        
+        <div class="col mb-4"></div>
+        <div class="col mb-4"></div>
+        </div>
+
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
+            Close
+          </button>
+          <button type="button" class="btn btn-primary add-client" id="add-client">Add Client</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+  <!--end new client modal-->
+
+
 
   <!-- Add new item modal -->
 
@@ -207,8 +329,9 @@
                   <tr>
                     <td>{{row.id}}</td>
                     <td></td>
-                    <td><b>{{row.generic.name}}</b> {{row.sub_generic.name}} {{row.description}}</td>
-                    <td>{{row.brand.name}}</td>
+                    <!-- <td><b>{{row.item.generic.name}}</b> {{row.sub_generic.name}} {{row.description}}</td> -->
+                    <td><b>{{row.item.generic.name}}</b> {{row.item.sub_generic.name}} {{row.item.description}}</td>
+                    <td>{{row.item.brand.name}}</td>
                     <td>{{row.pcs_quantity}}</td>
                     <td>₱ {{row.retail_price|floatformat:2}}</td>
                     
@@ -238,505 +361,615 @@
 <script>
       
 $(document).ready(function(){
-  var client_id = 0;
-  var discount_id = 0;
-  $(".patient-details-div").hide();
-  
-  //discounts ------------------------------------------------------->
-  $(".spn-discount").hide();
-  $('#select-discount').on('change', function() {
-    var value = $('.select-discount').find(":selected").text();
-    $('.special-percentage').val('');
-    if (value !="Special"){
-      $(".view-percentage").hide();
-    }
-    else{
-      $(".view-percentage").show();
-    }
-  });
+    var selected_items = [];
+    var client_id = 0;
+    var discount_id = 0;
+    $(".patient-details-div").hide();
 
-  $('.save-discount').click(function(event){
-    var percentage_value,discount_type;
-    discount_type = $('.select-discount').find(":selected").text();
-    discount_id = $('.select-discount').find(":selected").val();
+    const toast_options = (toastr.options = {
+            maxOpened: 1,
+            autoDismiss: true,
+            closeButton: true,
+            newestOnTop: true,
+            progressBar: true,
+            positionClass: 'toast-top-right',
+            rtl: isRtl,
+    })
     
-    $.ajax({
-        type: "POST",
-        url: "{% url 'discount-details' %}",
-        data:{
-            dis_id: discount_id
-        }
-        }).done(function(data){
-          client_id = data.data[0].id;
-          discount_type = data.data[0].name;
-          percentage_value = data.data[0].percentage;
-          if (discount_type =="Special"){
-            percentage_value = $('#special-percentage').val();
-          }
-          $(".spn-discount").text(percentage_value +" %");
-          $(".spn-discount").show();
-          $('#onboardModal').modal('hide');
-          var original_price = $(".sub-total").text().slice(1);
-          var discount_price = parseFloat(original_price * percentage_value/100);
-          $('.discount-value').text("-₱ "+discount_price);
-          original_price =parseFloat(original_price) -parseFloat(discount_price);
-          $('.total-place-order').text("₱ "+original_price);
-         
+    //discounts ------------------------------------------------------->
+    $(".spn-discount").hide();
+    $('#select-discount').on('change', function() {
+      var value = $('.select-discount').find(":selected").text();
+      $('.special-percentage').val('');
+      if (value !="Special"){
+        $(".view-percentage").hide();
+      }
+      else{
+        $(".view-percentage").show();
+      }
     });
-  });
 
-  $('.add-discount').click(function(event){
-    $('.special-percentage').val('');
-    var discount_type = $('.select-discount').find(":selected").text();
-    if (discount_type !="Special"){
-      $(".view-percentage").hide();
-    }
-    else{
-      $(".view-percentage").show();
-    }  
-  });
-
-
-
-  $('.remove-discount').click(function(event){
-    alert("No function yet");
-    
-  });
-  //end discounts ---------------------------------------------->
-  
-    $('.add-patient').click(function (event) {
-      $(".patient-details-div").show();
-      $(".spn-discount").hide();
-
-      var patient_id = $('#selected-patient').find(":selected").val();
-
+    $('.save-discount').click(function(event){
+      var percentage_value,discount_type;
+      discount_type = $('.select-discount').find(":selected").text();
+      discount_id = $('.select-discount').find(":selected").val();
+      
       $.ajax({
-        type: "POST",
-        url: "{% url 'patient-details' %}",
-        data:{
-            patient: patient_id
-        }
-        }).done(function(data){
-          client_id = data.data[0].id;
-          var first_name = data.data[0].first_name;
-          var middle_name = data.data[0].middle_name;
-          var last_name = data.data[0].last_name;
-          var client_type_name = data.data[0].client_type__name;
-          $('#patient-name').text(first_name + " " + middle_name + " " + last_name);
-          $('.spn-patient-status').text(client_type_name);
-        });
+          type: "POST",
+          url: "{% url 'discount-details' %}",
+          data:{
+              dis_id: discount_id
+          }
+          }).done(function(data){
+            client_id = data.data[0].id;
+            discount_type = data.data[0].name;
+            percentage_value = data.data[0].percentage;
+            toastr.success('Discount applied!', 'Success', toast_options)
+            if (discount_type =="Special"){
+              percentage_value = $('#special-percentage').val();
+            }
+            $(".spn-discount").text(percentage_value +" %");
+            $(".spn-discount").show();
+            $('#onboardModal').modal('hide');
+            var original_price = $(".sub-total").text().slice(1);
+            var discount_price = parseFloat(original_price * percentage_value/100);
+            $('.discount-value').text("-₱ "+discount_price);
+            original_price =parseFloat(original_price) -parseFloat(discount_price);
+            $('.total-place-order').text("₱ "+original_price);
+          
+      });
     });
 
-    $('.place-order-items').click(function (event) {
-      var total_amount = $(".total-place-order").text().slice(1);
-      var item_total = $("#count_items").text();
-      if (item_total !="0 item/s"){
-        Swal.fire({
-            title: 'Are you sure?',
-            text: "You won't be able to revert this!",
-            icon: 'warning',
-            showCancelButton: true,
-            confirmButtonText: 'Confirm',
-            customClass: {
-              confirmButton: 'btn btn-primary me-3',
-              cancelButton: 'btn btn-label-secondary'
-            },
-            buttonsStyling: false
-      }).then(function (result) {
-        if (result.value) {
-            event.preventDefault();
-            $.ajax({
-                type: "POST",
-                url: "{% url 'sales-item' %}",
-                data:{
-                  cl_id : client_id, dis_id : discount_id, amt_paid: total_amount
-                }
-            }).done(function(data){
-              if(data.data == "success"){
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Successfully save!',
-                    text:' Transaction has been saved.',
-                    customClass: {
-                      confirmButton: 'btn btn-success'
-                    }
-                  });
+    $('.add-discount').click(function(event){
+      $('.special-percentage').val('');
+      var discount_type = $('.select-discount').find(":selected").text();
+      if (discount_type !="Special"){
+        $(".view-percentage").hide();
+      }
+      else{
+        $(".view-percentage").show();
+      }  
+      
+    });
+
+    $('.add-client').click(function(event){
+      let fname = $('#ct-first-name').val();
+      let mname = $('#ct-middle-name').val();
+      let lname = $('#ct-last-name').val();
+      let bdate = $('#ct-birth-date').val();
+      let sex_ = $('#ct-sex').val();
+      let cl_type = $('#ct-client-type').find(":selected").val();
+      let occpt = $('#ct-occupation').val();
+
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Confirm',
+        customClass: {
+          confirmButton: 'btn btn-primary me-3',
+          cancelButton: 'btn btn-label-secondary'
+        },
+        buttonsStyling: false
+    }).then(function (result) {
+    
+      if (result.value) {
+          event.preventDefault();
+          console.log("bebe");
+          $.ajax({
+              type: "POST",
+              url: "{% url 'add-client' %}",
+              data:{
+                firstname : fname, middlename : mname, lastname: lname, birthdate: bdate, sex : sex_, client_type: cl_type, occupation: occpt
               }
-              else{
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Invalid company Name',
-                    text: $companyname +' already exist',
-                    customClass: {
-                      confirmButton: 'btn btn-success'
-                    }});
+          }).done(function(data){
+            if(data.data == "success"){
+              Swal.fire({
+                  icon: 'success',
+                  title: 'Successfully save!',
+                  text:' Client has been saved.',
+                  customClass: {
+                    confirmButton: 'btn btn-success'
                   }
                 });
-              }});
-      }
+                remove_all();
+            }
+            else{
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Invalid Client details',
+                  text: fname + lname +' cannot added',
+                  customClass: {
+                    confirmButton: 'btn btn-success'
+                  }});
+                }
+              });
+            }});
     });
 
+    function remove_all(){
+      var $checkbox = $(`input[type="checkbox"]`);
+      $('#count_items').text("0 item/s");
+      $('.dt-sales-remarks').val("");
+      $(".li").remove();
+      $checkbox.prop('checked', false);
+      $(".patient-details-div").hide();
+      $(".sub-total").html("₱ 0");
+      $(".total-place-order").html("₱ 0");
+      $(".discount-value").html("₱ 0");
+      $("#selected-patient").find('option:selected').prop("selected",false);
+      sub_total = 0;
+    }
 
 
-
-
-
-
-    /**
- * DataTables Basic
- */
-
-'use strict';
-
-let fv, offCanvasEl;
-var cart_count =0;
-document.addEventListener('DOMContentLoaded', function (e) {
-  (function () {
-    const formAddNewRecord = document.getElementById('form-add-new-record');
-
-    setTimeout(() => {
-      const newRecord = document.querySelector('.create-new'),
-        offCanvasElement = document.querySelector('#add-new-record');
-
-      // To open offCanvas, to add new record
-      if (newRecord) {
-        newRecord.addEventListener('click', function () {
-          offCanvasEl = new bootstrap.Offcanvas(offCanvasElement);
-          // Empty fields on offCanvas open
-          (offCanvasElement.querySelector('.dt-full-name').value = ''),
-            (offCanvasElement.querySelector('.dt-post').value = ''),
-            (offCanvasElement.querySelector('.dt-email').value = ''),
-            (offCanvasElement.querySelector('.dt-date').value = ''),
-            (offCanvasElement.querySelector('.dt-salary').value = '');
-          // Open offCanvas with form
-          offCanvasEl.show();
-        });
-      }
-    }, 200);
-
-    // Form validation for Add new record
-    fv = FormValidation.formValidation(formAddNewRecord, {
-      fields: {
-        basicFullname: {
-          validators: {
-            notEmpty: {
-              message: 'The name is required'
-            }
-          }
-        },
-        basicPost: {
-          validators: {
-            notEmpty: {
-              message: 'Post field is required'
-            }
-          }
-        },
-        basicEmail: {
-          validators: {
-            notEmpty: {
-              message: 'The Email is required'
-            },
-            emailAddress: {
-              message: 'The value is not a valid email address'
-            }
-          }
-        },
-        basicDate: {
-          validators: {
-            notEmpty: {
-              message: 'Joining Date is required'
-            },
-            date: {
-              format: 'MM/DD/YYYY',
-              message: 'The value is not a valid date'
-            }
-          }
-        },
-        basicSalary: {
-          validators: {
-            notEmpty: {
-              message: 'Basic Salary is required'
-            }
-          }
-        }
-      },
-      plugins: {
-        trigger: new FormValidation.plugins.Trigger(),
-        bootstrap5: new FormValidation.plugins.Bootstrap5({
-          // Use this for enabling/changing valid/invalid class
-          // eleInvalidClass: '',
-          eleValidClass: '',
-          rowSelector: '.col-sm-12'
-        }),
-        submitButton: new FormValidation.plugins.SubmitButton(),
-        // defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
-        autoFocus: new FormValidation.plugins.AutoFocus()
-      },
-      init: instance => {
-        instance.on('plugins.message.placed', function (e) {
-          if (e.element.parentElement.classList.contains('input-group')) {
-            e.element.parentElement.insertAdjacentElement('afterend', e.messageElement);
-          }
-        });
-      }
-    });
-
-    // FlatPickr Initialization & Validation
-    flatpickr(formAddNewRecord.querySelector('[name="basicDate"]'), {
-      enableTime: false,
-      // See https://flatpickr.js.org/formatting/
-      dateFormat: 'm/d/Y',
-      // After selecting a date, we need to revalidate the field
-      onChange: function () {
-        fv.revalidateField('basicDate');
-      }
-    });
-  })();
-});
-
-// datatable (jquery)
-$(function () {
-  var dt_basic_table = $('.datatables-basic'),
-    dt_complex_header_table = $('.dt-complex-header'),
-    dt_row_grouping_table = $('.dt-row-grouping'),
-    dt_multilingual_table = $('.dt-multilingual'),
-    dt_basic;
-
-  // DataTable with buttons
-  // --------------------------------------------------------------------
-
-  if (dt_basic_table.length) {
-    dt_basic = dt_basic_table.DataTable({
-      columnDefs: [
-
-        {
-          // For Checkboxes
-          targets: 0,
-          orderable: false,
-          searchable: false,
-          responsivePriority: 3,
-          checkboxes: true,
-          render: function (data) {
-            return '<input type="checkbox" class="dt-checkboxes form-check-input" id="cb'+data+'" name="cb'+data+'">';
-          },
-          checkboxes: {
-            selectAllRender: '<input type="checkbox" class="form-check-input" id="allcb" name="allcb">'
-          }
-        },
-        {
-          targets: 1,
-          searchable: false,
-          visible: false
-        },
-        {
-          responsivePriority: 1,
-          targets: 3
-        },
-        // {
-        //   // Label
-        //   targets: -1,
-        //   render: function (data, type, full, meta) {
-        //     var $status_number = full['status'];
-        //     var $status = {
-        //       1: { title: 'Current', class: 'bg-label-primary' },
-        //       2: { title: 'Professional', class: ' bg-label-success' },
-        //       3: { title: 'Rejected', class: ' bg-label-danger' },
-        //       4: { title: 'Resigned', class: ' bg-label-warning' },
-        //       5: { title: 'Applied', class: ' bg-label-info' }
-        //     };
-        //     if (typeof $status[$status_number] === 'undefined') {
-        //       return data;
-        //     }
-        //     return (
-        //       '<span class="badge ' + $status[$status_number].class + '">' + $status[$status_number].title + '</span>'
-        //     );
-        //   }
-        // }
-      ],
-      order: [[2, 'desc']],
-      
-      displayLength: 7,
-      lengthMenu: [7, 10, 25, 50, 75, 100],
-      responsive: {
-        details: {
-          display: $.fn.dataTable.Responsive.display.modal({
-            header: function (row) {
-              var data = row.data();
-              return 'Details of ' + data['full_name'];
-            }
-          }),
-          type: 'column',
-          renderer: function (api, rowIdx, columns) {
-            var data = $.map(columns, function (col, i) {
-              return col.title !== '' // ? Do not show row in modal popup if title is blank (for check box)
-                ? '<tr data-dt-row="' +
-                    col.rowIndex +
-                    '" data-dt-column="' +
-                    col.columnIndex +
-                    '">' +
-                    '<td>' +
-                    col.title +
-                    ':' +
-                    '</td> ' +
-                    '<td>' +
-                    col.data +
-                    '</td>' +
-                    '</tr>'
-                : '';
-            }).join('');
-
-            return data ? $('<table class="table"/><tbody />').append(data) : false;
-          }
-        }
-      }
-    });
-    $('div.head-label').html('<h5 class="card-title mb-0">DataTable with Buttons</h5>');
-  }
-
-
-  // Filter form control to default size
-  // ? setTimeout used for multilingual table initialization
-  setTimeout(() => {
-    $('.dataTables_filter .form-control').removeClass('form-control-sm');
-    $('.dataTables_length .form-select').removeClass('form-select-sm');
-  }, 300);
-});
-
-// $("#allcb").change(function() {
-//   $('tbody tr td input[type="checkbox"]').prop(
-//     "checked",
-//     $(this).prop("checked")
-//   );
-// });
-
-var sub_total = 0;
-$(document).on( "change",  ".quantity-input",function() {
-
-  var $row = $(this).closest('.row');
-  var value_input = $(".quantity-input", $row).val();
-  var row_sub_total_old = $(".total-value", $row).text().slice(1);
-  
-  var price_value = $(".price-value", $row).html(); 
-  let price = price_value.slice(1);
-  var total_value = parseFloat(value_input) * parseFloat(price);
-
-  var tl_value = parseFloat(total_value) - parseFloat(price);
-  t1_value = parseFloat(tl_value) + parseFloat(sub_total);
-
-  if(value_input.length!=0){$(".total-value", $row).text("₱ "+total_value);}
-  else{$(".total-value", $row).text("₱ 0");}
-  var sub_total_spn_value = $(".sub-total").text().slice(1);
-  var onchangetotalvalue = parseFloat(total_value - row_sub_total_old);
-  var ot_total = parseFloat(sub_total_spn_value) + parseFloat(onchangetotalvalue);
-  $(".sub-total").html("₱ "+ot_total);
-  var percentage_value = $(".spn-discount").text().slice(0,-1);
-  var discount = parseFloat(ot_total * percentage_value/100);
-  $('.discount-value').text("-₱ "+discount);
-
-  ot_total =parseFloat(ot_total) -parseFloat(discount);
-  $('.total-place-order').text("₱ "+ot_total);
-});
-
-$('.remove-all').click(function(event){
-  alert("No function yet");
-  // var $row = $(this).closest('.li');
-  // var checkboxName = $row.data('for');
-  // var $checkbox = $(`input[type="checkbox"][name="${checkboxName}"]`);
-
-  // $row.remove();
-  // $checkbox.prop('checked', false);
-  // $checkbox.get(0).hasCovered = false;
+    //end discounts ---------------------------------------------->
     
-});
+      $('.add-patient').click(function (event) {
+        $(".patient-details-div").show();
 
-$(document).on("click", ".remove_data", function() {
-  cart_count--;
-  $('#count_items').text(cart_count + " item/s");
-  var $row = $(this).closest('.li');
-  var checkboxName = $row.data('for');
-  
-  var $checkbox = $(`input[type="checkbox"][name="${checkboxName}"]`);
-  
-  $row.remove();
-  $checkbox.prop('checked', false);
-  $checkbox.get(0).hasCovered = false;
+        var patient_id = $('#selected-patient').find(":selected").val();
+
+        $.ajax({
+          type: "POST",
+          url: "{% url 'patient-details' %}",
+          data:{
+              patient: patient_id
+          }
+          }).done(function(data){
+            toastr.success('Patient add successfully!', 'Success', toast_options)
+            client_id = data.data[0].id;
+            var first_name = data.data[0].first_name;
+            var middle_name = data.data[0].middle_name;
+            var last_name = data.data[0].last_name;
+            var client_type_name = data.data[0].client_type__name;
+            $('#patient-name').text(first_name + " " + middle_name + " " + last_name);
+            $('.spn-patient-status').text(client_type_name);
+          });
+      });
+
+      $('.place-order-items').click(function (event) {
+        var total_amount = $(".total-place-order").text().slice(1);
+        var item_total = $("#count_items").text();
+        var sales_remarks = $(".dt-sales-remarks").val();
+        const selectedId = $('input[name=checkboxtype]').map((i, el) => ({id: el.id.slice(2)})).get();
+        const selectedItemsQty = $('.quantity-input').map((i, el) => ({quantity: el.value})).get();
+        const selectedMainQuantity = $('.quantity-input').map((i, el) => ({quantity: el.value})).get();
+        const quantityStocks = $('.main-quantity').map((i, el) => ({qtystocks: el.innerHTML.slice(0,-10)})).get();
+        const amount = $('.price-value').map((i, el) => ({price: el.innerHTML.slice(2)})).get();;
+        var percentage_value = $(".spn-discount").text().slice(0,-1);
+
+        var item_selected = [];
+        if (selectedId.length < selectedItemsQty.length){
+          for(var i = 0; i < selectedId.length; i++){
+            let obj = {id: selectedId[i]['id'], quantity: selectedItemsQty[i]?.quantity, stocksquantity:quantityStocks[i]?.qtystocks, price: amount[i]?.price, discount:percentage_value};
+            item_selected.push(obj);
+          }
+
+        }
+        else{
+          for(var i = 0; i < selectedItemsQty.length; i++){
+            let obj = {id: selectedId[i]['id'], quantity: selectedItemsQty[i]?.quantity, stocksquantity:quantityStocks[i]?.qtystocks, price: amount[i]?.price, discount:percentage_value};
+            item_selected.push(obj);
+        }}
+
+        if (item_total !="0 item/s" && client_id!=0){
+          Swal.fire({
+              title: 'Are you sure?',
+              text: "You won't be able to revert this!",
+              icon: 'warning',
+              showCancelButton: true,
+              confirmButtonText: 'Confirm',
+              customClass: {
+                confirmButton: 'btn btn-primary me-3',
+                cancelButton: 'btn btn-label-secondary'
+              },
+              buttonsStyling: false
+        }).then(function (result) {
+          if (result.value) {
+              event.preventDefault();
+              console.log("bebe");
+              $.ajax({
+                  type: "POST",
+                  url: "{% url 'sales-item' %}",
+                  data:{
+                    cl_id : client_id, dis_id : discount_id, amt_paid: total_amount, remarks:sales_remarks, out_stocks : JSON.stringify(item_selected)
+                  }
+              }).done(function(data){
+                if(data.data == "success"){
+                  Swal.fire({
+                      icon: 'success',
+                      title: 'Successfully save!',
+                      text:' Transaction has been saved.',
+                      customClass: {
+                        confirmButton: 'btn btn-success'
+                      }
+                    });
+                    remove_all();
+                }
+                else{
+                  Swal.fire({
+                      icon: 'error',
+                      title: 'Invalid company Name',
+                      text: $companyname +' already exist',
+                      customClass: {
+                        confirmButton: 'btn btn-success'
+                      }});
+                    }
+                  });
+                }});
+        }
+        else if(client_id ==0){
+          toastr.error('Select client first!', 'Invalid', toast_options)
+        }
+        else{
+          toastr.error('Select item first!', 'Invalid', toast_options)}
+      });
+
+      /**
+   * DataTables Basic
+   */
+
+  'use strict';
+
+  let fv, offCanvasEl;
+  var cart_count =0;
+  document.addEventListener('DOMContentLoaded', function (e) {
+    (function () {
+      const formAddNewRecord = document.getElementById('form-add-new-record');
+
+      setTimeout(() => {
+        const newRecord = document.querySelector('.create-new'),
+          offCanvasElement = document.querySelector('#add-new-record');
+
+        // To open offCanvas, to add new record
+        if (newRecord) {
+          newRecord.addEventListener('click', function () {
+            offCanvasEl = new bootstrap.Offcanvas(offCanvasElement);
+            // Empty fields on offCanvas open
+            (offCanvasElement.querySelector('.dt-full-name').value = ''),
+              (offCanvasElement.querySelector('.dt-post').value = ''),
+              (offCanvasElement.querySelector('.dt-email').value = ''),
+              (offCanvasElement.querySelector('.dt-date').value = ''),
+              (offCanvasElement.querySelector('.dt-salary').value = '');
+            // Open offCanvas with form
+            offCanvasEl.show();
+          });
+        }
+      }, 200);
+
+      // Form validation for Add new record
+      fv = FormValidation.formValidation(formAddNewRecord, {
+        fields: {
+          basicFullname: {
+            validators: {
+              notEmpty: {
+                message: 'The name is required'
+              }
+            }
+          },
+          basicPost: {
+            validators: {
+              notEmpty: {
+                message: 'Post field is required'
+              }
+            }
+          },
+          basicEmail: {
+            validators: {
+              notEmpty: {
+                message: 'The Email is required'
+              },
+              emailAddress: {
+                message: 'The value is not a valid email address'
+              }
+            }
+          },
+          basicDate: {
+            validators: {
+              notEmpty: {
+                message: 'Joining Date is required'
+              },
+              date: {
+                format: 'MM/DD/YYYY',
+                message: 'The value is not a valid date'
+              }
+            }
+          },
+          basicSalary: {
+            validators: {
+              notEmpty: {
+                message: 'Basic Salary is required'
+              }
+            }
+          }
+        },
+        plugins: {
+          trigger: new FormValidation.plugins.Trigger(),
+          bootstrap5: new FormValidation.plugins.Bootstrap5({
+            // Use this for enabling/changing valid/invalid class
+            // eleInvalidClass: '',
+            eleValidClass: '',
+            rowSelector: '.col-sm-12'
+          }),
+          submitButton: new FormValidation.plugins.SubmitButton(),
+          // defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+          autoFocus: new FormValidation.plugins.AutoFocus()
+        },
+        init: instance => {
+          instance.on('plugins.message.placed', function (e) {
+            if (e.element.parentElement.classList.contains('input-group')) {
+              e.element.parentElement.insertAdjacentElement('afterend', e.messageElement);
+            }
+          });
+        }
+      });
+
+      // FlatPickr Initialization & Validation
+      flatpickr(formAddNewRecord.querySelector('[name="basicDate"]'), {
+        enableTime: false,
+        // See https://flatpickr.js.org/formatting/
+        dateFormat: 'm/d/Y',
+        // After selecting a date, we need to revalidate the field
+        onChange: function () {
+          fv.revalidateField('basicDate');
+        }
+      });
+    })();
+  });
+
+  // datatable (jquery)
+  $(function () {
+    var dt_basic_table = $('.datatables-basic'),
+      dt_complex_header_table = $('.dt-complex-header'),
+      dt_row_grouping_table = $('.dt-row-grouping'),
+      dt_multilingual_table = $('.dt-multilingual'),
+      dt_basic;
+
+    // DataTable with buttons
+    // --------------------------------------------------------------------
+
+    if (dt_basic_table.length) {
+      dt_basic = dt_basic_table.DataTable({
+        columnDefs: [
+
+          {
+            // For Checkboxes
+            targets: 0,
+            orderable: false,
+            searchable: false,
+            responsivePriority: 3,
+            checkboxes: true,
+            render: function (data) {
+              return '<input type="checkbox" class="dt-checkboxes form-check-input" id="cb'+data+'" name="checkboxtype">';
+            },
+            checkboxes: {
+              selectAllRender: '<input type="checkbox" class="form-check-input" id="allcb" name="allcb">'
+            }
+          },
+          {
+            targets: 1,
+            searchable: false,
+            visible: false
+          },
+          {
+            responsivePriority: 1,
+            targets: 3
+          },
+          // {
+          //   // Label
+          //   targets: -1,
+          //   render: function (data, type, full, meta) {
+          //     var $status_number = full['status'];
+          //     var $status = {
+          //       1: { title: 'Current', class: 'bg-label-primary' },
+          //       2: { title: 'Professional', class: ' bg-label-success' },
+          //       3: { title: 'Rejected', class: ' bg-label-danger' },
+          //       4: { title: 'Resigned', class: ' bg-label-warning' },
+          //       5: { title: 'Applied', class: ' bg-label-info' }
+          //     };
+          //     if (typeof $status[$status_number] === 'undefined') {
+          //       return data;
+          //     }
+          //     return (
+          //       '<span class="badge ' + $status[$status_number].class + '">' + $status[$status_number].title + '</span>'
+          //     );
+          //   }
+          // }
+        ],
+        order: [[2, 'desc']],
+        
+        displayLength: 7,
+        lengthMenu: [7, 10, 25, 50, 75, 100],
+        responsive: {
+          details: {
+            display: $.fn.dataTable.Responsive.display.modal({
+              header: function (row) {
+                var data = row.data();
+                return 'Details of ' + data['full_name'];
+              }
+            }),
+            type: 'column',
+            renderer: function (api, rowIdx, columns) {
+              var data = $.map(columns, function (col, i) {
+                return col.title !== '' // ? Do not show row in modal popup if title is blank (for check box)
+                  ? '<tr data-dt-row="' +
+                      colIndex +
+                      '" data-dt-column="' +
+                      col.columnIndex +
+                      '">' +
+                      '<td>' +
+                      col.title +
+                      ':' +
+                      '</td> ' +
+                      '<td>' +
+                      col.data +
+                      '</td>' +
+                      '</tr>'
+                  : '';
+              }).join('');
+
+              return data ? $('<table class="table"/><tbody />').append(data) : false;
+            }
+          }
+        }
+      });
+      $('div.head-label').html('<h5 class="card-title mb-0">DataTable with Buttons</h5>');
+    }
 
 
-  var $row_li = $(this).closest('.row');
-  var row_sub_total_old = $(".total-value", $row_li).text().slice(1);
-  var original_price = $(".sub-total").text().slice(1);
-  original_price = parseFloat(original_price - row_sub_total_old);
-  $('.sub-total').text("₱ " + original_price);
-  var percentage_value = $(".spn-discount").text().slice(0,-1);
-  var patient_discount  = parseFloat(original_price * percentage_value/100);
+    // Filter form control to default size
+    // ? setTimeout used for multilingual table initialization
+    setTimeout(() => {
+      $('.dataTables_filter .form-control').removeClass('form-control-sm');
+      $('.dataTables_length .form-select').removeClass('form-select-sm');
+    }, 300);
+  });
 
-  var total = parseFloat(original_price - patient_discount );
-  $('.total-place-order').text("₱ "+total);
-  $('.discount-value').text("-₱ "+patient_discount);
+  // $("#allcb").change(function() {
+  //   $('tbody tr td input[type="checkbox"]').prop(
+  //     "checked",
+  //     $(this).prop("checked")
+  //   );
+  // });
 
-});
+  var sub_total = 0;
+  $(document).on( "change",  ".quantity-input",function() {
+
+    var $row = $(this).closest('.row');
 
 
-$("#add_data").click(function() {
-    var grid = document.getElementById("Table1");
-    var checkBoxes = grid.getElementsByTagName("INPUT");
-    var str = '';
 
 
-    for (var i = 0; i < checkBoxes.length; i++) {
-      if (
-        checkBoxes[i].checked &&
-        checkBoxes[i].name !== "allcb" &&
-        !checkBoxes[i].hasCovered
-      ) {
-        var row = checkBoxes[i].parentNode.parentNode;
-        cart_count++;
-        str +=
-          '<li class="list-group-item p-4 li" data-for="' + checkBoxes[i].id + '">'+
-            '<div class="d-flex gap-3">'+
-              '<div class="flex-grow-1 append-item">'+
-                '<div class="row" >'+
-                  '<div class="col-md-8">'+
-                    '<p class="me-3">'+
-                      '<a href="javascript:void(0)" class="text-body">'+
-                        row.cells[1].innerHTML +'</a>'+
-                    '</p>'+
-                    '<div class="text-muted mb-2 d-flex flex-wrap">'+
-                      '<span class="me-1">Sold by:</span>'+
-                      '<a href="javascript:void(0)" class="me-3">'+ row.cells[2].innerHTML +'</a>'+
-                      '<span class="badge bg-label-success">In Stock</span>'+
-                    '</div>' +
-                    '<span class="text-primary sub-total-row price-value">'+ row.cells[4].innerHTML +'</span><br><br>'+
-                    '<input type="number" class="form-control form-control-sm w-px-75 quantity-input" value="1" min="1" />' +
-                  '</div>'+
-                  '<div class="col-md-4">'+
-                    '<div class="text-md-end">'+
-                      '<button type="button" class="btn-close btn-pinned remove_data" aria-label="Close"></button>'+
-                      '<div class="my-2 my-md-4 mb-md-5">'+
-                        '<span class="text-success sub-total-row total-value">'+ row.cells[4].innerHTML +'</span>'+
+
+    var value_input = $(".quantity-input", $row).val();
+    
+    console.log( $(".quantity-input").val());
+    var row_sub_total_old = $(".total-value", $row).text().slice(1);
+    
+    var price_value = $(".price-value", $row).html(); 
+    let price = price_value.slice(1);
+    var total_value = parseFloat(value_input) * parseFloat(price);
+
+    var tl_value = parseFloat(total_value) - parseFloat(price);
+    t1_value = parseFloat(tl_value) + parseFloat(sub_total);
+
+    if(value_input.length!=0){$(".total-value", $row).text("₱ "+total_value);}
+    else{$(".total-value", $row).text("₱ 0");}
+    var sub_total_spn_value = $(".sub-total").text().slice(1);
+    var onchangetotalvalue = parseFloat(total_value - row_sub_total_old);
+    var ot_total = parseFloat(sub_total_spn_value) + parseFloat(onchangetotalvalue);
+    $(".sub-total").html("₱ "+ot_total);
+    var percentage_value = $(".spn-discount").text().slice(0,-1);
+    var discount = parseFloat(ot_total * percentage_value/100);
+    $('.discount-value').text("-₱ "+discount);
+
+    ot_total =parseFloat(ot_total) -parseFloat(discount);
+    $('.total-place-order').text("₱ "+ot_total);
+  });
+
+  $('.remove-all').click(function(event){
+    remove_all();
+  });
+
+  $(document).on("click", ".remove_data", function() {
+    cart_count--;
+    $('#count_items').text(cart_count + " item/s");
+    var $row = $(this).closest('.li');
+    var checkboxName = $row.data('for');
+    
+    var $checkbox = $(`input[type="checkbox"][name="${checkboxName}"]`);
+    $row.remove();
+    $checkbox.prop('checked', false);
+    // $checkbox.get(0).hasCovered = false;
+
+    var $row_li = $(this).closest('.li');
+    var row_sub_total_old = $(".total-value", $row_li).text().slice(1);
+    var original_price = $(".sub-total").text().slice(1);
+    original_price = parseFloat(original_price - row_sub_total_old);
+    $('.sub-total').text("₱ " + original_price);
+    var percentage_value = $(".spn-discount").text().slice(0,-1);
+    var patient_discount  = parseFloat(original_price * percentage_value/100);
+
+    var total = parseFloat(original_price - patient_discount );
+    $('.total-place-order').text("₱ "+total);
+    $('.discount-value').text("-₱ "+patient_discount);
+    toastr.success('Item remove successfully!', 'Success', toast_options)
+
+  });
+
+
+  $("#add_data").click(function() {
+      var grid = document.getElementById("Table1");
+      var addedCheckboxes = $(".whole-div-class .row");
+
+      var checkBoxes = $(`input[type=checkbox][name=checkboxtype]`);
+      var str = '';
+
+      addedCheckboxes.map((i, addedCheckbox) => {
+          checkBoxes = checkBoxes.filter((j, checkbox) => {
+              return $(addedCheckbox).data('for') != $(checkbox).prop("name");
+          });
+      });
+
+      for (var i = 0; i < checkBoxes.length; i++) {
+        if (
+          checkBoxes[i].checked &&
+          checkBoxes[i].name !== "allcb"
+        ) {
+          var row = checkBoxes[i].parentNode.parentNode;
+          cart_count++;
+          var stck_id = checkBoxes[i].id.slice(2);
+         
+          str +=
+            '<li class="list-group-item p-4 li" data-for="' + checkBoxes[i].id + '">'+
+              '<div class="d-flex gap-3">'+
+                '<div class="flex-grow-1 append-item">'+
+                  '<div class="row" class="row" data-for="' + checkBoxes[i].id + '">'+
+                    '<div class="col-md-8">'+
+                      '<p class="me-3">'+
+                        '<a href="javascript:void(0)" class="text-body">'+
+                          row.cells[1].innerHTML +'</a>'+
+                      '</p>'+
+                      '<div class="text-muted mb-2 d-flex flex-wrap">'+
+                        '<span class="me-1">Brand Name:</span>'+
+                        '<a href="javascript:void(0)" class="me-3">'+ row.cells[2].innerHTML +'</a>'+
+                        '<span class="badge bg-label-success">In Stock</span>'+
+                      '</div>' +
+                      '<span class="text-primary sub-total-row price-value" name="price-value">'+ row.cells[4].innerHTML +'</span><br><br>'+
+                      '<input type="number" class="form-control form-control-sm w-px-75 quantity-input" value="1" min="1" />' +
+                    '</div>'+
+                    '<div class="col-md-4">'+
+                      '<div class="text-md-end">'+
+                        '<button type="button" class="btn-close btn-pinned remove_data" aria-label="Close"></button>'+
+                        '<div class="my-2 my-md-4 mb-md-5">'+
+                          '<span class="text-success sub-total-row total-value">'+ row.cells[4].innerHTML +'</span>'+
+                        '</div>'+
+                        // '<input type="number" class="form-control form-control-sm w-px-75 old-quantity" id="old-quantity">'+row.cells[3].innerHTML+'</input>' +
+                        '<span class="badge bg-label-primary cordoba main-quantity" id="stocks_quantity" name="stocks_quantity">'+row.cells[3].innerHTML+' Available</span>'+
+                        // '<button type="button" class="btn btn-sm btn-label-primary">'+ row.cells[3].innerHTML +' available</button>'+
                       '</div>'+
-                      '<button type="button" class="btn btn-sm btn-label-primary">'+ row.cells[3].innerHTML +' available</button>'+
                     '</div>'+
                   '</div>'+
                 '</div>'+
               '</div>'+
-            '</div>'+
-          '</li>';
-          var sb_total = parseFloat(row.cells[4].innerHTML.slice(1));
-          sub_total = parseFloat(sub_total + sb_total);
-        checkBoxes[i].hasCovered = true;
+            '</li>';
+            var sb_total = parseFloat(row.cells[4].innerHTML.slice(1));
+            sub_total = parseFloat(sub_total + sb_total);
+          checkBoxes[i].hasCovered = true;
+        }
       }
-    }
-      $(".whole-div-class").append(str);
-      $('#exLargeModal').modal('hide');
-      $('#count_items').text(cart_count + " item/s");
-      $('.sub-total').text("₱ " + sub_total);
-      var percentage_value = $(".spn-discount").text().slice(0,-1);
-      var patient_discount  = parseFloat(sub_total * percentage_value/100);
-      $('.discount-value').text("-₱ "+patient_discount);
-      var total = parseFloat(sub_total - patient_discount);
-      $('.total-place-order').text("₱ "+total);
-  });
+        $(".whole-div-class").append(str);
+        $('#exLargeModal').modal('hide');
+        $('#count_items').text(cart_count + " item/s");
+        $('.sub-total').text("₱ " + sub_total);
+        var percentage_value = $(".spn-discount").text().slice(0,-1);
+        var patient_discount  = parseFloat(sub_total * percentage_value/100);
+        $('.discount-value').text("-₱ "+patient_discount);
+        var total = parseFloat(sub_total - patient_discount);
+        $('.total-place-order').text("₱ "+total);
+        toastr.success('Item add successfully!', 'Success', toast_options)
+    });
 });
 </script>
 {% endblock footer_scripts %}

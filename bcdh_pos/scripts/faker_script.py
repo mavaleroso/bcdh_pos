@@ -1,7 +1,8 @@
 from faker import Faker
-from main.models import Location, Generic, SubGeneric, Unit,Company,ClientType,Brand, ItemType, Discounts, SystemConfiguration
+from main.models import Location, Generic, SubGeneric, Unit,Company,ClientType,Brand, ItemType, Discounts, SystemConfiguration, Clients
 import numpy as np
 import random
+import datetime
 
 fake = Faker()
 Faker.seed(313)
@@ -24,6 +25,14 @@ client_type = ['Walk-in','Out-patient','In-patient']
 discount = ['PWD','Senior Citizen','OPD','Corporators','Special']
 discount_percentage = [20,20,6,20,0]
 fixed_amount = [False,False,False,False,True] 
+
+
+clients_name = ['Reymark','Jonas','Marwen','Alexis']
+middle_name = ['N','A','A','B']
+last_name = ['Valdehueza','Docdoc','Valeroso','Villanueva']
+
+
+client_type_id = ['1','2','3','1']
 
 
 
@@ -70,6 +79,10 @@ for i in range(len(discount)):
 for i in range(20):
     location_db = Location(name=fake.address())
     location_db.save()
+    
+for i in range(len(clients_name)):
+    db_cl = Clients(first_name=clients_name[i],middle_name = middle_name[i],last_name =last_name[i],birthdate =datetime.date.today(),sex="Male",address=fake.unique.address(),occupation=fake.address(),client_type_id =client_type_id[i] )
+    db_cl.save()
 
 system_configuration_db = SystemConfiguration(name='Bayugan City Doctors Hospital', inventory_code='23-04-00000', year='2023')
 system_configuration_db.save()

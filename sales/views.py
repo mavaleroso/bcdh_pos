@@ -8,7 +8,7 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from main.models import (Stocks, Clients, Items, Discounts, Sales, Payment)
+from main.models import (Stocks, Clients, ClientType, Discounts, Sales, Payment,OutItems)
 import json 
 from django.core import serializers
 import datetime
@@ -21,7 +21,8 @@ def salestransaction(request):
     context = {
 		'clients' : Clients.objects.filter().order_by('first_name'),
         'items' : Stocks.objects.filter().exclude(pcs_quantity=0).select_related(),
-        'discount' : Discounts.objects.filter()
+        'discount' : Discounts.objects.filter(),
+        'client_type' : ClientType.objects.filter()
         
 	}
     return render(request, 'sales/transaction.html', context)
@@ -59,23 +60,51 @@ def salesitem(request):
         disc_id = request.POST.get('dis_id')
         usr_id = request.session.get('user_id', 0)
         amt_paid = request.POST.get('amt_paid')
-
+        sales_remarks = request.POST.get('remarks')
+        discount_amount = request.POST.get('discounted_amt')
+        stock_list = json.loads(request.POST.get('out_stocks'))
+        
         if disc_id =="0":
             disc_id = None
-            print("zero ni")
-            print(disc_id)
 
-        print("zero ni111")
-        print(disc_id)
-        
-        addsales = Sales(is_er=False,client_id = clie_id,discount_id=disc_id,user_id = usr_id)
+        addsales = Sales(is_er=0,remarks=sales_remarks,client_id = clie_id,user_id = usr_id)
         addsales.save()
         addpayment = Payment(amount_paid = amt_paid,sales_id = Sales.objects.last().id)
         addpayment.save()
-
+        
+        for stock_list_item in stock_list:
+            price = float(stock_list_item['price']) * float(stock_list_item['discount'])/100
+            obj, was_created_bool = OutItems.objects.get_or_create(
+            stock_id=stock_list_item['id'],
+            quantity=stock_list_item['quantity'],
+            discounted_amount=price,
+            sales_id = Sales.objects.last().id
+        )
+            mainquantity=stock_list_item['stocksquantity']
+            newquantity = stock_list_item['quantity']
+            total_quantity = (int(mainquantity) - int(newquantity))
+            Stocks.objects.filter(id=stock_list_item['id']).update(pcs_quantity=total_quantity)
         return JsonResponse({'data': 'success'})
     else:
         return JsonResponse({'data': 'error'})
+    
+    
+@csrf_exempt
+def addclient(request):
+    
+    firstname = request.POST.get('firstname')
+    middlename = request.POST.get('middlename')
+    lastname = request.POST.get('lastname')
+    bdate = request.POST.get('birthdate')
+    sex = request.POST.get('sex')
+    address = request.POST.get('address')
+    client_type = request.POST.get('client_type')
+    occupation = request.POST.get('occupation')    
+    
+    addclt = Clients(first_name=firstname,middle_name=middlename,last_name = lastname,birthdate = bdate, sex=sex,address = address,occupation = occupation, client_type_id = client_type )
+    addclt.save()
+
+    return JsonResponse({'data': 'success'})
 
 
 
