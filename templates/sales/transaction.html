@@ -39,12 +39,12 @@
                     </p>
                   </div>
                   <div class="col-md-5">
-                    <div class="text-md-end">
-                      <button
-                      type="button"
-                      class="btn btn-warning remove-all"
-                      id = "remove-all"
-                    >
+                    <div class="text-md-end div-remove">
+                        <button
+                        type="button"
+                        class="btn btn-warning remove-all"
+                        id ="remove-all"
+                      >
                     <i class="ti ti-trash me-1"></i>Remove all
                     </button>
                     </div>
@@ -116,8 +116,8 @@
                       <i class="ti ti-user-check me-1"></i>Discount
                   </button> 
 
-                  <span class="badge bg-label-warning ms-1 spn-discount">0</span>
-                  <span class="badge bg-label-success ms-1 spn-patient-status">___</span>
+                  <span class="badge bg-label-warning ms-1 spn-discount">0.00 %</span>
+                  <span class="badge bg-label-success ms-1 spn-patient-status">Unidentified Patient</span>
 
                 </div>
                 
@@ -341,12 +341,16 @@
 
 {% block footer_scripts %}
 <script>
-      
+$('.div-remove').hide();
 $(document).ready(function(){
+    var discount_type;
     var selected_items = [];
     var client_id = 0;
     var discount_id = 0;
+    var actual_prc_discount = 0;
+    var percentage_value = 0;
     $(".patient-details-div").hide();
+    
 
     const toast_options = (toastr.options = {
             maxOpened: 1,
@@ -359,12 +363,12 @@ $(document).ready(function(){
     })
     
     //discounts ------------------------------------------------------->
-    $(".spn-discount").hide();
+    // $(".spn-discount").hide();
     $('#select-discount').on('change', function() {
       var value = $('.select-discount').find(":selected").text();
       $('.special-percentage').val('');
       if (value !="Special"){
-        $(".view-percentage").hide();
+        $(".view-percentage").hide();        
       }
       else{
         $(".view-percentage").show();
@@ -372,10 +376,10 @@ $(document).ready(function(){
     });
 
     $('.save-discount').click(function(event){
-      var percentage_value,discount_type;
+      var amount_value;
       discount_type = $('.select-discount').find(":selected").text();
       discount_id = $('.select-discount').find(":selected").val();
-      
+      var sub_total = $(".sub-total").text().slice(1);
       $.ajax({
           type: "POST",
           url: "{% url 'discount-details' %}",
@@ -383,20 +387,44 @@ $(document).ready(function(){
               dis_id: discount_id
           }
           }).done(function(data){
-            client_id = data.data[0].id;
+            // client_id = data.data[0].id;
+            discount_id = data.data[0].id;
             discount_type = data.data[0].name;
             percentage_value = data.data[0].percentage;
             toastr.success('Discount applied!', 'Success', toast_options)
-            if (discount_type =="Special"){
-              percentage_value = $('#special-percentage').val();
-            }
-            $(".spn-discount").text(percentage_value +" %");
-            $(".spn-discount").show();
-            $('#onboardModal').modal('hide');
+
+            console.log("percentage_value11");
+            console.log(percentage_value);
+            
             var original_price = $(".sub-total").text().slice(1);
             var discount_price = parseFloat(original_price * percentage_value/100);
-            $('.discount-value').text("-₱ "+discount_price);
-            original_price =parseFloat(original_price) -parseFloat(discount_price);
+            
+    
+
+            if (discount_type =="Special"){
+              percentage_value = $('#special-percentage').val();
+              amount_value = (sub_total == 0) ? 0 : amount_value = parseFloat((percentage_value)/parseFloat(sub_total)*100); 
+              actual_prc_discount = amount_value;
+              convert_discount_value = amount_value.toFixed(2);
+              $('.discount-value').text("-₱ "+percentage_value);
+              $(".spn-discount").text(convert_discount_value +" %");
+            }
+            else{
+              actual_prc_discount = percentage_value;
+              $(".spn-discount").text(percentage_value +" %");
+            }
+            // console.log(discount_price);
+            // console.log(sub_total);
+            // console.log(discount_type);
+            // console.log(percentage_value);
+            // console.log(amount_value);
+            
+            // $(".spn-discount").show();
+            $('#onboardModal').modal('hide');
+
+            amount_value = (discount_type == "Special") ? $('.discount-value').text("-₱ "+percentage_value) : $('.discount-value').text("-₱ "+discount_price);
+            original_price = (discount_type == "Special")?original_price =parseFloat(original_price) -parseFloat(percentage_value) : original_price =parseFloat(original_price) -parseFloat(discount_price);
+            original_price = (sub_total == 0) ? original_price = 0 : original_price;
             $('.total-place-order').text("₱ "+original_price);
           
       });
@@ -489,26 +517,30 @@ $(document).ready(function(){
     //end discounts ---------------------------------------------->
     
       $('.add-patient').click(function (event) {
-        $(".patient-details-div").show();
 
-        var patient_id = $('#selected-patient').find(":selected").val();
-
-        $.ajax({
-          type: "POST",
-          url: "{% url 'patient-details' %}",
-          data:{
-              patient: patient_id
-          }
-          }).done(function(data){
-            toastr.success('Patient add successfully!', 'Success', toast_options)
-            client_id = data.data[0].id;
-            var first_name = data.data[0].first_name;
-            var middle_name = data.data[0].middle_name;
-            var last_name = data.data[0].last_name;
-            var client_type_name = data.data[0].client_type__name;
-            $('#patient-name').text(first_name + " " + middle_name + " " + last_name);
-            $('.spn-patient-status').text(client_type_name);
-          });
+        if($('#selected-patient').val() ) { 
+          $(".patient-details-div").show();
+          var patient_id = $('#selected-patient').find(":selected").val();
+          $.ajax({
+            type: "POST",
+            url: "{% url 'patient-details' %}",
+            data:{
+                patient: patient_id
+            }
+            }).done(function(data){
+              toastr.success('Patient add successfully!', 'Success', toast_options)
+              client_id = data.data[0].id;
+              var first_name = data.data[0].first_name;
+              var middle_name = data.data[0].middle_name;
+              var last_name = data.data[0].last_name;
+              var client_type_name = data.data[0].client_type__name;
+              $('#patient-name').text(first_name + " " + middle_name + " " + last_name);
+              $('.spn-patient-status').text(client_type_name);
+            });
+        }
+        else {
+              toastr.error('Select Patient first!', 'Invalid', toast_options)
+        }
       });
 
       $('.place-order-items').click(function (event) {
@@ -520,8 +552,11 @@ $(document).ready(function(){
         const selectedMainQuantity = $('.quantity-input').map((i, el) => ({quantity: el.value})).get();
         const quantityStocks = $('.main-quantity').map((i, el) => ({qtystocks: el.innerHTML.slice(0,-10)})).get();
         const amount = $('.price-value').map((i, el) => ({price: el.innerHTML.slice(2)})).get();;
-        var percentage_value = parseInt($(".spn-discount").text().slice(0,-1));
-        percentage_value = (percentage_value === 0) ? percentage_value : 0;
+        // var percentage_value = parseFloat($(".spn-discount").text().slice(0,-1));
+        var percentage_value = parseFloat(actual_prc_discount);
+        console.log("percentage_value");
+        console.log(percentage_value);
+        percentage_value = (percentage_value == 0) ? 0 : percentage_value;
         var item_selected = [];
         if (selectedId.length < selectedItemsQty.length){
           for(var i = 0; i < selectedId.length; i++){
@@ -535,6 +570,9 @@ $(document).ready(function(){
             let obj = {id: selectedId[i]['id'], quantity: selectedItemsQty[i]?.quantity, stocksquantity:quantityStocks[i]?.qtystocks, price: amount[i]?.price, discount:percentage_value};
             item_selected.push(obj);
         }}
+
+        console.log("selecteitemsni");
+        console.log(item_selected);
 
         if (item_total !="0 item/s" && client_id!=0){
           Swal.fire({
@@ -568,6 +606,7 @@ $(document).ready(function(){
                       }
                     });
                     remove_all();
+                    window.location.reload();
                 }
                 else{
                   Swal.fire({
@@ -821,11 +860,9 @@ $(document).ready(function(){
     var $row = $(this).closest('.row');
     var value_input = $(".quantity-input", $row).val();
     var row_sub_total_old = $(".total-value", $row).text().slice(1);
-    
-    var price_value = $(".price-value", $row).html(); 
-    let price = price_value.slice(1);
+    var discount;    
+    let price = $(".price-value", $row).html().slice(1); 
     var total_value = parseFloat(value_input) * parseFloat(price);
-
     var tl_value = parseFloat(total_value) - parseFloat(price);
     t1_value = parseFloat(tl_value) + parseFloat(sub_total);
 
@@ -836,9 +873,13 @@ $(document).ready(function(){
     var ot_total = parseFloat(sub_total_spn_value) + parseFloat(onchangetotalvalue);
     $(".sub-total").html("₱ "+ot_total);
     var percentage_value = $(".spn-discount").text().slice(0,-1);
-    var discount = parseFloat(ot_total * percentage_value/100);
-    $('.discount-value').text("-₱ "+discount);
-
+    if(discount_type!="Special"){
+      discount = parseFloat(ot_total * percentage_value/100);
+      $('.discount-value').text("-₱ "+discount);
+    }
+    else {
+      discount = $(".discount-value").text().slice(2);
+    }
     ot_total =parseFloat(ot_total) -parseFloat(discount);
     $('.total-place-order').text("₱ "+ot_total);
   });
@@ -945,17 +986,59 @@ $(document).ready(function(){
           // checkBoxes[i].hasCovered = true;
         }
       }
+        $('.div-remove').show();
         $(".whole-div-class").append(str);
         $('#exLargeModal').modal('hide');
         $('#count_items').text(cart_count + " item/s");
+
+
+        // original_price = (discount_type == "Special")?original_price =parseFloat(original_price) -parseFloat(percentage_value) : original_price =parseFloat(original_price) -parseFloat(discount_price);
         $('.sub-total').text("₱ " + sub_total);
-        var percentage_value = $(".spn-discount").text().slice(0,-1);
-        var patient_discount  = parseFloat(sub_total * percentage_value/100);
-        $('.discount-value').text("-₱ "+patient_discount);
-        var total = parseFloat(sub_total - patient_discount);
-        $('.total-place-order').text("₱ "+total);
+
+        if (discount_type=="Special"){
+            var discount_val = $(".discount-value").text().slice(2);
+            var total = parseFloat(sub_total - discount_val);
+            $('.total-place-order').text("₱ "+total);
+
+            var discount_amount = $(".discount-value").text().slice(2);
+
+
+
+            actual_prc_discount = parseFloat(discount_amount/sub_total*100);
+
+            convert_discount_value = actual_prc_discount.toFixed(2);
+
+
+            
+            console.log(actual_prc_discount);
+            console.log(sub_total);
+
+            $(".spn-discount").text(convert_discount_value +" %");
+
+        }else{
+          
+          var percentage_value = $(".spn-discount").text().slice(0,-1);
+          var patient_discount  = parseFloat(sub_total * percentage_value/100);
+
+          $('.discount-value').text("-₱ "+patient_discount);
+          var total = parseFloat(sub_total - patient_discount);
+          $('.total-place-order').text("₱ "+total);
+        }
+
+
         toastr.success('Item add successfully!', 'Success', toast_options);
     });
+
+    var select2 = $('.select2');
+      if (select2.length) {
+        select2.each(function () {
+          var $this = $(this);
+          $this.wrap('<div class="position-relative"></div>').select2({
+            placeholder: 'Select value',
+            dropdownParent: $this.parent()
+          });
+        });
+      }
 });
 </script>
 {% endblock footer_scripts %}
