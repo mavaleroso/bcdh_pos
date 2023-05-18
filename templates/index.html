@@ -125,7 +125,7 @@
                                 <div data-i18n="Out">Out</div>
                             </a>
                         </li>
-                        <li class="menu-item {% if url_name == 'inventory-list' %}active{% endif %}">
+                        <li class="menu-item {% if url_name == 'inventory-list' or url_name == 'inventory-list-edit' %}active{% endif %}">
                             <a href="{% url 'inventory-list' %}" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-layout-grid"></i>
                                 <div data-i18n="List">List</div>

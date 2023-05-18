@@ -23,21 +23,22 @@
                             >
                                 <option value="1">Inv-code</option>
                                 <option value="2">Barcode</option>
-                                <option value="3">Item Description</option>
-                                <option value="4">Brand</option>
-                                <option value="5">Company</option>
-                                <option value="6">Location</option>
-                                <option value="7">Quantity</option>
-                                <option value="8">Damage Stock</option>
-                                <option value="9">Available Stock</option>
-                                <option value="10">Unit Price</option>
-                                <option value="11">Retail Price</option>
-                                <option value="12">Expiration Date</option>
-                                <option value="13">Aging</option>
-                                <option value="14">Delivery Date</option>
-                                <option value="15">created_at</option>
-                                <option value="16">updated_at</option>
-                                <option value="17">created_by</option>
+                                <option value="3">Item Type</option>
+                                <option value="4">Item Description</option>
+                                <option value="5">Brand</option>
+                                <option value="6">Company</option>
+                                <option value="7">Location</option>
+                                <option value="8">Quantity</option>
+                                <option value="9">Damage Stock</option>
+                                <option value="10">Available Stock</option>
+                                <option value="11">Unit Price</option>
+                                <option value="12">Retail Price</option>
+                                <option value="13">Expiration Date</option>
+                                <option value="14">Aging</option>
+                                <option value="15">Delivery Date</option>
+                                <option value="16">created_at</option>
+                                <option value="17">updated_at</option>
+                                <option value="18">created_by</option>
                             </select>
                         </div>
                     </div>
@@ -53,7 +54,7 @@
                                         <i class="ti ti-x"></i>
                                     </span>
                                 </span>
-                                <span class="switch-label">Advance Search</span>
+                                <span class="switch-label">Filter</span>
                             </label>
                         </div>
                     </div>
@@ -95,6 +96,15 @@
                                                 <option></option>
                                                 {% for row in barcode %}
                                                 <option value="{{ row.barcode }}">{{ row.barcode }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
+                                            <label class="form-label">Item Type</label>
+                                            <select id="item-type-filter" name="item_type_filter" class="select2-filter form-select" multiple>
+                                                <option></option>
+                                                {% for row in item_type %}
+                                                <option value="{{ row.id }}">{{ row.name }}</option>
                                                 {% endfor %}
                                             </select>
                                         </div>
@@ -204,7 +214,7 @@
                                             <label class="form-label">Delivered Date</label>
                                             <input type="date" id="delivered-date-filter" name="delivered_date_filter" class="form-control" />
                                         </div>
-                                        <div class="col-12 col-sm-6 col-md-4 col-lg-3 offset-md-3">
+                                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
                                             <div class="mt-4 fit-content d-flex ms-auto d-block">
                                                 <button
                                                     id="reset-advance-filter"
@@ -232,6 +242,7 @@
                                 <th>Action</th>
                                 <th>Inv-code</th>
                                 <th>Barcode</th>
+                                <th>Item Type</th>
                                 <th>Item Description</th>
                                 <th>Brand</th>
                                 <th>Company</th>
@@ -270,6 +281,7 @@
 
         const inventory_code_filter = $('#inventory-code-filter')
         const barcode_filter = $('#barcode-filter')
+        const item_type_filter = $('#item-type-filter')
         const generic_filter = $('#generic-filter')
         const subgeneric_filter = $('#subgeneric-filter')
         const classification_filter = $('#classification-filter')
@@ -315,6 +327,7 @@
                 data: function (d) {
                     d.inventory_code_filter = inventory_code_filter.val()
                     d.barcode_filter = barcode_filter.val()
+                    d.item_type_filter = item_type_filter.val()
                     d.generic_filter = generic_filter.val()
                     d.subgeneric_filter = subgeneric_filter.val()
                     d.classification_filter = classification_filter.val()
@@ -333,6 +346,7 @@
                 { data: 'id' },
                 { data: 'code' },
                 { data: 'barcode' },
+                { data: 'item_type' },
                 { data: 'details' },
                 { data: 'brand' },
                 { data: 'company' },
@@ -383,12 +397,12 @@
                     },
                 },
                 {
-                    targets: [3, 5, 17],
+                    targets: [4, 6, 18],
                     orderable: false,
                     searchable: false,
                 },
                 {
-                    targets: 6,
+                    targets: 7,
                     orderable: false,
                     searchable: false,
                     render: function (data) {
@@ -406,7 +420,7 @@
                     },
                 },
                 {
-                    targets: 7,
+                    targets: 8,
                     render: function (data) {
                         let elem = data ?? ''
                         if (elem) {
@@ -416,7 +430,7 @@
                     },
                 },
                 {
-                    targets: 8,
+                    targets: 9,
                     orderable: false,
                     searchable: false,
                     render: function (data) {
@@ -428,7 +442,7 @@
                     },
                 },
                 {
-                    targets: 9,
+                    targets: 10,
                     orderable: false,
                     searchable: false,
                     render: function (data) {
@@ -438,7 +452,7 @@
                     },
                 },
                 {
-                    targets: 10,
+                    targets: 11,
                     render: function (data) {
                         let elem = ''
                         if (data) {
@@ -448,7 +462,7 @@
                     },
                 },
                 {
-                    targets: 11,
+                    targets: 12,
                     render: function (data) {
                         let elem = ''
                         if (data) {
@@ -458,7 +472,7 @@
                     },
                 },
                 {
-                    targets: 13,
+                    targets: 14,
                     orderable: false,
                     searchable: false,
                     render: function (data) {
@@ -474,13 +488,13 @@
                     },
                 },
                 {
-                    targets: [15, 16],
+                    targets: [16, 17],
                     render: function (data) {
                         return moment(data).format('LLL')
                     },
                 },
             ],
-            order: [[14, 'asc']],
+            order: [[15, 'asc']],
             scrollY: '300px',
             scrollX: true,
         })
@@ -500,7 +514,7 @@
             if (toggled_column != '') {
                 columns_name.val(toggled_column.split(','))
             } else {
-                columns_name.val([2, 4, 5, 6, 7, 8, 10, 11, 15, 16, 17])
+                columns_name.val([2, 5, 6, 7, 8, 9, 10, 11, 12, 15, 16, 17])
             }
             toggle_columns()
             columns_name.selectpicker()
@@ -511,7 +525,7 @@
         })
 
         function toggle_columns() {
-            var all_column = Array.from({ length: 17 }, (_, i) => (i + 1).toString())
+            var all_column = Array.from({ length: 18 }, (_, i) => (i + 1).toString())
 
             var remove_column = columns_name.val()
 

@@ -65,6 +65,8 @@ def inventory_load(request):
         'inventory_code_filter[]') if request.GET.getlist('inventory_code_filter[]') else []
     _barcode_filter = request.GET.getlist(
         'barcode_filter[]') if request.GET.getlist('barcode_filter[]') else []
+    _item_type_filter = request.GET.getlist(
+        'item_type_filter[]') if request.GET.getlist('item_type_filter[]') else []
     _generic_filter = request.GET.getlist(
         'generic_filter[]') if request.GET.getlist('generic_filter[]') else []
     _subgeneric_filter = request.GET.getlist(
@@ -114,6 +116,9 @@ def inventory_load(request):
     if len(_barcode_filter) > 0:
         filters['item__barcode__in'] = _barcode_filter
 
+    if len(_item_type_filter) > 0:
+        filters['item__type_id__in'] = _item_type_filter
+
     if len(_generic_filter) > 0:
         filters['item__generic_id__in'] = _generic_filter
 
@@ -132,10 +137,10 @@ def inventory_load(request):
         filters['id__in'] = stock_id
 
     if _classification_filter:
-        filters['classification__in'] = _classification_filter
+        filters['item__classification__icontains'] = _classification_filter
 
     if _description_filter:
-        filters['description__in'] = _description_filter
+        filters['item__description__icontains'] = _description_filter
 
     if _is_damage_filter == 'yes':
         filters['is_damaged__gt'] = 0
@@ -179,6 +184,7 @@ def inventory_load(request):
     stock_data = Stocks.objects.select_related().filter(**filters).filter(
         Q(code__icontains=_search) |
         Q(item__barcode__icontains=_search) |
+        Q(item__type__name__icontains=_search) |
         Q(item__brand__name__icontains=_search) |
         Q(company__name__icontains=_search) |
         Q(item__generic__name__icontains=_search) |
@@ -234,6 +240,7 @@ def inventory_load(request):
             'id': stock.id,
             'code': stock.code,
             'barcode': stock.item.barcode,
+            'item_type': stock.item.type.name,
             'brand': stock.item.brand.name,
             'company': stock.company.name,
             'location': location_data,
@@ -359,3 +366,7 @@ def received_item_load(request):
         'recordsFiltered': total,
     }
     return JsonResponse(response)
+
+
+def inventory_list_edit(request):
+    return render(request, 'inventory/list_edit.html')
