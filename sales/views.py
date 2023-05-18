@@ -27,6 +27,13 @@ def salestransaction(request):
 	}
     return render(request, 'sales/transaction.html', context)
 
+@csrf_exempt
+def saleslist(request):
+    context = {
+        'sales' : Sales.objects.filter().select_related()
+	}
+    return render(request, 'sales/list.html', context)
+    
     
 @csrf_exempt
 def patientdetails(request):
@@ -67,13 +74,25 @@ def salesitem(request):
         if disc_id =="0":
             disc_id = None
 
-        addsales = Sales(is_er=0,remarks=sales_remarks,client_id = clie_id,user_id = usr_id)
+        # print("sales_remarks11")
+        # print(sales_remarks)
+        # print(clie_id)
+        # print(usr_id)
+        # print(disc_id)
+        
+
+        addsales = Sales(is_er=0,remarks=sales_remarks,client_id = clie_id,discount_id = disc_id, user_id = usr_id)
         addsales.save()
         addpayment = Payment(amount_paid = amt_paid,sales_id = Sales.objects.last().id)
         addpayment.save()
         
         for stock_list_item in stock_list:
             price = float(stock_list_item['price']) * float(stock_list_item['discount'])/100
+
+            print("newdiscnt")
+            print(float(stock_list_item['price']))
+            print(float(stock_list_item['discount']))
+
             obj, was_created_bool = OutItems.objects.get_or_create(
             stock_id=stock_list_item['id'],
             quantity=stock_list_item['quantity'],

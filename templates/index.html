@@ -149,8 +149,8 @@
                                 <div data-i18n="Transaction">Transaction</div>
                             </a>
                         </li>
-                        <li class="menu-item">
-                            <a href="app-email.html" class="menu-link">
+                        <li class="menu-item {% if url_name == 'sales-list' %}active{% endif %}">
+                            <a href="{% url 'sales-list' %}" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-layout-grid"></i>
                                 <div data-i18n="List">List</div>
                             </a>
