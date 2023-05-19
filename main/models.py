@@ -354,6 +354,7 @@ class OutItems(models.Model):
 class SystemConfiguration(models.Model):
     name = models.CharField(max_length=128, blank=True, null=True)
     inventory_code = models.CharField(max_length=128, blank=True, null=True)
+    transaction_code = models.CharField(max_length=128, blank=True, null=True)
     year = models.CharField(max_length=128, blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     updated_at = models.DateTimeField(blank=True, null=True, auto_now=True)

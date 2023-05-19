@@ -61,7 +61,8 @@ def discountdetails(request):
 
 def generate_code():
     inventory_code = SystemConfiguration.objects.values_list(
-        'inventory_code', flat=True).first()
+        'transaction_code', flat=True).first()
+    
     last_code = inventory_code.split('-')
     sampleDate = date.today()
     year = sampleDate.strftime("%y")
@@ -93,6 +94,13 @@ def salesitem(request):
 
         addsales = Sales(transaction_code = code,is_er=0,remarks=sales_remarks,client_id = clie_id,discount_id = disc_id, user_id = usr_id)
         addsales.save()
+
+
+        if Sales.id:
+            system_config = SystemConfiguration.objects.first()
+            system_config.transaction_code = code
+            system_config.save()
+
         addpayment = Payment(amount_paid = amt_paid,sales_id = Sales.objects.last().id)
         addpayment.save()
         
