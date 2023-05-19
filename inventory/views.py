@@ -368,5 +368,33 @@ def received_item_load(request):
     return JsonResponse(response)
 
 
-def inventory_list_edit(request):
-    return render(request, 'inventory/list_edit.html')
+def inventory_list_edit(request, stock_id):
+    context = {
+        'company': Company.objects.filter().order_by('name'),
+        'stock_details': Stocks.objects.select_related().get(pk=stock_id),
+        'items': Items.objects.select_related()
+    }
+    return render(request, 'inventory/list_edit.html', context)
+
+
+@csrf_exempt
+def update_stock(request, stock_id):
+    item_id = request.POST.get('ItemID')
+    item_quantity_pcs = request.POST.get('ItemQuantityPcs')
+    unit_price = request.POST.get('UnitPrice')
+    retail_price = request.POST.get('RetailPricePcs')
+    company = request.POST.get('Company')
+    delivered_date = request.POST.get('DeliveredDate')
+    expiration_date = request.POST.get('ExpirationDate')
+
+    stock = Stocks.objects.get(pk=stock_id)
+    stock.item_id = item_id
+    stock.pcs_quantity = item_quantity_pcs
+    stock.unit_price = unit_price
+    stock.retail_price = retail_price
+    stock.company_id = company
+    stock.delivered_date = delivered_date
+    stock.expiration_date = expiration_date
+    stock.save()
+
+    return JsonResponse({'data': 'success'})
