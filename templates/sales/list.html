@@ -1,0 +1,208 @@
+{% extends 'index.html' %} {% block content %} {% load staticfiles %}
+
+
+<!-- Content wrapper -->
+<div class="content-wrapper">
+    <!-- Content -->
+    <div class="container-xxl flex-grow-1 container-p-y">
+      <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Sales /</span> List</h4>
+
+<!-- DataTable with Buttons -->
+        <div class="card">
+            <div class="card-datatable table-responsive pt-0">
+            <table class="datatables-basic table">
+                <thead>
+                <tr>
+                    <th>Transaction Code</th>
+                    <th>Client</th>
+                    <th>Emergency</th>
+                    <th>Remarks</th>
+                    <th>Discount</th>
+                    <th>User</th>
+                    <th>Date added</th>
+
+                </tr>
+                </thead>
+                <tbody>
+                  {% for row in sales %}
+                  <tr>
+                    <td>{{row.transaction_code}}</td>
+                    <td>{{row.client.first_name}} {{row.client.middle_name}} {{row.client.last_name}}</td>
+                    <td>
+                        {% if row.is_er == True %}<span class="badge bg-primary">Yes</span> {% else %}<span class="badge bg-primary">No</span> {% endif %}
+                    </td>
+                    <td>{{row.remarks}}</td>
+                    <td>{{row.discount.name}}</td>
+                    <td>{{row.user.username}}</td>
+                    <td>{{row.created_at}}</td>
+                    
+                  </tr>
+                 {% endfor %}
+                 </tbody> 
+            </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+  
+
+
+{% endblock %} 
+{% block footer_scripts %}
+<script>
+  let id,name,status,identifier_swal;
+$(document).ready(function(){
+  
+    $('.item-edit').click(function (event) {
+      $('.sub-generic-status').show();
+      id = $(this).attr('id');
+      name = $(this).attr('value')
+      status = $(this).attr('status')
+      if (status == "True"){status =1}
+      else {status =0}
+      $('.title-name').text('Update Record');
+      $('.dt-sub-generic-name').text('Update Record');
+      offCanvasElement = document.querySelector('#add-new-record'); 
+      let fv, offCanvasEl;
+      offCanvasEl = new bootstrap.Offcanvas(offCanvasElement);
+      (offCanvasElement.querySelector('.dt-sub-generic-name').value = name);
+      (offCanvasElement.querySelector('.select-status').value = status),
+        offCanvasEl.show();
+    });
+
+    $('#add-sub-generic').on('click', function(){
+        $subgenericname = $('#SubGenericname').val();
+        $selectvalue = $('#select').find(":selected").val();
+        if(id){request_url = "{% url 'update-sub-generic' %}";identifier_swal = "Update";}
+        else{identifier_swal = "Add";request_url = "{% url 'add-sub-generic' %}";}
+        if($subgenericname != ""){
+          Swal.fire({
+            title: 'Are you sure?',
+            html: identifier_swal+" "+'<strong>'+$subgenericname+ " ?"+'</strong>',
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes',
+            customClass: {
+              confirmButton: 'btn btn-primary me-3',
+              cancelButton: 'btn btn-label-secondary'
+            },
+            buttonsStyling: false
+      }).then(function (result) {
+        if (result.value) {
+            $.ajax({
+                type: "POST",
+                url: request_url,
+                data:{
+                    subgenericname: $subgenericname,is_active : $selectvalue, subgeneric_id: id
+                }
+            }).done(function(data){
+              if(data.data == "success"){
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Successfully save!',
+                    text: $subgenericname +' has been added.',
+                    customClass: {
+                      confirmButton: 'btn btn-success'
+                    }
+                  });
+                    window.location.reload();
+              }
+              else{
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid SubGeneric Name',
+                    text: $subgenericname +' already exist',
+                    customClass: {
+                      confirmButton: 'btn btn-success'
+                    }});
+                  }
+                });
+              }});
+            }});
+        });
+
+//datatables
+
+$(function () {
+  var dt_basic_table = $('.datatables-basic'),
+    dt_complex_header_table = $('.dt-complex-header'),
+    dt_row_grouping_table = $('.dt-row-grouping'),
+    dt_multilingual_table = $('.dt-multilingual'),
+    dt_basic;
+
+  if (dt_basic_table.length) {
+    
+    dt_basic = dt_basic_table.DataTable({
+      responsive: {
+        details: {
+          display: $.fn.dataTable.Responsive.display.modal({
+            header: function (row) {
+              var data = row.data();
+              return 'Details of ' + data['full_name'];
+            }
+          }),
+          type: 'column',
+          renderer: function (api, rowIdx, columns) {
+            var data = $.map(columns, function (col, i) {
+              return col.title !== '' // ? Do not show row in modal popup if title is blank (for check box)
+                ? '<tr data-dt-row="' +
+                    col.rowIndex +
+                    '" data-dt-column="' +
+                    col.columnIndex +
+                    '">' +
+                    '<td>' +
+                    col.title +
+                    ':' +
+                    '</td> ' +
+                    '<td>' +
+                    col.data +
+                    '</td>' +
+                    '</tr>'
+                : '';
+            }).join('');
+
+            return data ? $('<table class="table"/><tbody />').append(data) : false;
+          }
+        }
+      }
+    });
+    $('div.head-label').html('<h5 class="card-title mb-0">Transaction</h5>');
+  }
+
+  // Add New record
+  // ? Remove/Update this code as per your requirements
+  var count = 101;
+  // On form submit, if form is valid
+  fv.on('core.form.valid', function () {
+    var $new_name = $('.add-new-record .dt-sub-generic-name').val();
+
+
+    if ($new_name != '') {
+      dt_basic.row
+        .add({
+          id: count,
+          full_name: $new_name
+        })
+        .draw();
+      count++;
+
+      // Hide offcanvas using javascript method
+      offCanvasEl.hide();
+    }
+  });
+});
+
+</script>
+{% endblock footer_scripts %}
+
+
+
+
+
+
+
+
+

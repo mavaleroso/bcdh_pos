@@ -12,31 +12,32 @@
     <div class="row">
       <div class="col mb-3">
         <label for="nameBackdrop" class="form-label">Name</label>
-        <input
-          type="text"
-          id="nameBackdrop"
-          class="form-control"
-          placeholder="Enter Name"
-        />
+        <select id="select-discount" name="select-discount" class="select2 form-select select-discount" data-allow-clear="true">
+          <option></option>
+          {% for row in discount %}
+          {% if row.name == "Special" %}
+          <option value="{{ row.id }}">{{ row.name }}</option>
+          {% else %}
+          <option value="{{ row.id }}">{{ row.name }} - {{ row.percentage }}%</option>
+          {% endif %}
+          
+          {% endfor %}
+        
+      </select>
       </div>
     </div>
-    <div class="row g-2">
+    <div class="row g-2 view-percentage">
       <div class="col mb-0">
-        <label for="emailBackdrop" class="form-label">Email</label>
+        <label for="percentageBackdrop" class="form-label">Amount </label>
         <input
-          type="email"
-          id="emailBackdrop"
-          class="form-control"
-          placeholder="xxxx@xxx.xx"
-        />
-      </div>
-      <div class="col mb-0">
-        <label for="dobBackdrop" class="form-label">DOB</label>
-        <input
-          type="date"
-          id="dobBackdrop"
-          class="form-control"
-          placeholder="DD / MM / YY"
+          type="number"
+          id="special-percentage"
+          name="special-percentage"
+          class="form-control special-percentage"
+          min="0"
+          maxlength = "3"
+          max="100"
+          placeholder="₱ 0.00"
         />
       </div>
     </div>
@@ -45,6 +46,7 @@
     <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
       Close
     </button>
-    <button type="button" class="btn btn-primary">Save</button>
+    <button type="button" class="btn btn-primary remove-discount">Remove</button>
+    <button type="button" class="btn btn-primary save-discount">Save</button>
   </div>
 </form>

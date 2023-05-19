@@ -42,9 +42,9 @@ INSTALLED_APPS = [
     'django_extensions',
     'main',
     'inventory',
+    'libraries',
     'sales',
     'management',
-  
 ]
 
 MIDDLEWARE = [

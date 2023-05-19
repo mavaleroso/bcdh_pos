@@ -9,6 +9,7 @@ urlpatterns = [
     path('dashboard', views.dashboard, name='dashboard'),
     path('inventory/', include('inventory.urls')),
     path('admin/', include('admin.urls')),
+    path('libraries/', include('libraries.urls')),
     path('sales/', include('sales.urls')),
     path('management/', include('management.urls')),
 ]
