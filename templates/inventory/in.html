@@ -327,20 +327,13 @@
                 trigger: new FormValidation.plugins.Trigger(),
                 bootstrap5: new FormValidation.plugins.Bootstrap5(),
                 submitButton: new FormValidation.plugins.SubmitButton(),
-                // Submit the form when all fields are valid
-                //defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
                 autoFocus: new FormValidation.plugins.AutoFocus(),
             },
             init: (instance) => {
                 instance.on('plugins.message.placed', function (e) {
-                    //* Move the error message out of the `input-group` element
                     if (e.element.parentElement.classList.contains('input-group')) {
-                        // `e.field`: The field name
-                        // `e.messageElement`: The message element
-                        // `e.element`: The field element
                         e.element.parentElement.insertAdjacentElement('afterend', e.messageElement)
                     }
-                    //* Move the error message out of the `row` element for custom-options
                     if (e.element.parentElement.parentElement.classList.contains('custom-option')) {
                         e.element.closest('.row').insertAdjacentElement('afterend', e.messageElement)
                     }
@@ -569,7 +562,7 @@
                     itemID.val(field.id)
                     toastr.success('Item fetch successfully!', 'Search Barcode', toast_options)
                     tblItem.html(`<tr>
-                                <td>${field.barcode}</td>
+                                <td><span class="badge bg-primary">${field.barcode}</span></td>
                                 <td>${field.item_type}</td>
                                 <td>${field.brand}</td>
                                 <td>${field.details}</td>

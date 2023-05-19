@@ -8,30 +8,348 @@
     <!-- Sticky Actions -->
     <div class="row">
         <div class="col-12">
-            <form id="in-frm">
+            <form id="stock-edit-frm">
                 <div class="card">
                     <div
                         class="card-header sticky-element bg-label-secondary d-flex justify-content-sm-between align-items-sm-center flex-column flex-sm-row"
                     >
                         <h5 class="card-title mb-sm-0 me-2">Stock Edit Form</h5>
                         <div class="action-btns">
-                            <button class="btn btn-label-primary me-3">
-                                <span class="align-middle"> Reset</span>
-                            </button>
-                            <button name="submitButton" class="btn btn-primary">Submit</button>
+                            <a href="{% url 'inventory-list' %}" class="btn btn-label-primary me-3">
+                                <span class="align-middle"> Cancel</span>
+                            </a>
+                            <button name="submitButton" class="btn btn-primary">Save</button>
                         </div>
                     </div>
-                    <div class="card-body"></div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-12">
+                                <table class="table mt-4">
+                                    <thead>
+                                        <tr>
+                                            <th></th>
+                                            <th>Barcode</th>
+                                            <th>Item Type</th>
+                                            <th>Brand</th>
+                                            <th>Details</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbl-item">
+                                        <tr>
+                                            <td>
+                                                <a href="javascript:;" class="text-body" data-bs-toggle="modal" data-bs-target="#modalItems"
+                                                    ><i class="text-primary ti ti-pencil"></i
+                                                ></a>
+                                            </td>
+                                            <td><span id="stock-item-barcode" class="badge bg-primary">{{ stock_details.item.barcode }}</span></td>
+                                            <td><span id="stock-item-type">{{ stock_details.item.type.name }}</span></td>
+                                            <td><span id="stock-item-brand">{{ stock_details.item.brand.name }}</span></td>
+                                            <td>
+                                                <span id="stock-item-details">
+                                                    <!--prettier-ignore-->
+                                                    {{ stock_details.item.generic.name }} {{ stock_details.item.sub_generic.name }} {{ stock_details.item.classification }} {{stock_details.item.description }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="col-12">
+                                <div class="divider divider-dashed my-4">
+                                    <div class="divider-text">Stock Details</div>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <input type="hidden" id="stock-item-id" name="ItemID" value="{{ stock_details.item.id }}" />
+                            </div>
+                            <div class="col-12 row g-3">
+                                <div class="col-md-4">
+                                    <label class="form-label" for="item-quantity-pcs">Quantity</label>
+                                    <div class="input-group input-group-merge">
+                                        <input
+                                            type="number"
+                                            id="item-quantity-pcs"
+                                            name="ItemQuantityPcs"
+                                            class="form-control"
+                                            value="{{ stock_details.pcs_quantity }}"
+                                        />
+                                        <span class="input-group-text">PC/s</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label" for="unit-price">Unit Price</label>
+                                    <input
+                                        dir="rtl"
+                                        type="number"
+                                        name="UnitPrice"
+                                        id="unit-price"
+                                        class="form-control"
+                                        step=".01"
+                                        value="{{ stock_details.unit_price|floatformat:2 }}"
+                                    />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label" for="retail-price-pcs">Retail Price Per PC/s</label>
+                                    <input
+                                        type="number"
+                                        dir="rtl"
+                                        id="retail-price-pcs"
+                                        name="RetailPricePcs"
+                                        class="form-control"
+                                        step=".01"
+                                        value="{{ stock_details.retail_price|floatformat:2 }}"
+                                    />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label" for="company">Company</label>
+                                    <select id="company" name="Company" class="form-select" data-allow-clear="true">
+                                        <option></option>
+                                        {% for row in company %}
+                                        <option value="{{ row.id }}">{{ row.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label" for="delivered-date">Delivery Date</label>
+                                    <!--prettier-ignore-->
+                                    <input type="date" id="delivered-date" name="DeliveredDate" class="form-control" value="{{stock_details.delivered_date|date:"Y-m-d" }}" />
+                                </div>
+                                <div class="col-md-4">
+                                    <label class="form-label" for="expiration-date">Expiration Date</label>
+                                    <!--prettier-ignore-->
+                                    <input type="date" id="expiration-date" name="ExpirationDate" class="form-control" value="{{stock_details.expiration_date|date:"Y-m-d" }}" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
     <!-- /Sticky Actions -->
+    <!-- Modal -->
+    <div class="modal fade" id="modalItems" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalItemsTitle">Item List</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <table id="item-list-datatable" class="datatables-basic table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Barcode</th>
+                                <th>Item Type</th>
+                                <th>Brand</th>
+                                <th>Details</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for row in items %}
+                            <tr>
+                                <td>
+                                    <button
+                                        type="button"
+                                        data-id="{{ row.id }}"
+                                        data-barcode="{{ row.barcode }}"
+                                        data-type="{{ row.type.name }}"
+                                        data-brand="{{ row.brand.name }}"
+                                        data-details="{{ row.generic.name }} {{ row.sub_generic.name }} {{ row.classification }} {{ row.description }}"
+                                        class="select-item btn btn-icon btn-sm btn-label-primary waves-effect waves-light"
+                                    >
+                                        <span class="ti ti-mouse"></span>
+                                    </button>
+                                </td>
+                                <td><span class="badge bg-primary">{{ row.barcode }}</span></td>
+                                <td>{{ row.type.name }}</td>
+                                <td>{{ row.brand.name }}</td>
+                                <td>
+                                    <!--prettier-ignore-->
+                                    {{ row.generic.name }} {{ row.sub_generic.name }} {{ row.classification }} {{ row.description }}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modal -->
 </div>
 
 <!-- / Content -->
 {% endblock %} {% block footer_scripts %}
 <script>
-    $(document).ready(function () {})
+    $(document).ready(function () {
+        let item_quantity_pcs = $('#item-quantity-pcs')
+        let item_list_datatable = $('#item-list-datatable')
+        let select_item = $('.select-item')
+        let modal_items = $('#modalItems')
+
+        let stock_item_id = $('#stock-item-id')
+        let stock_item_barcode = $('#stock-item-barcode')
+        let stock_item_type = $('#stock-item-type')
+        let stock_item_brand = $('#stock-item-brand')
+        let stock_item_details = $('#stock-item-details')
+
+        const toast_options = (toastr.options = {
+            maxOpened: 1,
+            autoDismiss: true,
+            closeButton: true,
+            newestOnTop: true,
+            progressBar: true,
+            positionClass: 'toast-top-right',
+            rtl: isRtl,
+        })
+
+        const InFormValidation = document.getElementById('stock-edit-frm'),
+            Company = jQuery(InFormValidation.querySelector('[name="Company"]'))
+
+        const fv = FormValidation.formValidation(InFormValidation, {
+            fields: {
+                DeliveredDate: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Please delivery date',
+                        },
+                    },
+                },
+                ExpirationDate: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Please expiration date',
+                        },
+                    },
+                },
+                Company: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Please select company',
+                        },
+                    },
+                },
+                UnitPrice: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Please enter unit price',
+                        },
+                    },
+                },
+                ItemQuantityPcs: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Please enter item quantity in pcs',
+                        },
+                    },
+                },
+                RetailPricePcs: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Please enter retail price per pcs',
+                        },
+                    },
+                },
+            },
+            plugins: {
+                trigger: new FormValidation.plugins.Trigger(),
+                bootstrap5: new FormValidation.plugins.Bootstrap5(),
+                submitButton: new FormValidation.plugins.SubmitButton(),
+                autoFocus: new FormValidation.plugins.AutoFocus(),
+            },
+            init: (instance) => {
+                instance.on('plugins.message.placed', function (e) {
+                    if (e.element.parentElement.classList.contains('input-group')) {
+                        e.element.parentElement.insertAdjacentElement('afterend', e.messageElement)
+                    }
+                    if (e.element.parentElement.parentElement.classList.contains('custom-option')) {
+                        e.element.closest('.row').insertAdjacentElement('afterend', e.messageElement)
+                    }
+                })
+            },
+        }).on('core.form.valid', function () {
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, save it!',
+                customClass: {
+                    confirmButton: 'btn btn-primary me-3',
+                    cancelButton: 'btn btn-label-secondary',
+                },
+                buttonsStyling: false,
+            }).then(function (result) {
+                if (result.value) {
+                    var form_data = $('#stock-edit-frm').serialize()
+                    $.ajax({
+                        type: 'POST',
+                        url: "{% url 'update-stock' stock_details.id %}",
+                        data: form_data,
+                    }).done(function (data) {
+                        if (data.data == 'success') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Successfully updated!',
+                                text: 'Item has been added.',
+                                customClass: {
+                                    confirmButton: 'btn btn-success',
+                                },
+                            })
+
+                            setTimeout(() => {
+                                window.location.href = "{% url 'inventory-list' %}"
+                            }, 1300)
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error saving!',
+                                text: 'Encountered error on updating stock!',
+                                customClass: {
+                                    confirmButton: 'btn btn-success',
+                                },
+                            })
+                        }
+                    })
+                }
+            })
+        })
+
+        // Select2 (Company)
+        if (Company.length) {
+            Company.wrap('<div class="position-relative"></div>')
+            Company.select2({
+                placeholder: 'Select Company',
+                dropdownParent: Company.parent(),
+            }).on('change.select2', function () {
+                // Revalidate the color field when an option is chosen
+                fv.revalidateField('Company')
+            })
+
+            Company.select2('val', '{{ stock_details.company_id }}')
+        }
+
+        item_list_datatable.DataTable()
+
+        select_item.on('click', function () {
+            let id = $(this).data('id')
+            let barcode = $(this).data('barcode')
+            let type = $(this).data('type')
+            let brand = $(this).data('brand')
+            let details = $(this).data('details')
+
+            stock_item_id.text(id)
+            stock_item_barcode.text(barcode)
+            stock_item_type.text(type)
+            stock_item_brand.text(brand)
+            stock_item_details.text(details)
+
+            modal_items.modal('toggle')
+
+            toastr.success('Successfully change item!', 'Item List', toast_options)
+        })
+    })
 </script>
 {% endblock footer_scripts %}
