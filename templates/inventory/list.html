@@ -265,6 +265,45 @@
             </div>
         </div>
     </div>
+    <!-- Location Modal -->
+    <div class="modal fade" id="modalStockLocation" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalStockLocationTitle">Update Location</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3 row">
+                        <label class="col-md-4 col-form-label">Available Stocks</label>
+                        <div class="col-md-8">
+                            <input class="form-control" id="location-available-stocks" type="number" />
+                        </div>
+                    </div>
+                    <div class="divider divider-dashed my-4">
+                        <div class="divider-text">Locations</div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-md-4 col-form-label">Main</label>
+                        <div class="col-md-8">
+                            <input class="form-control" type="number" />
+                        </div>
+                    </div>
+                    <div class="mb-3 row">
+                        <label class="col-md-4 col-form-label">Emergency</label>
+                        <div class="col-md-8">
+                            <input class="form-control" type="number" />
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Location Modal -->
 </div>
 {% endblock %} {% block footer_scripts %}
 <script>
@@ -278,6 +317,8 @@
         const advance_filter_form = $('#advance-filter-form')
         const search_advance_filter = $('#search-advance-filter')
         const reset_advance_filter = $('#reset-advance-filter')
+        const modal_stock_location = $('#modalStockLocation')
+        const location_available_stock = $('#location-available-stock')
 
         const inventory_code_filter = $('#inventory-code-filter')
         const barcode_filter = $('#barcode-filter')
@@ -369,18 +410,17 @@
                     title: 'Actions',
                     orderable: false,
                     searchable: false,
-                    render: function (data) {
-                        let id = data.toString()
+                    render: function (data, full) {
                         return `<div class="d-inline-block">
                             <a href="javascript:;" class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="text-primary ti ti-dots-vertical"></i></a>
                             <div class="dropdown-menu dropdown-menu-end m-0">
-                            <a href="javascript:;" class="dropdown-item">Details</a>
-                            <a href="javascript:;" class="dropdown-item">Archive</a>
+                            <a href="javascript:;" data-available-stock="${full['available_stock']}" class="update-location dropdown-item">Location</a>
+                            <a href="javascript:;" class="update-damage dropdown-item">Damage</a>
                             <div class="dropdown-divider"></div>
                             <a href="javascript:;" class="dropdown-item text-danger delete-record">Delete</a>
                             </div>
                             </div>
-                            <a href="list/edit/${id}" class="item-edit text-body"><i class="text-primary ti ti-pencil"></i></a>`
+                            <a href="list/edit/${data}" class="item-edit text-body"><i class="text-primary ti ti-pencil"></i></a>`
                     },
                 },
                 {
@@ -496,6 +536,18 @@
             order: [[15, 'asc']],
             scrollY: '300px',
             scrollX: true,
+            drawCallback: function (settings) {
+                let update_location = $('.update-location')
+                let update_damage = $('.update-damage')
+
+                update_location.on('click', function () {
+                    let available_stock = $(this).data('available-stock')
+                    location_available_stock.val(available_stock)
+                    modal_stock_location.modal('show')
+                })
+
+                update_damage.on('click', function () {})
+            },
         })
 
         search_advance_filter.on('click', function () {
