@@ -13,13 +13,16 @@
             <table class="datatables-basic table">
                 <thead>
                 <tr>
-                  <th>first name</th>
-                  <th>middle name</th>
-                  <th>last name</th>
+                  <th>full name</th>
                   <th>birthdate</th>
                   <th>sex</th>
                   <th>address</th>
                   <th>occupation</th>
+                  <th>Client Type</th>
+                  <th>Created at</th>
+                  <th>Action</th>
+                  
+
                 </tr>
                 </thead>
                 <tbody>
@@ -29,10 +32,10 @@
                     <td>{{row.birthdate}}</td>
                     <td>{{row.sex}}</td>
                     <td>{{row.address}}</td>
-                    <td>{{row.occupation}}</td>
+                    <td>{% if row.occupation != None %} {{row.occupation}} {% endif %}</td>
                     <td>{{row.client_type.name}}</td>
                     <td>{{row.created_at}}</td>
-                    <td><a class="btn btn-sm btn-icon item-edit" id={{row.id}} first_name="{{row.first_name}}" middle_name="{{row.middle_name}}" last_name="{{row.last_name}}" birthdate="{{row.birthdate}}" sex="{{row.sex}}" address="{{row.address}}" occupation="{{row.occupation}}"><i class="text-primary ti ti-pencil"></i></a></td>
+                    <td><a class="btn btn-sm btn-icon item-edit" id={{row.id}} first_name="{{row.first_name}}" middle_name="{{row.middle_name}}" last_name="{{row.last_name}}" birthdate="{{row.birthdate}}" sex="{{row.sex}}" address="{{row.address}}" occupation="{{row.occupation}}" client_type="{{row.client_type.name}}"><i class="text-primary ti ti-pencil"></i></a></td>
                   </tr>
                  {% endfor %}
                  </tbody> 
@@ -57,7 +60,7 @@
         <div class="col-sm-12">
           <label class="form-label" for="first_name">First Name</label>
           <div class="input-group input-group-merge">
-            <span id="first_name2" class="input-group-text"><i class="ti ti-user"></i></span>
+            <span id="first_name2" class="input-group-text"><i class="ti ti-clients"></i></span>
             <input
               type="text"
               id="first_name"
@@ -72,7 +75,7 @@
         <div class="col-sm-12">
           <label class="form-label" for="middle_name">Middle Name</label>
           <div class="input-group input-group-merge">
-            <span id="middle_name2" class="input-group-text"><i class="ti ti-user"></i></span>
+            <span id="middle_name2" class="input-group-text"><i class="ti ti-clients"></i></span>
             <input
               type="text"
               id="middle_name"
@@ -87,7 +90,7 @@
         <div class="col-sm-12">
             <label class="form-label" for="last_name">Last Name</label>
             <div class="input-group input-group-merge">
-              <span id="last_name2" class="input-group-text"><i class="ti ti-user"></i></span>
+              <span id="last_name2" class="input-group-text"><i class="ti ti-clients"></i></span>
               <input
                 type="text"
                 id="last_name"
@@ -102,7 +105,7 @@
           <div class="col-sm-12">
             <label class="form-label" for="Birthdate">Birthdate</label>
             <div class="input-group input-group-merge">
-              <span id="birthdate2" class="input-group-text"><i class="ti ti-user"></i></span>
+              <span id="birthdate2" class="input-group-text"><i class="ti ti-clients"></i></span>
               <input
                 type="date"
                 id="birthdate"
@@ -114,10 +117,10 @@
             </div>
           </div>
 
-          <div class="col-sm-12 user-sex">
+          <div class="col-sm-12 clients-sex">
             <label class="form-label" for="Sex">Sex</label>
             <div class="input-group input-group-merge">
-              <span id="sex2" class="input-group-text"><i class="ti ti-user"></i></span>
+              <span id="sex2" class="input-group-text"><i class="ti ti-clients"></i></span>
   
                 <select class="form-select dt-sex" id="sex">
                   <option value="Male">Male</option>
@@ -151,11 +154,25 @@
           </div>
         </div>
 
-        <div class="col-sm-12 update-div-clients">
-          <br>
-          <button type="button" id="add-client" class="btn btn-primary data-submit me-sm-3 me-1 additional-record">Submit</button>
-          <button type="reset" class="btn btn-outline-secondary" data-bs-dismiss="offcanvas">Cancel</button>
+        <div class="col-sm-12 clients-client_type">
+          <label class="form-label" for="status">Client Type</label>
+          <div class="input-group input-group-merge">
+            <span id="client_type2" class="input-group-text"><i class="ti ti-clients"></i></span>
+  
+              <select class="form-select dt-client_type" name="client_type" id="client_type">
+                <option value="1">Walk-in</option>
+                <option value="2">Out-patient</option>
+                <option value="3">Management</option>
+              </select>
+    
+          </div>
         </div>
+
+         <div class="col-sm-12 update-div-clients">
+            <br>
+              <button type="button" id="add-clients" class="btn btn-primary data-submit me-sm-3 me-1 additional-record">Submit</button>
+              <button type="reset" class="btn btn-outline-secondary" data-bs-dismiss="offcanvas">Cancel</button>
+          </div>
       </form>
     </div>
   </div>
@@ -163,7 +180,7 @@
 {% endblock %} 
 {% block footer_scripts %}
 <script>
-let id,first_name,middle_name, last_name, birthdate, sex, address, occupation, identifier_swal;
+let id,first_name,middle_name, last_name, birthdate, sex, address, occupation, client_type, identifier_swal;
 $(document).ready(function(){
     $('.item-edit').click(function (event) {
       id = $(this).attr('id');
@@ -171,34 +188,39 @@ $(document).ready(function(){
       middle_name = $(this).attr('middle_name');
       last_name = $(this).attr('last_name');
       birthdate = $(this).attr('birthdate');
-      sex = $(this).attr('sex');
+      console.log("PRINTING");
+      console.log(birthdate);
+      sex = $('.dt-sex').find(":selected").val();
       address = $(this).attr('address');
       occupation = $(this).attr('occupation');
+      client_type = $('.dt-client_type').find(":selected").val();
+      // client_type = $(this).attr('client_type')
 
       $('.title-name').text('Update Record');
       $('.dt-first-name').text('Update Record');
       offCanvasElement = document.querySelector('#add-new-record'); 
       let fv, offCanvasEl;
       offCanvasEl = new bootstrap.Offcanvas(offCanvasElement);
-      (offCanvasElement.querySelector('.dt-first-name').value = first_name),
+      (offCanvasElement.querySelector('.dt-first-name').value = first_name), 
       (offCanvasElement.querySelector('.dt-middle-name').value = middle_name),
       (offCanvasElement.querySelector('.dt-last-name').value = last_name),
       (offCanvasElement.querySelector('.dt-birthdate').value = birthdate),
       (offCanvasElement.querySelector('.dt-sex').value = sex),
       (offCanvasElement.querySelector('.dt-address').value = address),
       (offCanvasElement.querySelector('.dt-occupation').value = occupation),
-
+      (offCanvasElement.querySelector('.dt-client_type').value = client_type),
         offCanvasEl.show();
     });
 
     $('#add-clients').on('click', function(){
         $first_name = $('#first_name').val();
         $middle_name = $('#middle_name').val();
-        $last_name = $('.dt-last_name').val();
+        $last_name = $('#last_name').val();
         $birthdate = $('.dt-birthdate').val();
         $sex = $('.dt-sex').val();
         $address = $('.dt-address').val();
         $occupation = $('.dt-occupation').val();
+        $client_type = $('.dt-client_type').find(":selected").val();
         $selectvalue = $('#select').find(":selected").val();
 
         if(id){request_url = "{% url 'update-clients' %}";identifier_swal = "Update";}
@@ -206,7 +228,7 @@ $(document).ready(function(){
         if($first_name !=""){
           Swal.fire({
             title: 'Are you sure?',
-            html: identifier_swal+" "+'<strong>'+$clientsname+ " ?"+'</strong>',
+            html: identifier_swal+" "+'<strong>'+$first_name+ " ?"+'</strong>',
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Yes',
@@ -221,14 +243,14 @@ $(document).ready(function(){
                 type: "POST",
                 url: request_url,
                 data:{
-                    first_name: $first_name, clients_id: id, middle_name : $middle_name, last_name: $last_name, birthdate: $birthdate, sex: $sex, address: $address, occupation: $occupation
+                    first_name: $first_name, clients_id: id, middle_name : $middle_name, last_name: $last_name, birthdate: $birthdate, sex: $sex, address: $address, occupation: $occupation, client_type_id: $client_type
                 }
             }).done(function(data){
               if(data.data == "success"){
                 Swal.fire({
                     icon: 'success',
                     title: 'Successfully save!',
-                    text: $clientsname +' has been added.',
+                    text: $first_name +' has been added.',
                     customClass: {
                       confirmButton: 'btn btn-success'
                     }
@@ -239,7 +261,7 @@ $(document).ready(function(){
                 Swal.fire({
                     icon: 'error',
                     title: 'Invalid client Name',
-                    text: $clientsname +' already exist',
+                    text: $first_name +' already exist',
                     customClass: {
                       confirmButton: 'btn btn-success'
                     }});
@@ -375,7 +397,7 @@ $(function () {
                     var el = $.parseHTML(inner);
                     var result = '';
                     $.each(el, function (index, item) {
-                      if (item.classList !== undefined && item.classList.contains('user-name')) {
+                      if (item.classList !== undefined && item.classList.contains('clients-name')) {
                         result = result + item.lastChild.firstChild.textContent;
                       } else if (item.innerText === undefined) {
                         result = result + item.textContent;
@@ -412,7 +434,7 @@ $(function () {
                     var el = $.parseHTML(inner);
                     var result = '';
                     $.each(el, function (index, item) {
-                      if (item.classList !== undefined && item.classList.contains('user-name')) {
+                      if (item.classList !== undefined && item.classList.contains('clients-name')) {
                         result = result + item.lastChild.firstChild.textContent;
                       } else if (item.innerText === undefined) {
                         result = result + item.textContent;
@@ -436,7 +458,7 @@ $(function () {
                     var el = $.parseHTML(inner);
                     var result = '';
                     $.each(el, function (index, item) {
-                      if (item.classList !== undefined && item.classList.contains('user-name')) {
+                      if (item.classList !== undefined && item.classList.contains('clients-name')) {
                         result = result + item.lastChild.firstChild.textContent;
                       } else if (item.innerText === undefined) {
                         result = result + item.textContent;
@@ -460,7 +482,7 @@ $(function () {
                     var el = $.parseHTML(inner);
                     var result = '';
                     $.each(el, function (index, item) {
-                      if (item.classList !== undefined && item.classList.contains('user-name')) {
+                      if (item.classList !== undefined && item.classList.contains('clients-name')) {
                         result = result + item.lastChild.firstChild.textContent;
                       } else if (item.innerText === undefined) {
                         result = result + item.textContent;
@@ -484,7 +506,7 @@ $(function () {
                     var el = $.parseHTML(inner);
                     var result = '';
                     $.each(el, function (index, item) {
-                      if (item.classList !== undefined && item.classList.contains('user-name')) {
+                      if (item.classList !== undefined && item.classList.contains('clients-name')) {
                         result = result + item.lastChild.firstChild.textContent;
                       } else if (item.innerText === undefined) {
                         result = result + item.textContent;
