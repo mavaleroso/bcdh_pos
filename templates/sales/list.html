@@ -29,7 +29,7 @@
                     <td>{{row.transaction_code}}</td>
                     <td>{{row.client.first_name}} {{row.client.middle_name}} {{row.client.last_name}}</td>
                     <td>
-                        {% if row.is_er == True %}<span class="badge bg-label-primary">Yes</span> {% else %}<span class="badge bg-label-primary">No</span> {% endif %}
+                        {% if row.is_er == True %}<span class="badge bg-primary">Yes</span> {% else %}<span class="badge bg-primary">No</span> {% endif %}
                     </td>
                     <td>{{row.remarks}}</td>
                     <td>{{row.discount.name}}</td>

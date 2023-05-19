@@ -547,32 +547,29 @@ $(document).ready(function(){
         var total_amount = $(".total-place-order").text().slice(1);
         var item_total = $("#count_items").text();
         var sales_remarks = $(".dt-sales-remarks").val();
-        const selectedId = $('input[name=checkboxtype]').map((i, el) => ({id: el.id.slice(2)})).get();
         const selectedItemsQty = $('.quantity-input').map((i, el) => ({quantity: el.value})).get();
         const selectedMainQuantity = $('.quantity-input').map((i, el) => ({quantity: el.value})).get();
         const quantityStocks = $('.main-quantity').map((i, el) => ({qtystocks: el.innerHTML.slice(0,-10)})).get();
         const amount = $('.price-value').map((i, el) => ({price: el.innerHTML.slice(2)})).get();;
+
+
         // var percentage_value = parseFloat($(".spn-discount").text().slice(0,-1));
         var percentage_value = parseFloat(actual_prc_discount);
-        console.log("percentage_value");
-        console.log(percentage_value);
+
         percentage_value = (percentage_value == 0) ? 0 : percentage_value;
         var item_selected = [];
-        if (selectedId.length < selectedItemsQty.length){
-          for(var i = 0; i < selectedId.length; i++){
-            let obj = {id: selectedId[i]['id'], quantity: selectedItemsQty[i]?.quantity, stocksquantity:quantityStocks[i]?.qtystocks, price: amount[i]?.price, discount:percentage_value};
+        if (selected_items.length < selectedItemsQty.length){
+          for(var i = 0; i < selected_items.length; i++){
+            let obj = {id: selected_items[i]['id'], quantity: selectedItemsQty[i]?.quantity, stocksquantity:quantityStocks[i]?.qtystocks, price: amount[i]?.price, discount:percentage_value};
             item_selected.push(obj);
           }
 
         }
         else{
           for(var i = 0; i < selectedItemsQty.length; i++){
-            let obj = {id: selectedId[i]['id'], quantity: selectedItemsQty[i]?.quantity, stocksquantity:quantityStocks[i]?.qtystocks, price: amount[i]?.price, discount:percentage_value};
+            let obj = {id: selected_items[i]['id'], quantity: selectedItemsQty[i]?.quantity, stocksquantity:quantityStocks[i]?.qtystocks, price: amount[i]?.price, discount:percentage_value};
             item_selected.push(obj);
         }}
-
-        console.log("selecteitemsni");
-        console.log(item_selected);
 
         if (item_total !="0 item/s" && client_id!=0){
           Swal.fire({
@@ -922,9 +919,7 @@ $(document).ready(function(){
 
       var checkBoxes = $(`input[name=checkboxtype]`);
       var str = '';
-      console.log(addedCheckboxes);
-      console.log("---------");
-      console.log(checkBoxes);
+
 
       addedCheckboxes.map((i, addedCheckbox) => {
           checkBoxes = checkBoxes.filter((j, checkbox) => {
@@ -939,7 +934,19 @@ $(document).ready(function(){
         ) {
           var row = checkBoxes[i].parentNode.parentNode;
           cart_count++;
+
+
+          console.log(checkBoxes[i].id);
+          console.log("---------");
+          // console.log(checkBoxes);
+
+
           var stck_id = checkBoxes[i].id.slice(2);
+
+          var array_id = {
+            id: stck_id
+          }
+          selected_items.push(array_id);
          
           str +=
             '<li class="list-group-item p-4 li" data-for="' + checkBoxes[i].id + '">'+

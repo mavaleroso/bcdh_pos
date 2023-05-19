@@ -84,7 +84,6 @@ def salesitem(request):
         usr_id = request.session.get('user_id', 0)
         amt_paid = request.POST.get('amt_paid')
         sales_remarks = request.POST.get('remarks')
-        discount_amount = request.POST.get('discounted_amt')
         stock_list = json.loads(request.POST.get('out_stocks'))
         code = generate_code()
         
@@ -99,10 +98,6 @@ def salesitem(request):
         
         for stock_list_item in stock_list:
             price = float(stock_list_item['price']) * float(stock_list_item['discount'])/100
-
-            print("newdiscnt")
-            print(float(stock_list_item['price']))
-            print(float(stock_list_item['discount']))
 
             obj, was_created_bool = OutItems.objects.get_or_create(
             stock_id=stock_list_item['id'],
