@@ -35,7 +35,7 @@
                     <td>{% if row.occupation != None %} {{row.occupation}} {% endif %}</td>
                     <td>{{row.client_type.name}}</td>
                     <td>{{row.created_at}}</td>
-                    <td><a class="btn btn-sm btn-icon item-edit" id={{row.id}} first_name="{{row.first_name}}" middle_name="{{row.middle_name}}" last_name="{{row.last_name}}" birthdate="{{row.birthdate}}" sex="{{row.sex}}" address="{{row.address}}" occupation="{{row.occupation}}" client_type="{{row.client_type.name}}"><i class="text-primary ti ti-pencil"></i></a></td>
+                    <td><a class="btn btn-sm btn-icon item-edit" id={{row.id}} first_name="{{row.first_name}}" middle_name="{{row.middle_name}}" last_name="{{row.last_name}}" birthdate="{{row.birthdate|date:"Y-m-d"}}" sex="{{row.sex}}" address="{{row.address}}" occupation="{{row.occupation}}" client_type="{{row.client_type.name}}"><i class="text-primary ti ti-pencil"></i></a></td>
                   </tr>
                  {% endfor %}
                  </tbody> 
