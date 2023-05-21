@@ -309,7 +309,7 @@
                 <tbody>
                   {% for row in items %}
                   <tr>
-                    <td>{{row.id}}</td>
+                    <td id="checkbox_data" class="checkbox_data">{{row.id}}</td>
                     <td></td>
                     <!-- <td><b>{{row.item.generic.name}}</b> {{row.sub_generic.name}} {{row.description}}</td> -->
                     <td><b>{{row.item.generic.name}}</b> {{row.item.sub_generic.name}} {{row.item.description}}</td>
@@ -345,6 +345,7 @@ $('.div-remove').hide();
 $(document).ready(function(){
     var discount_type;
     var selected_items = [];
+    var unique_items = [];
     var client_id = 0;
     var discount_id = 0;
     var actual_prc_discount = 0;
@@ -499,7 +500,6 @@ $(document).ready(function(){
     });
 
     function remove_all(){
-      // var $checkbox = $(`input[type="checkbox"]`);
       var $checkbox = $(`input[type=checkbox][name=checkboxtype]`);
       $(".li").remove();
       $checkbox.prop('checked', false);
@@ -514,6 +514,8 @@ $(document).ready(function(){
       $("#selected-patient").find('option:selected').prop("selected",false);
       sub_total = 0;
       cart_count = 0;
+      unique_items.splice(0, unique_items.length);
+      selected_items.splice(0, selected_items.length);
     }
     //end discounts ---------------------------------------------->
     
@@ -559,16 +561,16 @@ $(document).ready(function(){
 
         percentage_value = (percentage_value == 0) ? 0 : percentage_value;
         var item_selected = [];
-        if (selected_items.length < selectedItemsQty.length){
-          for(var i = 0; i < selected_items.length; i++){
-            let obj = {id: selected_items[i]['id'], quantity: selectedItemsQty[i]?.quantity, stocksquantity:quantityStocks[i]?.qtystocks, price: amount[i]?.price, discount:percentage_value};
+        if (unique_items.length < selectedItemsQty.length){
+          for(var i = 0; i < unique_items.length; i++){
+            let obj = {id: unique_items[i]['id'], quantity: selectedItemsQty[i]?.quantity, stocksquantity:quantityStocks[i]?.qtystocks, price: amount[i]?.price, discount:percentage_value};
             item_selected.push(obj);
           }
 
         }
         else{
           for(var i = 0; i < selectedItemsQty.length; i++){
-            let obj = {id: selected_items[i]['id'], quantity: selectedItemsQty[i]?.quantity, stocksquantity:quantityStocks[i]?.qtystocks, price: amount[i]?.price, discount:percentage_value};
+            let obj = {id: unique_items[i]['id'], quantity: selectedItemsQty[i]?.quantity, stocksquantity:quantityStocks[i]?.qtystocks, price: amount[i]?.price, discount:percentage_value};
             item_selected.push(obj);
         }}
 
@@ -763,7 +765,7 @@ $(document).ready(function(){
               return '<input type="checkbox" class="dt-checkboxes form-check-input checkboxtype" id="cb'+data+'" name="checkboxtype">';
             },
             checkboxes: {
-              selectAllRender: '<input type="checkbox" class="form-check-input" id="allcb" name="allcb">'
+              selectAllRender: '<input type="checkbox" class="form-check-input" id="allcb" name="allcb" disabled>'
             }
           },
           {
@@ -887,6 +889,9 @@ $(document).ready(function(){
     toastr.success('Data remove successfully!', 'Success', toast_options);
   });
 
+
+  
+
   $(document).on("click", ".remove_data", function() {
     cart_count--;
     $('#count_items').text(cart_count + " item/s");
@@ -913,62 +918,89 @@ $(document).ready(function(){
 
   });
 
+  $(document).on("click", "input[name=checkboxtype]", function() {
+    alert("clicked")
 
-  $("#add_data").click(function() {
-      var grid = document.getElementById("Table1");
-      var addedCheckboxes = $(".whole-div-class .row");
-
-      var checkBoxes = $(`input[name=checkboxtype]`);
-      var str = '';
+  });
 
 
-      addedCheckboxes.map((i, addedCheckbox) => {
+ $('.checkbox_data').click(function(event){
+
+  var grid = document.getElementById("Table1");
+  var addedCheckboxes = $(".whole-div-class .row");
+
+  var checkBoxes = $(`input[name=checkboxtype]`);
+  var str = '';
+
+  var clickedCheckbox = $(event.target);
+  addedCheckboxes.map((i, addedCheckbox) => {
           checkBoxes = checkBoxes.filter((j, checkbox) => {
               return $(addedCheckbox).data('for') != $(checkbox).prop("name");
           });
-      });
+  });
 
-      for (var i = 0; i < checkBoxes.length; i++) {
-        if (
-          checkBoxes[i].checked &&
-          checkBoxes[i].name !== "allcb"
-        ) {
-          var row = checkBoxes[i].parentNode.parentNode;
-          cart_count++;
+if (clickedCheckbox.prop('checked')) {
+    for (var i = 0; i < checkBoxes.length; i++) {
+      if (checkBoxes[i].checked) {
+            var row = checkBoxes[i].parentNode.parentNode;
+            cart_count++;
+            var stck_id = checkBoxes[i].id.slice(2);
 
-
-          console.log(checkBoxes[i].id);
-          console.log("---------");
-          // console.log(checkBoxes);
-
-
-          var stck_id = checkBoxes[i].id.slice(2);
-
-          var array_id = {
-            id: stck_id
+            var array_id = {
+              id: stck_id,
+              item: row.cells[1].innerHTML,
+              brand: row.cells[2].innerHTML,
+              quantity: row.cells[3].innerHTML,
+              price: row.cells[4].innerHTML
+            }
+            selected_items.push(array_id);
           }
-          selected_items.push(array_id);
-         
+
+      }
+  }
+  else{
+    var uncheckedId = clickedCheckbox.attr('id').slice(2);
+      selected_items = selected_items.filter(function(item) {
+        return item.id !== uncheckedId;
+    });
+  }
+
+  unique_items = selected_items.filter(function(item, index, self) {
+      return index === self.findIndex(function(i) {
+        return i.id === item.id;
+      });
+  });
+});
+
+
+  $("#add_data").click(function() {
+      var str = '';
+      for (var i = 0; i < unique_items.length; i++) {
+        var row = unique_items[i];
+        var existingItem = $('.list-group-item[data-for="' + row.id + '"]');
+        if (existingItem.length > 0) {
+          continue; // Skip adding the item if it already exists
+        }
           str +=
-            '<li class="list-group-item p-4 li" data-for="' + checkBoxes[i].id + '">'+
+            '<li class="list-group-item p-4 li" data-for="' + row.id + '">'+
               '<div class="d-flex gap-3">'+
                 '<div class="flex-grow-1 append-item">'+
-                  '<div class="row" class="row" data-for="' + checkBoxes[i].id + '">'+
+                  '<div class="row" class="row" data-for="' + row.id + '">'+
                     '<div class="col-md-6">'+
                       '<p class="me-3">'+
                         '<a href="javascript:void(0)" class="text-body">'+
-                          row.cells[1].innerHTML +'</a>'+
+                          row.item +'</a>'+
                       '</p>'+
                       '<div class="text-muted mb-2 d-flex flex-wrap">'+
                         '<span class="me-1">Brand Name:</span>'+
-                        '<a href="javascript:void(0)" class="me-3">'+ row.cells[2].innerHTML +'</a>'+
+                        '<a href="javascript:void(0)" class="me-3">'+ row.brand +'</a>'+
                         // '<span class="badge bg-label-success">In Stocks</span>'+
-                        '<span class="badge bg-label-primary cordoba main-quantity" id="stocks_quantity" name="stocks_quantity">'+row.cells[3].innerHTML+' Available</span>'+
+                        '<span class="badge bg-label-primary cordoba main-quantity" id="stocks_quantity" name="stocks_quantity">'+row.quantity+' Available</span>'+
                       '</div>' +
                     '</div>'+
 
                     '<div class="col-md-2">'+
-                      '<span class="text-primary sub-total-row price-value" name="price-value">'+ row.cells[4].innerHTML +'</span><br><br>'+
+                      '<span class="text-primary sub-total-row price-value" name="price-value">'+ row.price+'</span><br><br>'+
                     '</div>'+
                     '<div class="col-md-2">'+
                     '<input type="number" class="form-control form-control-sm w-px-75 quantity-input" value="1" min="1" />' +
@@ -978,26 +1010,26 @@ $(document).ready(function(){
                       '<div class="text-md-end">'+
                         '<button type="button" class="btn-close btn-pinned remove_data" aria-label="Close"></button>'+
                         '<div class="my-2 my-md-4 mb-md-5">'+
-                          '<span class="text-success sub-total-row total-value">'+ row.cells[4].innerHTML +'</span>'+
+                          '<span class="text-success sub-total-row total-value">'+row.price +'</span>'+
                         '</div>'+
-                        // '<input type="number" class="form-control form-control-sm w-px-75 old-quantity" id="old-quantity">'+row.cells[3].innerHTML+'</input>' +
-                        // '<span class="badge bg-label-primary cordoba main-quantity" id="stocks_quantity" name="stocks_quantity">'+row.cells[3].innerHTML+' Available</span>'+
-                        // '<button type="button" class="btn btn-sm btn-label-primary">'+ row.cells[3].innerHTML +' available</button>'+
                       '</div>'+
                     '</div>'+
                   '</div>'+
                 '</div>'+
               '</div>'+
             '</li>';
-            var sb_total = parseFloat(row.cells[4].innerHTML.slice(1));
+            var sb_total = parseFloat(row.price.slice(1));
             sub_total = parseFloat(sub_total + sb_total);
           // checkBoxes[i].hasCovered = true;
-        }
+        
       }
+        console.log("selected Itemsss");
+        console.log(unique_items);
+        cart_count = unique_items.length;
         $('.div-remove').show();
         $(".whole-div-class").append(str);
         $('#exLargeModal').modal('hide');
-        $('#count_items').text(cart_count + " item/s");
+        $('#count_items').text(unique_items.length + " item/s");
 
 
         // original_price = (discount_type == "Special")?original_price =parseFloat(original_price) -parseFloat(percentage_value) : original_price =parseFloat(original_price) -parseFloat(discount_price);
