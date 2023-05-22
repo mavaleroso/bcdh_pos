@@ -271,12 +271,7 @@
       </div>
     </div>
   </div>
-
-
   <!--end new client modal-->
-
-
-
   <!-- Add new item modal -->
 
   <div class="modal fade" id="exLargeModal" tabindex="-1" aria-hidden="true">
@@ -350,9 +345,9 @@ $(document).ready(function(){
     var discount_id = 0;
     var actual_prc_discount = 0;
     var percentage_value = 0;
+    var sub_total = 0;
     $(".patient-details-div").hide();
     
-
     const toast_options = (toastr.options = {
             maxOpened: 1,
             autoDismiss: true,
@@ -392,16 +387,10 @@ $(document).ready(function(){
             discount_id = data.data[0].id;
             discount_type = data.data[0].name;
             percentage_value = data.data[0].percentage;
-            toastr.success('Discount applied!', 'Success', toast_options)
+            toastr.success('Discount applied!', 'Success', toast_options);
 
-            console.log("percentage_value11");
-            console.log(percentage_value);
-            
             var original_price = $(".sub-total").text().slice(1);
             var discount_price = parseFloat(original_price * percentage_value/100);
-            
-    
-
             if (discount_type =="Special"){
               percentage_value = $('#special-percentage').val();
               amount_value = (sub_total == 0) ? 0 : amount_value = parseFloat((percentage_value)/parseFloat(sub_total)*100); 
@@ -414,15 +403,7 @@ $(document).ready(function(){
               actual_prc_discount = percentage_value;
               $(".spn-discount").text(percentage_value +" %");
             }
-            // console.log(discount_price);
-            // console.log(sub_total);
-            // console.log(discount_type);
-            // console.log(percentage_value);
-            // console.log(amount_value);
-            
-            // $(".spn-discount").show();
             $('#onboardModal').modal('hide');
-
             amount_value = (discount_type == "Special") ? $('.discount-value').text("-₱ "+percentage_value) : $('.discount-value').text("-₱ "+discount_price);
             original_price = (discount_type == "Special")?original_price =parseFloat(original_price) -parseFloat(percentage_value) : original_price =parseFloat(original_price) -parseFloat(discount_price);
             original_price = (sub_total == 0) ? original_price = 0 : original_price;
@@ -506,7 +487,6 @@ $(document).ready(function(){
       $('#count_items').text("0 item/s");
       $('.dt-sales-remarks').val("");
       $(".li").remove();
-      $checkbox.prop('checked', false);
       $(".patient-details-div").hide();
       $(".sub-total").html("₱ 0");
       $(".total-place-order").html("₱ 0");
@@ -514,6 +494,7 @@ $(document).ready(function(){
       $("#selected-patient").find('option:selected').prop("selected",false);
       sub_total = 0;
       cart_count = 0;
+      $("#selected-patient").val(null).trigger("change");
       unique_items.splice(0, unique_items.length);
       selected_items.splice(0, selected_items.length);
     }
@@ -573,6 +554,10 @@ $(document).ready(function(){
             let obj = {id: unique_items[i]['id'], quantity: selectedItemsQty[i]?.quantity, stocksquantity:quantityStocks[i]?.qtystocks, price: amount[i]?.price, discount:percentage_value};
             item_selected.push(obj);
         }}
+
+        console.log("item selected");
+        console.log(item_selected);
+ 
 
         if (item_total !="0 item/s" && client_id!=0){
           Swal.fire({
@@ -776,27 +761,7 @@ $(document).ready(function(){
           {
             responsivePriority: 1,
             targets: 3
-          },
-          // {
-          //   // Label
-          //   targets: -1,
-          //   render: function (data, type, full, meta) {
-          //     var $status_number = full['status'];
-          //     var $status = {
-          //       1: { title: 'Current', class: 'bg-label-primary' },
-          //       2: { title: 'Professional', class: ' bg-label-success' },
-          //       3: { title: 'Rejected', class: ' bg-label-danger' },
-          //       4: { title: 'Resigned', class: ' bg-label-warning' },
-          //       5: { title: 'Applied', class: ' bg-label-info' }
-          //     };
-          //     if (typeof $status[$status_number] === 'undefined') {
-          //       return data;
-          //     }
-          //     return (
-          //       '<span class="badge ' + $status[$status_number].class + '">' + $status[$status_number].title + '</span>'
-          //     );
-          //   }
-          // }
+          }
         ],
         order: [[2, 'desc']],
         
@@ -846,15 +811,18 @@ $(document).ready(function(){
       $('.dataTables_length .form-select').removeClass('form-select-sm');
     }, 300);
   });
+$(document).on("input", ".quantity-input", function() {
+  var $row = $(this).closest('.row');
+  var value_input = parseInt($(this).val());
 
-  // $("#allcb").change(function() {
-  //   $('tbody tr td input[type="checkbox"]').prop(
-  //     "checked",
-  //     $(this).prop("checked")
-  //   );
-  // });
+  // Update the max attribute based on row.quantity
+  var quantity_limit = parseInt($row.find('.main-quantity').text());
 
-  var sub_total = 0;
+  if (value_input > quantity_limit) {
+    $(this).val(quantity_limit); // Set the input value to the maximum allowed quantity
+  }
+});
+
   $(document).on( "change",  ".quantity-input",function() {
 
     var $row = $(this).closest('.row');
@@ -889,9 +857,6 @@ $(document).ready(function(){
     toastr.success('Data remove successfully!', 'Success', toast_options);
   });
 
-
-  
-
   $(document).on("click", ".remove_data", function() {
     cart_count--;
     $('#count_items').text(cart_count + " item/s");
@@ -918,20 +883,28 @@ $(document).ready(function(){
 
   });
 
-  $(document).on("click", "input[name=checkboxtype]", function() {
-    alert("clicked")
-
+  $('.remove-discount').click(function(event){
+    var original_price = $(".sub-total").text().slice(1);
+    $("#select-discount").val(null).trigger("change");
+    $('.spn-discount').text("0.00 %");
+    $('.discount-value').text("-₱ 0");
+    convert_discount_value = 0;
+    actual_prc_discount = 0;
+    percentage_value = 0;
+    var discount_price = parseFloat(original_price * percentage_value/100);
+    original_price = (discount_type == "Special")?original_price =parseFloat(original_price) -parseFloat(percentage_value) : original_price =parseFloat(original_price) -parseFloat(discount_price);
+    original_price = (sub_total == 0) ? original_price = 0 : original_price;
+    $('.total-place-order').text("₱ "+original_price);
+    $('#onboardModal').modal('hide');
+    toastr.success('Discount remove successfully!', 'Success', toast_options)
   });
-
 
  $('.checkbox_data').click(function(event){
 
   var grid = document.getElementById("Table1");
   var addedCheckboxes = $(".whole-div-class .row");
-
   var checkBoxes = $(`input[name=checkboxtype]`);
   var str = '';
-
   var clickedCheckbox = $(event.target);
   addedCheckboxes.map((i, addedCheckbox) => {
           checkBoxes = checkBoxes.filter((j, checkbox) => {
@@ -1023,15 +996,11 @@ if (clickedCheckbox.prop('checked')) {
           // checkBoxes[i].hasCovered = true;
         
       }
-        console.log("selected Itemsss");
-        console.log(unique_items);
         cart_count = unique_items.length;
         $('.div-remove').show();
         $(".whole-div-class").append(str);
         $('#exLargeModal').modal('hide');
         $('#count_items').text(unique_items.length + " item/s");
-
-
         // original_price = (discount_type == "Special")?original_price =parseFloat(original_price) -parseFloat(percentage_value) : original_price =parseFloat(original_price) -parseFloat(discount_price);
         $('.sub-total').text("₱ " + sub_total);
 
@@ -1041,31 +1010,17 @@ if (clickedCheckbox.prop('checked')) {
             $('.total-place-order').text("₱ "+total);
 
             var discount_amount = $(".discount-value").text().slice(2);
-
-
-
             actual_prc_discount = parseFloat(discount_amount/sub_total*100);
-
             convert_discount_value = actual_prc_discount.toFixed(2);
-
-
-            
-            console.log(actual_prc_discount);
-            console.log(sub_total);
-
             $(".spn-discount").text(convert_discount_value +" %");
-
         }else{
           
           var percentage_value = $(".spn-discount").text().slice(0,-1);
           var patient_discount  = parseFloat(sub_total * percentage_value/100);
-
           $('.discount-value').text("-₱ "+patient_discount);
           var total = parseFloat(sub_total - patient_discount);
           $('.total-place-order').text("₱ "+total);
         }
-
-
         toastr.success('Item add successfully!', 'Success', toast_options);
     });
 
