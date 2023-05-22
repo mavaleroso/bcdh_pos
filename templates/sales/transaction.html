@@ -421,10 +421,10 @@ $(document).ready(function(){
       else{
         $(".view-percentage").show();
       }  
-      
     });
 
     $('.add-client').click(function(event){
+      patient_details();
       let fname = $('#ct-first-name').val();
       let mname = $('#ct-middle-name').val();
       let lname = $('#ct-last-name').val();
@@ -456,6 +456,7 @@ $(document).ready(function(){
               }
           }).done(function(data){
             if(data.data == "success"){
+              
               Swal.fire({
                   icon: 'success',
                   title: 'Successfully save!',
@@ -464,8 +465,10 @@ $(document).ready(function(){
                     confirmButton: 'btn btn-success'
                   }
                 });
-                remove_all();
-                window.location.reload();
+                $('#clientomodal').modal('hide');
+                patient_details();
+                // window.location.reload();
+                
             }
             else{
               Swal.fire({
@@ -498,6 +501,48 @@ $(document).ready(function(){
       unique_items.splice(0, unique_items.length);
       selected_items.splice(0, selected_items.length);
     }
+
+    function patient_details(){
+      console.log("testt");
+      $.ajax({
+        type: "POST",
+        url: "{% url 'patient-all-details' %}"
+      }).done(function(data){
+        $('#selected-patient').empty();
+        for (let i = 0; i < data.data.length; i++) {
+          let patient_id = data.data[i].id;
+          let first_name = data.data[i].first_name;
+          let middle_name = data.data[i].middle_name;
+          let last_name = data.data[i].last_name;
+          let client_type_name = data.data[i].client_type__name;
+          let fullname = first_name + " " + middle_name + " " + last_name;
+
+          let option = $('<option>').val(patient_id).text(fullname);
+          $('#selected-patient').append(option);
+          $("#selected-patient").val(null).trigger("change");
+        }
+
+      // <select id="selected-patient" class="select2 form-select" data-allow-clear="true">
+      //    <option></option>
+      //  </select>
+
+
+        // var client_id = data.data[0].id;
+        // var first_name = data.data[0].first_name;
+        // var middle_name = data.data[0].middle_name;
+        // var last_name = data.data[0].last_name;
+        // var client_type_name = data.data[0].client_type__name;
+
+        // console.log("datanipatient");
+        // console.log(first_name);
+        // console.log(middle_name);
+        // console.log(last_name);
+
+      
+      });
+
+    }
+    
     //end discounts ---------------------------------------------->
     
       $('.add-patient').click(function (event) {
@@ -899,8 +944,9 @@ $(document).on("input", ".quantity-input", function() {
     toastr.success('Discount remove successfully!', 'Success', toast_options)
   });
 
- $('.checkbox_data').click(function(event){
+  
 
+ $('.checkbox_data').click(function(event){
   var grid = document.getElementById("Table1");
   var addedCheckboxes = $(".whole-div-class .row");
   var checkBoxes = $(`input[name=checkboxtype]`);
@@ -911,31 +957,30 @@ $(document).on("input", ".quantity-input", function() {
               return $(addedCheckbox).data('for') != $(checkbox).prop("name");
           });
   });
+  if (clickedCheckbox.prop('checked')) {
+      for (var i = 0; i < checkBoxes.length; i++) {
+        if (checkBoxes[i].checked) {
+              var row = checkBoxes[i].parentNode.parentNode;
+              cart_count++;
+              var stck_id = checkBoxes[i].id.slice(2);
 
-if (clickedCheckbox.prop('checked')) {
-    for (var i = 0; i < checkBoxes.length; i++) {
-      if (checkBoxes[i].checked) {
-            var row = checkBoxes[i].parentNode.parentNode;
-            cart_count++;
-            var stck_id = checkBoxes[i].id.slice(2);
-
-            var array_id = {
-              id: stck_id,
-              item: row.cells[1].innerHTML,
-              brand: row.cells[2].innerHTML,
-              quantity: row.cells[3].innerHTML,
-              price: row.cells[4].innerHTML
+              var array_id = {
+                id: stck_id,
+                item: row.cells[1].innerHTML,
+                brand: row.cells[2].innerHTML,
+                quantity: row.cells[3].innerHTML,
+                price: row.cells[4].innerHTML
+              }
+              selected_items.push(array_id);
             }
-            selected_items.push(array_id);
-          }
 
-      }
-  }
-  else{
-    var uncheckedId = clickedCheckbox.attr('id').slice(2);
-      selected_items = selected_items.filter(function(item) {
-        return item.id !== uncheckedId;
-    });
+        }
+    }
+    else{
+      var uncheckedId = clickedCheckbox.attr('id').slice(2);
+        selected_items = selected_items.filter(function(item) {
+          return item.id !== uncheckedId;
+      });
   }
 
   unique_items = selected_items.filter(function(item, index, self) {
