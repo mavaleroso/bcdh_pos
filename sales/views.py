@@ -47,6 +47,17 @@ def patientdetails(request):
     )
     return JsonResponse({'data': qs_list})
 
+@csrf_exempt
+def patientalldetails(request):
+    qs_list = list(
+         (Clients.objects
+             .filter()
+             .select_related('client_type')
+             .values('id','first_name','middle_name','last_name', 'client_type__name')
+         )
+    )
+    return JsonResponse({'data': qs_list})
+
 
 @csrf_exempt
 def discountdetails(request):
