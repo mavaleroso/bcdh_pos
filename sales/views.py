@@ -91,10 +91,8 @@ def salesitem(request):
         if disc_id =="0":
             disc_id = None
         
-
         addsales = Sales(transaction_code = code,is_er=0,remarks=sales_remarks,client_id = clie_id,discount_id = disc_id, user_id = usr_id)
         addsales.save()
-
 
         if Sales.id:
             system_config = SystemConfiguration.objects.first()
@@ -105,8 +103,7 @@ def salesitem(request):
         addpayment.save()
         
         for stock_list_item in stock_list:
-            price = float(stock_list_item['price']) * float(stock_list_item['discount'])/100
-
+            price = float(stock_list_item['price'])*float(stock_list_item['quantity'])*float(stock_list_item['discount'])/100
             obj, was_created_bool = OutItems.objects.get_or_create(
             stock_id=stock_list_item['id'],
             quantity=stock_list_item['quantity'],
