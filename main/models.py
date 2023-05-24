@@ -319,6 +319,7 @@ class Sales(models.Model):
     user = models.ForeignKey(AuthUser, models.DO_NOTHING)
     status = models.CharField(max_length=128, blank=True, null=True)
     remarks = models.CharField(max_length=255, blank=True, null=True)
+    payment_type = models.CharField(max_length=255, blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     updated_at = models.DateTimeField(blank=True, null=True, auto_now=True)
 
