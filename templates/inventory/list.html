@@ -273,37 +273,72 @@
                     <h5 class="modal-title" id="modalStockLocationTitle">Update Location</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                <div class="modal-body">
-                    <div class="mb-3 row">
-                        <label class="col-md-4 col-form-label">Available Stocks</label>
-                        <div class="col-md-8">
-                            <input class="form-control" id="location-available-stocks" type="number" />
+                <form id="update-location-frm">
+                    <div class="modal-body">
+                        <div class="mb-3 row">
+                            <input type="hidden" name="LocationStockId" id="location-stock-id" />
+                            <label class="col-md-4 col-form-label">Available Stocks</label>
+                            <div class="col-md-8">
+                                <input class="form-control" id="location-available-stocks" type="number" readonly="true" />
+                            </div>
                         </div>
-                    </div>
-                    <div class="divider divider-dashed my-4">
-                        <div class="divider-text">Locations</div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label class="col-md-4 col-form-label">Main</label>
-                        <div class="col-md-8">
-                            <input class="form-control" type="number" />
+                        <div class="divider divider-dashed my-4">
+                            <div class="divider-text">Locations</div>
                         </div>
-                    </div>
-                    <div class="mb-3 row">
-                        <label class="col-md-4 col-form-label">Emergency</label>
-                        <div class="col-md-8">
-                            <input class="form-control" type="number" />
+                        <div class="alert alert-info d-flex align-items-center" role="alert">
+                            <span class="alert-icon text-info me-2">
+                                <i class="ti ti-info-circle ti-xs"></i>
+                            </span>
+                            Total Stocks Entry: <span id="total-stocks-info" class="ms-2 fw-bold">0</span>
                         </div>
+                        {% for row in location %}
+                        <div class="mb-3 row">
+                            <input type="hidden" name="LocationDataId[]" value="{{ row.id }}" />
+                            <label class="col-md-4 col-form-label">{{ row.name }}</label>
+                            <div class="col-md-8">
+                                <input name="LocationDataQty[]" id="location-{{ row.name }}" class="location-data form-control" type="number" />
+                                <div id="location-{{ row.name }}-stocks-invalid" class="invalid-feedback"></div>
+                            </div>
+                        </div>
+                        {% endfor %}
                     </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary">Save changes</button>
-                </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" id="update-location-save-btn" class="btn btn-primary">Save changes</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
     <!-- /Location Modal -->
+    <!-- Damage Modal -->
+    <div class="modal fade" id="modalStockDamage" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="modalStockDamageTitle">Update Damage</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="update-damage-frm">
+                    <div class="modal-body">
+                        <div class="mb-3 row">
+                            <input type="hidden" name="DamageStockId" id="damage-stock-id" />
+                            <label class="col-md-4 col-form-label">Damage Stocks</label>
+                            <div class="col-md-8">
+                                <input class="form-control" name="DamageStocks" id="damage-stocks" type="number" max="200" />
+                                <div id="damage-stocks-invalid" class="invalid-feedback"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" id="update-damage-save-btn" class="btn btn-primary">Save changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <!-- /Damage Modal -->
 </div>
 {% endblock %} {% block footer_scripts %}
 <script>
@@ -318,7 +353,9 @@
         const search_advance_filter = $('#search-advance-filter')
         const reset_advance_filter = $('#reset-advance-filter')
         const modal_stock_location = $('#modalStockLocation')
-        const location_available_stock = $('#location-available-stock')
+        const modal_stock_damage = $('#modalStockDamage')
+        const location_available_stocks = $('#location-available-stocks')
+        const damage_stocks = $('#damage-stocks')
 
         const inventory_code_filter = $('#inventory-code-filter')
         const barcode_filter = $('#barcode-filter')
@@ -410,12 +447,13 @@
                     title: 'Actions',
                     orderable: false,
                     searchable: false,
-                    render: function (data, full) {
+                    render: function (data, type, full) {
+                        let location = encodeURIComponent(JSON.stringify(full['location']))
                         return `<div class="d-inline-block">
                             <a href="javascript:;" class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="text-primary ti ti-dots-vertical"></i></a>
                             <div class="dropdown-menu dropdown-menu-end m-0">
-                            <a href="javascript:;" data-available-stock="${full['available_stock']}" class="update-location dropdown-item">Location</a>
-                            <a href="javascript:;" class="update-damage dropdown-item">Damage</a>
+                            <a href="javascript:;" data-id="${data}" data-quantity="${full['pcs_quantity']}" data-available-stock="${full['available_stock']}" data-location="${location}" class="update-location dropdown-item">Location</a>
+                            <a href="javascript:;" data-id="${data}" data-quantity="${full['pcs_quantity']}" data-damage-stock="${full['damage_stock']}" class="update-damage dropdown-item">Damage</a>
                             <div class="dropdown-divider"></div>
                             <a href="javascript:;" class="dropdown-item text-danger delete-record">Delete</a>
                             </div>
@@ -534,19 +572,199 @@
                 },
             ],
             order: [[15, 'asc']],
-            scrollY: '300px',
             scrollX: true,
             drawCallback: function (settings) {
                 let update_location = $('.update-location')
                 let update_damage = $('.update-damage')
+                let location_data = $('.location-data')
+                let total_stocks_info = $('#total-stocks-info')
+                const update_location_frm = $('#update-location-frm')
+                const update_damage_frm = $('#update-damage-frm')
+                const update_location_save_btn = $('#update-location-save-btn')
+                const update_damage_save_btn = $('#update-damage-save-btn')
+                const location_stock_id = $('#location-stock-id')
+                const damage_stock_id = $('#damage-stock-id')
+                const damage_stocks_invalid = $('#damage-stocks-invalid')
+                const location_invalid_feedback = $('#update-location-frm .invalid-feedback')
+                const location_form_control = $('.location-entry-field')
 
                 update_location.on('click', function () {
                     let available_stock = $(this).data('available-stock')
-                    location_available_stock.val(available_stock)
+                    let location = $(this).data('location')
+                    let quantity = $(this).data('quantity')
+                    let stock_id = $(this).data('id')
+                    let location_parse_data = JSON.parse(decodeURIComponent(location))
+                    let total_stock_location = 0
+
+                    location_stock_id.val(stock_id)
+                    location_available_stocks.val(available_stock)
+
+                    location_parse_data.forEach((e) => {
+                        let locationInput = $('#location-' + e.name)
+                        locationInput.val(e.quantity)
+                    })
+
                     modal_stock_location.modal('show')
+
+                    location_data.each(function () {
+                        let val = $(this).val() == '' ? 0 : parseInt($(this).val())
+                        total_stock_location += val
+                        total_stocks_info.text(total_stock_location)
+                    })
+
+                    location_data.keyup(function () {
+                        total_stock_location = 0
+
+                        location_data.each(function () {
+                            let val = $(this).val() == '' ? 0 : parseInt($(this).val())
+                            total_stock_location += val
+                            total_stocks_info.text(total_stock_location)
+                        })
+                    })
+
+                    update_location_save_btn.on('click', function () {
+                        total_stock_location = 0
+
+                        location_data.each(function () {
+                            let val = $(this).val() == '' ? 0 : parseInt($(this).val())
+                            total_stock_location += val
+                        })
+
+                        console.log(total_stock_location + ' == ' + quantity)
+
+                        location_data.removeClass('invalid')
+                        location_invalid_feedback.hide()
+
+                        if (total_stock_location != quantity) {
+                            location_data.each(function () {
+                                let id = $(this).attr('id')
+                                let val = $(this).val()
+                                let location_invalid_feedback = $(`#${id}-stocks-invalid`)
+
+                                if (val) {
+                                    $(this).addClass('invalid')
+                                    location_invalid_feedback.show()
+                                    location_invalid_feedback.text(`The total stocks must be ${quantity} pcs`)
+                                }
+                            })
+
+                            return false
+                        }
+                        Swal.fire({
+                            title: 'Are you sure?',
+                            text: "You won't be able to revert this!",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: 'Yes, save it!',
+                            customClass: {
+                                confirmButton: 'btn btn-primary me-3',
+                                cancelButton: 'btn btn-label-secondary',
+                            },
+                            buttonsStyling: false,
+                        }).then(function (result) {
+                            if (result.value) {
+                                let form_data = update_location_frm.serialize()
+
+                                $.ajax({
+                                    type: 'POST',
+                                    url: "{% url 'update-stock-location' %}",
+                                    data: form_data,
+                                }).done(function (data) {
+                                    if (data.data == 'success') {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Successfully updated stock location!',
+                                            text: 'Item has been added.',
+                                            customClass: {
+                                                confirmButton: 'btn btn-success',
+                                            },
+                                        })
+
+                                        modal_stock_location.modal('toggle')
+                                        stocksTable.ajax.reload()
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error saving!',
+                                            text: 'Encountered error on updating stock location!',
+                                            customClass: {
+                                                confirmButton: 'btn btn-success',
+                                            },
+                                        })
+                                    }
+                                })
+                            }
+                        })
+                    })
                 })
 
-                update_damage.on('click', function () {})
+                update_damage.on('click', function () {
+                    let damage_stock = $(this).data('damage-stock')
+                    let quantity = $(this).data('quantity')
+                    let stock_id = $(this).data('id')
+
+                    damage_stock_id.val(stock_id)
+                    damage_stocks.val(damage_stock)
+                    modal_stock_damage.modal('show')
+
+                    update_damage_save_btn.on('click', function () {
+                        let new_damage_stocks = damage_stocks.val() ?? 0
+                        damage_stocks_invalid.hide()
+                        damage_stocks.removeClass('invalid')
+                        if (new_damage_stocks > quantity) {
+                            damage_stocks.addClass('invalid')
+                            damage_stocks_invalid.text(`The entry stocks exceed the stock quantity of ${quantity} pcs`)
+                            damage_stocks_invalid.show()
+                            return false
+                        }
+
+                        Swal.fire({
+                            title: 'Are you sure?',
+                            text: "You won't be able to revert this!",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: 'Yes, save it!',
+                            customClass: {
+                                confirmButton: 'btn btn-primary me-3',
+                                cancelButton: 'btn btn-label-secondary',
+                            },
+                            buttonsStyling: false,
+                        }).then(function (result) {
+                            if (result.value) {
+                                let form_data = update_damage_frm.serialize()
+
+                                $.ajax({
+                                    type: 'POST',
+                                    url: "{% url 'update-stock-damage' %}",
+                                    data: form_data,
+                                }).done(function (data) {
+                                    if (data.data == 'success') {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Successfully updated damage stock!',
+                                            text: 'Item has been added.',
+                                            customClass: {
+                                                confirmButton: 'btn btn-success',
+                                            },
+                                        })
+
+                                        modal_stock_damage.modal('toggle')
+                                        stocksTable.ajax.reload()
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error saving!',
+                                            text: 'Encountered error on updating damage stocks!',
+                                            customClass: {
+                                                confirmButton: 'btn btn-success',
+                                            },
+                                        })
+                                    }
+                                })
+                            }
+                        })
+                    })
+                })
             },
         })
 
@@ -562,11 +780,13 @@
 
         stocksTable.on('draw', function () {
             let toggled_column = localStorage.getItem('toggled_column') ?? ''
+
             if (toggled_column != '') {
                 columns_name.val(toggled_column.split(','))
             } else {
                 columns_name.val([2, 5, 6, 7, 8, 9, 10, 11, 12, 15, 16, 17])
             }
+
             toggle_columns()
             columns_name.selectpicker()
         })
@@ -577,7 +797,6 @@
 
         function toggle_columns() {
             var all_column = Array.from({ length: 18 }, (_, i) => (i + 1).toString())
-
             var remove_column = columns_name.val()
 
             localStorage.setItem('toggled_column', remove_column)
@@ -587,7 +806,6 @@
             })
 
             stocksTable.columns(remove_column).visible(false)
-
             stocksTable.columns(remaining_column).visible(true)
         }
     })

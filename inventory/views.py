@@ -398,3 +398,36 @@ def update_stock(request, stock_id):
     stock.save()
 
     return JsonResponse({'data': 'success'})
+
+
+@csrf_exempt
+def update_stock_location(request):
+    location_stock_id = request.POST.get('LocationStockId')
+    location_data_id = request.POST.getlist('LocationDataId[]')
+    location_data_qty = request.POST.getlist('LocationDataQty[]')
+
+    new_location_data = zip(location_data_id, location_data_qty)
+
+    for ldi, ldq in new_location_data:
+        quantity = ldq if ldq else 0
+
+        if int(quantity) > 0:
+            ItemLocation.objects.update_or_create(
+                stock_id=location_stock_id, location_id=ldi, defaults={'quantity': quantity})
+        else:
+            ItemLocation.objects.filter(
+                stock_id=location_stock_id, location_id=ldi).delete()
+
+    return JsonResponse({'data': 'success'})
+
+
+@csrf_exempt
+def update_stock_damage(request):
+    damage_stock_id = request.POST.get('DamageStockId')
+    damage_stock_qty = request.POST.get('DamageStocks')
+
+    stock_data = Stocks.objects.get(id=damage_stock_id)
+    stock_data.is_damaged = damage_stock_qty
+    stock_data.save()
+
+    return JsonResponse({'data': 'success'})
