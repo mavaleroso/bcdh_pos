@@ -10,4 +10,5 @@ urlpatterns = [
          name='inventory-list-edit'),
     path('load', views.inventory_load, name='inventory-load'),
     path('received_item_load', views.received_item_load, name='received-item-load'),
+    path('export_excel', views.export_excel, name='export-excel')
 ]
