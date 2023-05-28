@@ -319,7 +319,8 @@ class Sales(models.Model):
     user = models.ForeignKey(AuthUser, models.DO_NOTHING)
     status = models.CharField(max_length=128, blank=True, null=True)
     remarks = models.CharField(max_length=255, blank=True, null=True)
-    payment_type = models.CharField(max_length=255, blank=True, null=True)
+    payment_status = models.CharField(max_length=255, blank=True, null=True)
+    exact_amount_paid = models.DecimalField(max_digits=30, decimal_places=10, blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     updated_at = models.DateTimeField(blank=True, null=True, auto_now=True)
 
@@ -330,8 +331,7 @@ class Sales(models.Model):
 
 class Payment(models.Model):
     sales = models.ForeignKey(Sales, models.DO_NOTHING)
-    amount_paid = models.DecimalField(
-        max_digits=30, decimal_places=10, blank=True, null=True)
+    amount_paid = models.DecimalField(max_digits=30, decimal_places=10, blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
 
     class Meta:
