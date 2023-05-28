@@ -211,7 +211,7 @@
                 </div><br>
 
                 <div class="bg-lighter rounded p-3 emergency-details-div">
-                  <p class="fw-semibold mb-2">Emergency</p>
+                  <p class="fw-semibold mb-2">Emergency Details</p>
 
 
                   <div class="row g-3 mb-3">
@@ -220,15 +220,15 @@
                       <select id="emergency-payment-type" class="select2 form-select emergency-payment-type" data-allow-clear="true">
                         <option></option>
                         <option value="Partial">Partial</option>	
-                        <option value="Full">Full</option>	
+                        <option value="Fully paid">Full paid</option>	
                       </select>
                     </div>
                     
                   </div>
                   <div class="row">
-                    <div class="col-12 col-xxl-12 col-xl-12">
+                    <div class="col-12 col-xxl-12 col-xl-12 div-emergency-amount" >
                       <label for="nameBackdrop" class="form-label">Amount paid</label>
-                      <input type="number" class="form-control form-control-md w-px-175" id="emergency-amount"  min="0" />
+                      <input type="number" class="form-control form-control-md w-px-175 emergency-amount" id="emergency-amount"  min="0" />
                     </div>
                    
                   </div>
@@ -462,9 +462,10 @@ $(document).ready(function(){
     var percentage_value = 0;
     var sub_total = 0;
     var is_er = 0;
-    var pymt_tpe="Full";
+    var pymt_tpe="Fully paid";
     $(".patient-details-div").hide();
     $(".emergency-details-div").hide();
+    $(".div-emergency-amount").hide();
     
     const toast_options = (toastr.options = {
             maxOpened: 1,
@@ -690,10 +691,25 @@ $(document).ready(function(){
         }
       });
 
+
+      $('.emergency-payment-type').change(function() {
+        var selectedOption = $(this).val();
+        
+        if (selectedOption === 'Partial') {
+          $(".div-emergency-amount").show();
+          toastr.success('Partial has been choosen!', 'Success', toast_options)
+        }
+        else{
+          $(".div-emergency-amount").hide();
+          toastr.success('Fully paid has been choosen!', 'Success', toast_options)
+        }
+      });
+
       $('.place-order-items').click(function (event) {
         var total_amount = $(".total-place-order").text().slice(1);
         var item_total = $("#count_items").text();
         var sales_remarks = $(".dt-sales-remarks").val();
+        var emergency_exact_amt = $('#emergency-amount').val() || total_amount;
         const selectedItemsQty = $('.quantity-input').map((i, el) => ({quantity: el.value})).get();
         const selectedMainQuantity = $('.quantity-input').map((i, el) => ({quantity: el.value})).get();
         const quantityStocks = $('.main-quantity').map((i, el) => ({qtystocks: el.innerHTML.slice(0,-10)})).get();
@@ -741,7 +757,7 @@ $(document).ready(function(){
                   type: "POST",
                   url: "{% url 'sales-item' %}",
                   data:{
-                    cl_id : client_id, dis_id : discount_id, amt_paid: total_amount, remarks:sales_remarks, out_stocks : JSON.stringify(item_selected), is_emergency : is_er, payment_type : pymt_tpe
+                    cl_id : client_id, dis_id : discount_id, amt_paid: total_amount, remarks:sales_remarks, out_stocks : JSON.stringify(item_selected), is_emergency : is_er, payment_type : pymt_tpe,emergency_amt : emergency_exact_amt
                   }
               }).done(function(data){
                 if(data.data == "success"){
@@ -1119,14 +1135,11 @@ $('#emergency-switch').click(function() {
     toastr.warning('Emergency applied!', 'Success', toast_options);
   } else {
     is_er = 0;
-    pymt_tpe = "Full"
+    pymt_tpe = "Fully paid"
     $(".emergency-details-div").hide();
     toastr.success('Emergency has removed!', 'Success', toast_options);
   }
 });
-
-
-
 
 
   $("#add_data").click(function() {

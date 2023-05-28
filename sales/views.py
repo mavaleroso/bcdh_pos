@@ -96,15 +96,19 @@ def salesitem(request):
         usr_id = request.session.get('user_id', 0)
         amt_paid = request.POST.get('amt_paid')
         sales_remarks = request.POST.get('remarks')
+        emergency_amt = request.POST.get('emergency_amt', 0)
         stock_list = json.loads(request.POST.get('out_stocks'))
         code = generate_code()
         is_emergency = request.POST.get('is_emergency')
         pmt_type = request.POST.get('payment_type')
+
+        print("emergency_amt")
+        print(emergency_amt)
         
         if disc_id =="0":
             disc_id = None
         
-        addsales = Sales(transaction_code = code,is_er=is_emergency,remarks=sales_remarks,client_id = clie_id,discount_id = disc_id, user_id = usr_id, payment_type = pmt_type)
+        addsales = Sales(transaction_code = code,is_er=is_emergency,remarks=sales_remarks,client_id = clie_id,discount_id = disc_id, user_id = usr_id, payment_status = pmt_type, exact_amount_paid = emergency_amt)
         addsales.save()
 
         if Sales.id:
