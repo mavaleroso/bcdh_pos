@@ -8,6 +8,7 @@ from main.models import (Stocks, Items, StockLocation, SystemConfiguration,
                          ItemType, Company, Generic, SubGeneric, Brand, AuthUser, OutItems, Location)
 from datetime import date, datetime
 import math
+import xlwt
 from django.db.models import Q
 
 
@@ -399,7 +400,6 @@ def update_stock(request, stock_id):
 
     return JsonResponse({'data': 'success'})
 
-
 @csrf_exempt
 def update_stock_location(request):
     location_stock_id = request.POST.get('LocationStockId')
@@ -421,7 +421,7 @@ def update_stock_location(request):
     return JsonResponse({'data': 'success'})
 
 
-@csrf_exempt
+
 def update_stock_damage(request):
     damage_stock_id = request.POST.get('DamageStockId')
     damage_stock_qty = request.POST.get('DamageStocks')
@@ -431,3 +431,74 @@ def update_stock_damage(request):
     stock_data.save()
 
     return JsonResponse({'data': 'success'})
+
+def export_excel(request):
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="bcdh_inventory_"'+datetime.now().strftime("%m_%d_%Y")+'".xls"'
+
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet('Users Data')
+
+    row_num = 0
+
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+
+    columns = ['Code', 'Company', 'Item Description', 'Inventory Evaluation Method', 'Unit Price', 'Retail Price', 'Quantity in Stocks', 'Unit of Measurement', 'Total Cost', 'Expiration Date', 'Aging', 'Delivery Date', 'Prev. Qty.' ]
+
+    stock_data = Stocks.objects.all().select_related()
+
+    data = []
+
+    for stock in stock_data:
+        outItemsData = OutItems.objects.filter(stock_id=stock.id)
+        itemLocation = ItemLocation.objects.select_related().filter(stock_id=stock.id)
+
+        expended_stock = 0
+        damage_stock = stock.is_damaged if stock.is_damaged else 0
+
+        for outItem in outItemsData:
+            expended_stock = expended_stock + outItem.quantity
+
+        available = stock.pcs_quantity - expended_stock - damage_stock
+
+        expiration_aging = stock.expiration_date - datetime.now().date()
+
+        stock_obj = [
+            stock.code,
+            stock.company.name,
+            stock.item.generic.name + ' ' + stock.item.sub_generic.name + ' ' + stock.item.classification + ' ' + stock.item.description,
+            'FIFO',
+            stock.unit_price,
+            stock.retail_price,
+            available,
+            'PCS',
+            stock.unit_price * available,
+            stock.expiration_date,
+            expiration_aging.days,
+            stock.delivered_date,
+            stock.pcs_quantity
+        ]
+
+
+        for il in itemLocation:
+            columns.append(il.location.name)
+            stock_obj.append(il.quantity)
+
+        data.append(stock_obj)
+
+        
+
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num], font_style) 
+
+    font_style = xlwt.XFStyle()
+
+    for row in data:
+        row_num += 1
+        for col_num in range(len(row)):
+            ws.write(row_num, col_num, row[col_num], font_style)
+
+    wb.save(response)
+
+    return response

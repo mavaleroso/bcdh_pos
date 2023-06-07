@@ -6,7 +6,96 @@
 
 
 <div class="container-xxl flex-grow-1 container-p-y">
-  <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Sales /</span> Transaction</h4>
+ 
+
+  <div class="row g-3 mb-3">
+    <div class="col-xl-2">
+      <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Sales /</span> Transaction</h4>
+    </div>
+    <div class="col-xl-2" style="margin-top: 35px;">
+
+      <label class="switch switch-danger">
+        <input type="checkbox" class="switch-input emergency-switch" id="emergency-switch"/>
+        <span class="switch-toggle-slider">
+          <span class="switch-on">
+            <i class="ti ti-check"></i>
+          </span>
+          <span class="switch-off">
+            <i class="ti ti-x"></i>
+          </span>
+        </span>
+        <span class="switch-label">Emergency</span>
+      </label>
+    
+    </div>
+    
+    <div class="col-xl-8" >
+
+      <div class="card-body">
+
+        <div class="alert alert-primary alert-dismissible" role="alert">
+          <!-- <h5 class="alert-heading mb-2">This is a primary alert — check it out!</h5> -->
+          <p class="mb-0">
+              <i class="ti ti-bookmark ti-sm"></i>
+            By pressing the emergency button, carefully follow any on-screen instructions provided by the payment system under Emergency level. 
+            This action will trigger the payment method and identifies as a partial or fully paid.
+            <!-- Sugar plum apple pie sesame snaps croissant marshmallow apple pie liquorice. Cheesecake bear
+            claw tiramisu shortbread cupcake. Sugar plum candy canes jujubes liquorice tiramisu gummi
+            bears muffin dragée gingerbread. -->
+          </p>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- <div class="col-lg-6 mb-4 mb-lg-0">
+     
+   
+        <div class="card-body">
+          <div class="alert alert-primary alert-dismissible" role="alert">
+            <h5 class="alert-heading mb-2">This is a primary alert — check it out!</h5>
+            <p class="mb-0">
+              Sugar plum apple pie sesame snaps croissant marshmallow apple pie liquorice. Cheesecake bear
+              claw tiramisu shortbread cupcake. Sugar plum candy canes jujubes liquorice tiramisu gummi
+              bears muffin dragée gingerbread.
+            </p>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        </div>
+     
+    </div> -->
+
+
+
+  </div>
+
+
+ 
+
+  
+  <!-- <div class="timeline-event">
+    <div class="timeline-header mb-sm-0 mb-3">
+      <h6 class="mb-0">Design Review</h6>
+      <span class="text-muted">4th October</span>
+    </div>
+    <p>Weekly review of freshly prepared design for our new application.</p>
+    <div class="d-flex justify-content-between">
+      <h6>New Application</h6>
+      <div class="d-flex">
+        <div class="avatar avatar-xs me-2">
+          <img src="../../assets/img/avatars/4.png" alt="Avatar" class="rounded-circle" />
+        </div>
+        <div class="avatar avatar-xs">
+          <img src="../../assets/img/avatars/5.png" alt="Avatar" class="rounded-circle" />
+        </div>
+      </div>
+    </div>
+  </div> -->
+
+ 
+
+
+
   <!-- Checkout Wizard -->
   <div id="wizard-checkout" class="bs-stepper wizard-icons wizard-icons-example mt-2">
     <div class="bs-stepper-header m-auto border-0 py-0">
@@ -118,6 +207,32 @@
 
                   <span class="badge bg-label-warning ms-1 spn-discount">0.00 %</span>
                   <span class="badge bg-label-success ms-1 spn-patient-status">Unidentified Patient</span>
+
+                </div><br>
+
+                <div class="bg-lighter rounded p-3 emergency-details-div">
+                  <p class="fw-semibold mb-2">Emergency Details</p>
+
+
+                  <div class="row g-3 mb-3">
+                    <div class="col-12 col-xxl-12 col-xl-12">
+                      <label for="nameBackdrop" class="form-label">Payment type</label>
+                      <select id="emergency-payment-type" class="select2 form-select emergency-payment-type" data-allow-clear="true">
+                        <option></option>
+                        <option value="Partial">Partial</option>	
+                        <option value="Fully paid">Full paid</option>	
+                      </select>
+                    </div>
+                    
+                  </div>
+                  <div class="row">
+                    <div class="col-12 col-xxl-12 col-xl-12 div-emergency-amount" >
+                      <label for="nameBackdrop" class="form-label">Amount paid</label>
+                      <input type="number" class="form-control form-control-md w-px-175 emergency-amount" id="emergency-amount"  min="0" />
+                    </div>
+                   
+                  </div>
+                  
 
                 </div>
                 
@@ -271,12 +386,7 @@
       </div>
     </div>
   </div>
-
-
   <!--end new client modal-->
-
-
-
   <!-- Add new item modal -->
 
   <div class="modal fade" id="exLargeModal" tabindex="-1" aria-hidden="true">
@@ -309,7 +419,7 @@
                 <tbody>
                   {% for row in items %}
                   <tr>
-                    <td>{{row.id}}</td>
+                    <td id="checkbox_data" class="checkbox_data">{{row.id}}</td>
                     <td></td>
                     <!-- <td><b>{{row.item.generic.name}}</b> {{row.sub_generic.name}} {{row.description}}</td> -->
                     <td><b>{{row.item.generic.name}}</b> {{row.item.sub_generic.name}} {{row.item.description}}</td>
@@ -345,13 +455,18 @@ $('.div-remove').hide();
 $(document).ready(function(){
     var discount_type;
     var selected_items = [];
+    var unique_items = [];
     var client_id = 0;
     var discount_id = 0;
     var actual_prc_discount = 0;
     var percentage_value = 0;
+    var sub_total = 0;
+    var is_er = 0;
+    var pymt_tpe="Fully paid";
     $(".patient-details-div").hide();
+    $(".emergency-details-div").hide();
+    $(".div-emergency-amount").hide();
     
-
     const toast_options = (toastr.options = {
             maxOpened: 1,
             autoDismiss: true,
@@ -391,16 +506,10 @@ $(document).ready(function(){
             discount_id = data.data[0].id;
             discount_type = data.data[0].name;
             percentage_value = data.data[0].percentage;
-            toastr.success('Discount applied!', 'Success', toast_options)
+            toastr.success('Discount applied!', 'Success', toast_options);
 
-            console.log("percentage_value11");
-            console.log(percentage_value);
-            
             var original_price = $(".sub-total").text().slice(1);
             var discount_price = parseFloat(original_price * percentage_value/100);
-            
-    
-
             if (discount_type =="Special"){
               percentage_value = $('#special-percentage').val();
               amount_value = (sub_total == 0) ? 0 : amount_value = parseFloat((percentage_value)/parseFloat(sub_total)*100); 
@@ -413,15 +522,7 @@ $(document).ready(function(){
               actual_prc_discount = percentage_value;
               $(".spn-discount").text(percentage_value +" %");
             }
-            // console.log(discount_price);
-            // console.log(sub_total);
-            // console.log(discount_type);
-            // console.log(percentage_value);
-            // console.log(amount_value);
-            
-            // $(".spn-discount").show();
             $('#onboardModal').modal('hide');
-
             amount_value = (discount_type == "Special") ? $('.discount-value').text("-₱ "+percentage_value) : $('.discount-value').text("-₱ "+discount_price);
             original_price = (discount_type == "Special")?original_price =parseFloat(original_price) -parseFloat(percentage_value) : original_price =parseFloat(original_price) -parseFloat(discount_price);
             original_price = (sub_total == 0) ? original_price = 0 : original_price;
@@ -439,10 +540,10 @@ $(document).ready(function(){
       else{
         $(".view-percentage").show();
       }  
-      
     });
 
     $('.add-client').click(function(event){
+      patient_details();
       let fname = $('#ct-first-name').val();
       let mname = $('#ct-middle-name').val();
       let lname = $('#ct-last-name').val();
@@ -474,6 +575,7 @@ $(document).ready(function(){
               }
           }).done(function(data){
             if(data.data == "success"){
+              
               Swal.fire({
                   icon: 'success',
                   title: 'Successfully save!',
@@ -482,7 +584,10 @@ $(document).ready(function(){
                     confirmButton: 'btn btn-success'
                   }
                 });
-                remove_all();
+                $('#clientomodal').modal('hide');
+                patient_details();
+                // window.location.reload();
+                
             }
             else{
               Swal.fire({
@@ -498,14 +603,12 @@ $(document).ready(function(){
     });
 
     function remove_all(){
-      // var $checkbox = $(`input[type="checkbox"]`);
       var $checkbox = $(`input[type=checkbox][name=checkboxtype]`);
       $(".li").remove();
       $checkbox.prop('checked', false);
       $('#count_items').text("0 item/s");
       $('.dt-sales-remarks').val("");
       $(".li").remove();
-      $checkbox.prop('checked', false);
       $(".patient-details-div").hide();
       $(".sub-total").html("₱ 0");
       $(".total-place-order").html("₱ 0");
@@ -513,7 +616,52 @@ $(document).ready(function(){
       $("#selected-patient").find('option:selected').prop("selected",false);
       sub_total = 0;
       cart_count = 0;
+      $("#selected-patient").val(null).trigger("change");
+      unique_items.splice(0, unique_items.length);
+      selected_items.splice(0, selected_items.length);
     }
+
+    function patient_details(){
+      console.log("testt");
+      $.ajax({
+        type: "POST",
+        url: "{% url 'patient-all-details' %}"
+      }).done(function(data){
+        $('#selected-patient').empty();
+        for (let i = 0; i < data.data.length; i++) {
+          let patient_id = data.data[i].id;
+          let first_name = data.data[i].first_name;
+          let middle_name = data.data[i].middle_name;
+          let last_name = data.data[i].last_name;
+          let client_type_name = data.data[i].client_type__name;
+          let fullname = first_name + " " + middle_name + " " + last_name;
+
+          let option = $('<option>').val(patient_id).text(fullname);
+          $('#selected-patient').append(option);
+          $("#selected-patient").val(null).trigger("change");
+        }
+
+      // <select id="selected-patient" class="select2 form-select" data-allow-clear="true">
+      //    <option></option>
+      //  </select>
+
+
+        // var client_id = data.data[0].id;
+        // var first_name = data.data[0].first_name;
+        // var middle_name = data.data[0].middle_name;
+        // var last_name = data.data[0].last_name;
+        // var client_type_name = data.data[0].client_type__name;
+
+        // console.log("datanipatient");
+        // console.log(first_name);
+        // console.log(middle_name);
+        // console.log(last_name);
+
+      
+      });
+
+    }
+    
     //end discounts ---------------------------------------------->
     
       $('.add-patient').click(function (event) {
@@ -543,10 +691,25 @@ $(document).ready(function(){
         }
       });
 
+
+      $('.emergency-payment-type').change(function() {
+        var selectedOption = $(this).val();
+        
+        if (selectedOption === 'Partial') {
+          $(".div-emergency-amount").show();
+          toastr.success('Partial has been choosen!', 'Success', toast_options)
+        }
+        else{
+          $(".div-emergency-amount").hide();
+          toastr.success('Fully paid has been choosen!', 'Success', toast_options)
+        }
+      });
+
       $('.place-order-items').click(function (event) {
         var total_amount = $(".total-place-order").text().slice(1);
         var item_total = $("#count_items").text();
         var sales_remarks = $(".dt-sales-remarks").val();
+        var emergency_exact_amt = $('#emergency-amount').val() || total_amount;
         const selectedItemsQty = $('.quantity-input').map((i, el) => ({quantity: el.value})).get();
         const selectedMainQuantity = $('.quantity-input').map((i, el) => ({quantity: el.value})).get();
         const quantityStocks = $('.main-quantity').map((i, el) => ({qtystocks: el.innerHTML.slice(0,-10)})).get();
@@ -558,18 +721,22 @@ $(document).ready(function(){
 
         percentage_value = (percentage_value == 0) ? 0 : percentage_value;
         var item_selected = [];
-        if (selected_items.length < selectedItemsQty.length){
-          for(var i = 0; i < selected_items.length; i++){
-            let obj = {id: selected_items[i]['id'], quantity: selectedItemsQty[i]?.quantity, stocksquantity:quantityStocks[i]?.qtystocks, price: amount[i]?.price, discount:percentage_value};
+        if (unique_items.length < selectedItemsQty.length){
+          for(var i = 0; i < unique_items.length; i++){
+            let obj = {id: unique_items[i]['id'], quantity: selectedItemsQty[i]?.quantity, stocksquantity:quantityStocks[i]?.qtystocks, price: amount[i]?.price, discount:percentage_value};
             item_selected.push(obj);
           }
 
         }
         else{
           for(var i = 0; i < selectedItemsQty.length; i++){
-            let obj = {id: selected_items[i]['id'], quantity: selectedItemsQty[i]?.quantity, stocksquantity:quantityStocks[i]?.qtystocks, price: amount[i]?.price, discount:percentage_value};
+            let obj = {id: unique_items[i]['id'], quantity: selectedItemsQty[i]?.quantity, stocksquantity:quantityStocks[i]?.qtystocks, price: amount[i]?.price, discount:percentage_value};
             item_selected.push(obj);
         }}
+
+        console.log("item selected");
+        console.log(pymt_tpe);
+ 
 
         if (item_total !="0 item/s" && client_id!=0){
           Swal.fire({
@@ -590,7 +757,7 @@ $(document).ready(function(){
                   type: "POST",
                   url: "{% url 'sales-item' %}",
                   data:{
-                    cl_id : client_id, dis_id : discount_id, amt_paid: total_amount, remarks:sales_remarks, out_stocks : JSON.stringify(item_selected)
+                    cl_id : client_id, dis_id : discount_id, amt_paid: total_amount, remarks:sales_remarks, out_stocks : JSON.stringify(item_selected), is_emergency : is_er, payment_type : pymt_tpe,emergency_amt : emergency_exact_amt
                   }
               }).done(function(data){
                 if(data.data == "success"){
@@ -762,7 +929,7 @@ $(document).ready(function(){
               return '<input type="checkbox" class="dt-checkboxes form-check-input checkboxtype" id="cb'+data+'" name="checkboxtype">';
             },
             checkboxes: {
-              selectAllRender: '<input type="checkbox" class="form-check-input" id="allcb" name="allcb">'
+              selectAllRender: '<input type="checkbox" class="form-check-input" id="allcb" name="allcb" disabled>'
             }
           },
           {
@@ -773,27 +940,7 @@ $(document).ready(function(){
           {
             responsivePriority: 1,
             targets: 3
-          },
-          // {
-          //   // Label
-          //   targets: -1,
-          //   render: function (data, type, full, meta) {
-          //     var $status_number = full['status'];
-          //     var $status = {
-          //       1: { title: 'Current', class: 'bg-label-primary' },
-          //       2: { title: 'Professional', class: ' bg-label-success' },
-          //       3: { title: 'Rejected', class: ' bg-label-danger' },
-          //       4: { title: 'Resigned', class: ' bg-label-warning' },
-          //       5: { title: 'Applied', class: ' bg-label-info' }
-          //     };
-          //     if (typeof $status[$status_number] === 'undefined') {
-          //       return data;
-          //     }
-          //     return (
-          //       '<span class="badge ' + $status[$status_number].class + '">' + $status[$status_number].title + '</span>'
-          //     );
-          //   }
-          // }
+          }
         ],
         order: [[2, 'desc']],
         
@@ -843,15 +990,18 @@ $(document).ready(function(){
       $('.dataTables_length .form-select').removeClass('form-select-sm');
     }, 300);
   });
+$(document).on("input", ".quantity-input", function() {
+  var $row = $(this).closest('.row');
+  var value_input = parseInt($(this).val());
 
-  // $("#allcb").change(function() {
-  //   $('tbody tr td input[type="checkbox"]').prop(
-  //     "checked",
-  //     $(this).prop("checked")
-  //   );
-  // });
+  // Update the max attribute based on row.quantity
+  var quantity_limit = parseInt($row.find('.main-quantity').text());
 
-  var sub_total = 0;
+  if (value_input > quantity_limit) {
+    $(this).val(quantity_limit); // Set the input value to the maximum allowed quantity
+  }
+});
+
   $(document).on( "change",  ".quantity-input",function() {
 
     var $row = $(this).closest('.row');
@@ -912,62 +1062,114 @@ $(document).ready(function(){
 
   });
 
+  $('.remove-discount').click(function(event){
+    var original_price = $(".sub-total").text().slice(1);
+    $("#select-discount").val(null).trigger("change");
+    $('.spn-discount').text("0.00 %");
+    $('.discount-value').text("-₱ 0");
+    convert_discount_value = 0;
+    actual_prc_discount = 0;
+    percentage_value = 0;
+    var discount_price = parseFloat(original_price * percentage_value/100);
+    original_price = (discount_type == "Special")?original_price =parseFloat(original_price) -parseFloat(percentage_value) : original_price =parseFloat(original_price) -parseFloat(discount_price);
+    original_price = (sub_total == 0) ? original_price = 0 : original_price;
+    $('.total-place-order').text("₱ "+original_price);
+    $('#onboardModal').modal('hide');
+    toastr.success('Discount remove successfully!', 'Success', toast_options)
+  });
 
-  $("#add_data").click(function() {
-      var grid = document.getElementById("Table1");
-      var addedCheckboxes = $(".whole-div-class .row");
+  
 
-      var checkBoxes = $(`input[name=checkboxtype]`);
-      var str = '';
-
-
-      addedCheckboxes.map((i, addedCheckbox) => {
+ $('.checkbox_data').click(function(event){
+  var grid = document.getElementById("Table1");
+  var addedCheckboxes = $(".whole-div-class .row");
+  var checkBoxes = $(`input[name=checkboxtype]`);
+  var str = '';
+  var clickedCheckbox = $(event.target);
+  addedCheckboxes.map((i, addedCheckbox) => {
           checkBoxes = checkBoxes.filter((j, checkbox) => {
               return $(addedCheckbox).data('for') != $(checkbox).prop("name");
           });
-      });
-
+  });
+  if (clickedCheckbox.prop('checked')) {
       for (var i = 0; i < checkBoxes.length; i++) {
-        if (
-          checkBoxes[i].checked &&
-          checkBoxes[i].name !== "allcb"
-        ) {
-          var row = checkBoxes[i].parentNode.parentNode;
-          cart_count++;
+        if (checkBoxes[i].checked) {
+              var row = checkBoxes[i].parentNode.parentNode;
+              cart_count++;
+              var stck_id = checkBoxes[i].id.slice(2);
+
+              var array_id = {
+                id: stck_id,
+                item: row.cells[1].innerHTML,
+                brand: row.cells[2].innerHTML,
+                quantity: row.cells[3].innerHTML,
+                price: row.cells[4].innerHTML
+              }
+              selected_items.push(array_id);
+            }
+
+        }
+    }
+    else{
+      var uncheckedId = clickedCheckbox.attr('id').slice(2);
+        selected_items = selected_items.filter(function(item) {
+          return item.id !== uncheckedId;
+      });
+  }
+
+  unique_items = selected_items.filter(function(item, index, self) {
+      return index === self.findIndex(function(i) {
+        return i.id === item.id;
+      });
+  });
+});
 
 
-          console.log(checkBoxes[i].id);
-          console.log("---------");
-          // console.log(checkBoxes);
+
+$('#emergency-switch').click(function() {
+  var isChecked = $(this).prop('checked');
+  if (isChecked) {
+    is_er = 1;
+    pymt_tpe = "Partial"
+    $(".emergency-details-div").show();
+    toastr.warning('Emergency applied!', 'Success', toast_options);
+  } else {
+    is_er = 0;
+    pymt_tpe = "Fully paid"
+    $(".emergency-details-div").hide();
+    toastr.success('Emergency has removed!', 'Success', toast_options);
+  }
+});
 
 
-          var stck_id = checkBoxes[i].id.slice(2);
-
-          var array_id = {
-            id: stck_id
-          }
-          selected_items.push(array_id);
-         
+  $("#add_data").click(function() {
+      var str = '';
+      for (var i = 0; i < unique_items.length; i++) {
+        var row = unique_items[i];
+        var existingItem = $('.list-group-item[data-for="' + row.id + '"]');
+        if (existingItem.length > 0) {
+          continue; // Skip adding the item if it already exists
+        }
           str +=
-            '<li class="list-group-item p-4 li" data-for="' + checkBoxes[i].id + '">'+
+            '<li class="list-group-item p-4 li" data-for="' + row.id + '">'+
               '<div class="d-flex gap-3">'+
                 '<div class="flex-grow-1 append-item">'+
-                  '<div class="row" class="row" data-for="' + checkBoxes[i].id + '">'+
+                  '<div class="row" class="row" data-for="' + row.id + '">'+
                     '<div class="col-md-6">'+
                       '<p class="me-3">'+
                         '<a href="javascript:void(0)" class="text-body">'+
-                          row.cells[1].innerHTML +'</a>'+
+                          row.item +'</a>'+
                       '</p>'+
                       '<div class="text-muted mb-2 d-flex flex-wrap">'+
                         '<span class="me-1">Brand Name:</span>'+
-                        '<a href="javascript:void(0)" class="me-3">'+ row.cells[2].innerHTML +'</a>'+
+                        '<a href="javascript:void(0)" class="me-3">'+ row.brand +'</a>'+
                         // '<span class="badge bg-label-success">In Stocks</span>'+
-                        '<span class="badge bg-label-primary cordoba main-quantity" id="stocks_quantity" name="stocks_quantity">'+row.cells[3].innerHTML+' Available</span>'+
+                        '<span class="badge bg-label-primary cordoba main-quantity" id="stocks_quantity" name="stocks_quantity">'+row.quantity+' Available</span>'+
                       '</div>' +
                     '</div>'+
 
                     '<div class="col-md-2">'+
-                      '<span class="text-primary sub-total-row price-value" name="price-value">'+ row.cells[4].innerHTML +'</span><br><br>'+
+                      '<span class="text-primary sub-total-row price-value" name="price-value">'+ row.price+'</span><br><br>'+
                     '</div>'+
                     '<div class="col-md-2">'+
                     '<input type="number" class="form-control form-control-sm w-px-75 quantity-input" value="1" min="1" />' +
@@ -977,28 +1179,24 @@ $(document).ready(function(){
                       '<div class="text-md-end">'+
                         '<button type="button" class="btn-close btn-pinned remove_data" aria-label="Close"></button>'+
                         '<div class="my-2 my-md-4 mb-md-5">'+
-                          '<span class="text-success sub-total-row total-value">'+ row.cells[4].innerHTML +'</span>'+
+                          '<span class="text-success sub-total-row total-value">'+row.price +'</span>'+
                         '</div>'+
-                        // '<input type="number" class="form-control form-control-sm w-px-75 old-quantity" id="old-quantity">'+row.cells[3].innerHTML+'</input>' +
-                        // '<span class="badge bg-label-primary cordoba main-quantity" id="stocks_quantity" name="stocks_quantity">'+row.cells[3].innerHTML+' Available</span>'+
-                        // '<button type="button" class="btn btn-sm btn-label-primary">'+ row.cells[3].innerHTML +' available</button>'+
                       '</div>'+
                     '</div>'+
                   '</div>'+
                 '</div>'+
               '</div>'+
             '</li>';
-            var sb_total = parseFloat(row.cells[4].innerHTML.slice(1));
+            var sb_total = parseFloat(row.price.slice(1));
             sub_total = parseFloat(sub_total + sb_total);
           // checkBoxes[i].hasCovered = true;
-        }
+        
       }
+        cart_count = unique_items.length;
         $('.div-remove').show();
         $(".whole-div-class").append(str);
         $('#exLargeModal').modal('hide');
-        $('#count_items').text(cart_count + " item/s");
-
-
+        $('#count_items').text(unique_items.length + " item/s");
         // original_price = (discount_type == "Special")?original_price =parseFloat(original_price) -parseFloat(percentage_value) : original_price =parseFloat(original_price) -parseFloat(discount_price);
         $('.sub-total').text("₱ " + sub_total);
 
@@ -1008,31 +1206,17 @@ $(document).ready(function(){
             $('.total-place-order').text("₱ "+total);
 
             var discount_amount = $(".discount-value").text().slice(2);
-
-
-
             actual_prc_discount = parseFloat(discount_amount/sub_total*100);
-
             convert_discount_value = actual_prc_discount.toFixed(2);
-
-
-            
-            console.log(actual_prc_discount);
-            console.log(sub_total);
-
             $(".spn-discount").text(convert_discount_value +" %");
-
         }else{
           
           var percentage_value = $(".spn-discount").text().slice(0,-1);
           var patient_discount  = parseFloat(sub_total * percentage_value/100);
-
           $('.discount-value').text("-₱ "+patient_discount);
           var total = parseFloat(sub_total - patient_discount);
           $('.total-place-order').text("₱ "+total);
         }
-
-
         toastr.success('Item add successfully!', 'Success', toast_options);
     });
 

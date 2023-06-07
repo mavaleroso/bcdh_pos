@@ -47,6 +47,17 @@ def patientdetails(request):
     )
     return JsonResponse({'data': qs_list})
 
+@csrf_exempt
+def patientalldetails(request):
+    qs_list = list(
+         (Clients.objects
+             .filter()
+             .select_related('client_type')
+             .values('id','first_name','middle_name','last_name', 'client_type__name')
+         )
+    )
+    return JsonResponse({'data': qs_list})
+
 
 @csrf_exempt
 def discountdetails(request):
@@ -61,7 +72,8 @@ def discountdetails(request):
 
 def generate_code():
     inventory_code = SystemConfiguration.objects.values_list(
-        'inventory_code', flat=True).first()
+        'transaction_code', flat=True).first()
+    
     last_code = inventory_code.split('-')
     sampleDate = date.today()
     year = sampleDate.strftime("%y")
@@ -84,21 +96,31 @@ def salesitem(request):
         usr_id = request.session.get('user_id', 0)
         amt_paid = request.POST.get('amt_paid')
         sales_remarks = request.POST.get('remarks')
+        emergency_amt = request.POST.get('emergency_amt', 0)
         stock_list = json.loads(request.POST.get('out_stocks'))
         code = generate_code()
+        is_emergency = request.POST.get('is_emergency')
+        pmt_type = request.POST.get('payment_type')
+
+        print("emergency_amt")
+        print(emergency_amt)
         
         if disc_id =="0":
             disc_id = None
         
-
-        addsales = Sales(transaction_code = code,is_er=0,remarks=sales_remarks,client_id = clie_id,discount_id = disc_id, user_id = usr_id)
+        addsales = Sales(transaction_code = code,is_er=is_emergency,remarks=sales_remarks,client_id = clie_id,discount_id = disc_id, user_id = usr_id, payment_status = pmt_type, exact_amount_paid = emergency_amt)
         addsales.save()
+
+        if Sales.id:
+            system_config = SystemConfiguration.objects.first()
+            system_config.transaction_code = code
+            system_config.save()
+
         addpayment = Payment(amount_paid = amt_paid,sales_id = Sales.objects.last().id)
         addpayment.save()
         
         for stock_list_item in stock_list:
-            price = float(stock_list_item['price']) * float(stock_list_item['discount'])/100
-
+            price = float(stock_list_item['price'])*float(stock_list_item['quantity'])*float(stock_list_item['discount'])/100
             obj, was_created_bool = OutItems.objects.get_or_create(
             stock_id=stock_list_item['id'],
             quantity=stock_list_item['quantity'],

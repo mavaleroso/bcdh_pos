@@ -84,6 +84,8 @@ for i in range(len(clients_name)):
     db_cl = Clients(first_name=clients_name[i],middle_name = middle_name[i],last_name =last_name[i],birthdate =datetime.date.today(),sex="Male",address=fake.unique.address(),occupation=fake.address(),client_type_id =client_type_id[i] )
     db_cl.save()
 
-system_configuration_db = SystemConfiguration(name='Bayugan City Doctors Hospital', inventory_code='23-04-00000', year='2023')
+system_configuration_db = SystemConfiguration(name='Bayugan City Doctors Hospital', inventory_code='23-05-00000', transaction_code = '23-05-00000', year='2023')
 system_configuration_db.save()
+
+
 
