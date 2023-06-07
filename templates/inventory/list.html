@@ -279,13 +279,63 @@
                             <input type="hidden" name="LocationStockId" id="location-stock-id" />
                             <label class="col-md-4 col-form-label">Available Stocks</label>
                             <div class="col-md-8">
-                                <input class="form-control" id="location-available-stocks" type="number" readonly="true" />
+                                <div class="input-group input-group-merge">
+                                    <input
+                                        id="location-available-stocks"
+                                        type="text"
+                                        class="form-control"
+                                        aria-describedby="basic-addon-pcs"
+                                        readonly="true"
+                                    />
+                                    <span class="input-group-text" id="basic-addon-pcs">PCS</span>
+                                </div>
                             </div>
                         </div>
                         <div class="divider divider-dashed my-4">
                             <div class="divider-text">Locations</div>
                         </div>
-                        <div class="alert alert-info d-flex align-items-center" role="alert">
+                        <div id="location-data-area"></div>
+                        <div class="row mt-4">
+                            <div class="col-lg-6">
+                                <div class="mb-3">
+                                    <label class="form-label" for="location-from">From</label>
+                                    <select id="location-from" name="location_from" class="select2-location form-select">
+                                        <option></option>
+                                        {% for row in location %}
+                                        <option value="{{ row.name }}">{{ row.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="mb-3">
+                                    <label class="form-label" for="location-to">To</label>
+                                    <select id="location-to" name="location_to" class="select2-location form-select">
+                                        <option></option>
+                                        {% for row in location %}
+                                        <option value="{{ row.name }}">{{ row.name }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-lg-12">
+                                <div class="my-3 row">
+                                    <label class="col-md-4 col-form-label">Quantity:</label>
+                                    <div class="col-md-8">
+                                        <div class="input-group input-group-merge">
+                                            <input
+                                                id="location-transfer-stocks"
+                                                type="text"
+                                                class="form-control"
+                                                aria-describedby="basic-addon-pcs"
+                                            />
+                                            <span class="input-group-text" id="basic-addon-pcs">PCS</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- <div class="alert alert-info d-flex align-items-center" role="alert">
                             <span class="alert-icon text-info me-2">
                                 <i class="ti ti-info-circle ti-xs"></i>
                             </span>
@@ -300,7 +350,7 @@
                                 <div id="location-{{ row.name }}-stocks-invalid" class="invalid-feedback"></div>
                             </div>
                         </div>
-                        {% endfor %}
+                        {% endfor %} -->
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Close</button>
@@ -349,6 +399,7 @@
         const advance_filter_card = $('#advance-filter-card')
         const datepicker_field = document.querySelectorAll('.dob-picker')
         const select2_filter = $('.select2-filter')
+        const select2_location = $('.select2-location')
         const advance_filter_form = $('#advance-filter-form')
         const search_advance_filter = $('#search-advance-filter')
         const reset_advance_filter = $('#reset-advance-filter')
@@ -393,6 +444,31 @@
                 allowClear: false,
                 placeholder: 'Select Filter',
             })
+        }
+
+        if (select2_location.length) {
+            select2_location
+                .select2({
+                    allowClear: false,
+                    dropdownParent: modal_stock_location,
+                    placeholder: 'Select Location',
+                })
+                .on('change.select2', function () {
+                    let id = $(this).attr('id')
+                    let val = $(this).val()
+                    $(`.select2-location option`).each(function (e) {
+                        if ($(`#location-from`).val() != $(this).val() && $(`#location-to`).val() != $(this).val()) {
+                            $(this)
+                                .closest(`option[value='${$(this).val()}']`)
+                                .removeAttr('disabled')
+                        }
+                    })
+                    if (id == 'location-from') {
+                        $(`#location-to option[value='${val}']`).attr('disabled', 'disabled')
+                    } else {
+                        $(`#location-from option[value='${val}']`).attr('disabled', 'disabled')
+                    }
+                })
         }
 
         advance_filter_card.hide()
@@ -577,7 +653,7 @@
                 let update_location = $('.update-location')
                 let update_damage = $('.update-damage')
                 let location_data = $('.location-data')
-                let total_stocks_info = $('#total-stocks-info')
+                // let total_stocks_info = $('#total-stocks-info')
                 const update_location_frm = $('#update-location-frm')
                 const update_damage_frm = $('#update-damage-frm')
                 const update_location_save_btn = $('#update-location-save-btn')
@@ -588,7 +664,12 @@
                 const location_invalid_feedback = $('#update-location-frm .invalid-feedback')
                 const location_form_control = $('.location-entry-field')
 
+                const location_from = $('#location-from')
+                const location_to = $('#location-to')
+
                 update_location.on('click', function () {
+                    const location_data_area = $('#location-data-area')
+                    const location_transfer_stocks = $('#location-transfer-stocks')
                     let available_stock = $(this).data('available-stock')
                     let location = $(this).data('location')
                     let quantity = $(this).data('quantity')
@@ -600,56 +681,58 @@
                     location_available_stocks.val(available_stock)
 
                     location_parse_data.forEach((e) => {
-                        let locationInput = $('#location-' + e.name)
-                        locationInput.val(e.quantity)
+                        //     let locationInput = $('#location-' + e.name)
+                        //     locationInput.val(e.quantity)
+                        location_data_area.append(`<button type="button" class="btn btn-sm btn-label-dark waves-effect me-2 mt-1">
+                                                        ${e.name}
+                                                        <span class="badge bg-white text-dark badge-center ms-1">${e.quantity}</span>
+                                                    </button> `)
                     })
 
                     modal_stock_location.modal('show')
 
-                    location_data.each(function () {
-                        let val = $(this).val() == '' ? 0 : parseInt($(this).val())
-                        total_stock_location += val
-                        total_stocks_info.text(total_stock_location)
-                    })
+                    // location_data.each(function () {
+                    //     let val = $(this).val() == '' ? 0 : parseInt($(this).val())
+                    //     total_stock_location += val
+                    //     total_stocks_info.text(total_stock_location)
+                    // })
 
-                    location_data.keyup(function () {
-                        total_stock_location = 0
+                    // location_data.keyup(function () {
+                    //     total_stock_location = 0
 
-                        location_data.each(function () {
-                            let val = $(this).val() == '' ? 0 : parseInt($(this).val())
-                            total_stock_location += val
-                            total_stocks_info.text(total_stock_location)
-                        })
-                    })
+                    //     location_data.each(function () {
+                    //         let val = $(this).val() == '' ? 0 : parseInt($(this).val())
+                    //         total_stock_location += val
+                    //         total_stocks_info.text(total_stock_location)
+                    //     })
+                    // })
 
                     update_location_save_btn.on('click', function () {
-                        total_stock_location = 0
+                        // total_stock_location = 0
 
-                        location_data.each(function () {
-                            let val = $(this).val() == '' ? 0 : parseInt($(this).val())
-                            total_stock_location += val
-                        })
+                        // location_data.each(function () {
+                        //     let val = $(this).val() == '' ? 0 : parseInt($(this).val())
+                        //     total_stock_location += val
+                        // })
 
-                        console.log(total_stock_location + ' == ' + quantity)
+                        // location_data.removeClass('invalid')
+                        // location_invalid_feedback.hide()
 
-                        location_data.removeClass('invalid')
-                        location_invalid_feedback.hide()
+                        // if (total_stock_location != quantity) {
+                        //     location_data.each(function () {
+                        //         let id = $(this).attr('id')
+                        //         let val = $(this).val()
+                        //         let location_invalid_feedback = $(`#${id}-stocks-invalid`)
 
-                        if (total_stock_location != quantity) {
-                            location_data.each(function () {
-                                let id = $(this).attr('id')
-                                let val = $(this).val()
-                                let location_invalid_feedback = $(`#${id}-stocks-invalid`)
+                        //         if (val) {
+                        //             $(this).addClass('invalid')
+                        //             location_invalid_feedback.show()
+                        //             location_invalid_feedback.text(`The total stocks must be ${quantity} pcs`)
+                        //         }
+                        //     })
 
-                                if (val) {
-                                    $(this).addClass('invalid')
-                                    location_invalid_feedback.show()
-                                    location_invalid_feedback.text(`The total stocks must be ${quantity} pcs`)
-                                }
-                            })
-
-                            return false
-                        }
+                        //     return false
+                        // }
                         Swal.fire({
                             title: 'Are you sure?',
                             text: "You won't be able to revert this!",

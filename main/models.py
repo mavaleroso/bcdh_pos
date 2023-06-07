@@ -198,7 +198,8 @@ class ItemType(models.Model):
 
 class Items(models.Model):
     id = models.BigAutoField(primary_key=True)
-    barcode = models.CharField(max_length=128, blank=True, null=True, unique=True)
+    barcode = models.CharField(
+        max_length=128, blank=True, null=True, unique=True)
     type = models.ForeignKey(ItemType, models.DO_NOTHING)
     generic = models.ForeignKey(Generic, models.DO_NOTHING)
     sub_generic = models.ForeignKey(SubGeneric, models.DO_NOTHING)
@@ -220,9 +221,12 @@ class Stocks(models.Model):
     item = models.ForeignKey(Items, models.DO_NOTHING)
     company = models.ForeignKey(Company, models.DO_NOTHING)
     pcs_quantity = models.IntegerField(max_length=128, blank=True, null=True)
-    unit_price = models.DecimalField(max_digits=30, decimal_places=10, blank=True, null=True)
-    retail_price = models.DecimalField(max_digits=30, decimal_places=10, blank=True, null=True)
-    is_damaged = models.IntegerField(max_length=50, default=0, blank=False, null=False)
+    unit_price = models.DecimalField(
+        max_digits=30, decimal_places=10, blank=True, null=True)
+    retail_price = models.DecimalField(
+        max_digits=30, decimal_places=10, blank=True, null=True)
+    is_damaged = models.IntegerField(
+        max_length=50, default=0, blank=False, null=False)
     user = models.ForeignKey(AuthUser, models.DO_NOTHING)
     expiration_date = models.DateField(blank=True, null=True)
     delivered_date = models.DateField(blank=True, null=True)
@@ -285,7 +289,7 @@ class Location(models.Model):
         db_table = 'location'
 
 
-class ItemLocation(models.Model):
+class StockLocation(models.Model):
     stock = models.ForeignKey(Stocks, models.DO_NOTHING)
     location = models.ForeignKey(Location, models.DO_NOTHING)
     quantity = models.IntegerField(max_length=128, blank=True, null=True)
@@ -294,7 +298,7 @@ class ItemLocation(models.Model):
 
     class Meta:
         managed = True
-        db_table = 'item_location'
+        db_table = 'stock_location'
 
 
 class Discounts(models.Model):
@@ -314,7 +318,8 @@ class Sales(models.Model):
     id = models.BigAutoField(primary_key=True)
     client = models.ForeignKey(Clients, models.DO_NOTHING)
     transaction_code = models.CharField(max_length=128, blank=True, null=True)
-    discount = models.ForeignKey(Discounts, models.DO_NOTHING, blank=True, null=True)
+    discount = models.ForeignKey(
+        Discounts, models.DO_NOTHING, blank=True, null=True)
     is_er = models.BooleanField(null=True, default=None)
     user = models.ForeignKey(AuthUser, models.DO_NOTHING)
     status = models.CharField(max_length=128, blank=True, null=True)

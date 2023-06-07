@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from django.http import JsonResponse
-from main.models import (Stocks, Items, ItemLocation, SystemConfiguration,
+from main.models import (Stocks, Items, StockLocation, SystemConfiguration,
                          ItemType, Company, Generic, SubGeneric, Brand, AuthUser, OutItems, Location)
 from datetime import date, datetime
 import math
@@ -132,7 +132,7 @@ def inventory_load(request):
         filters['company_id__in'] = _company_filter
 
     if len(_location_filter) > 0:
-        stock_id = ItemLocation.objects.filter(
+        stock_id = StockLocation.objects.filter(
             location_id__in=_location_filter)
         filters['id__in'] = stock_id
 
@@ -214,12 +214,12 @@ def inventory_load(request):
     for stock in stock_data:
         userData = AuthUser.objects.filter(id=stock.user.id)
         outItemsData = OutItems.objects.filter(stock_id=stock.id)
-        itemLocation = ItemLocation.objects.select_related().filter(stock_id=stock.id)
+        StockLocations = StockLocation.objects.select_related().filter(stock_id=stock.id)
         full_name = userData[0].first_name + ' ' + userData[0].last_name
 
         location_data = []
 
-        for il in itemLocation:
+        for il in StockLocations:
             il_obj = {
                 'name': il.location.name,
                 'quantity': il.quantity
@@ -412,10 +412,10 @@ def update_stock_location(request):
         quantity = ldq if ldq else 0
 
         if int(quantity) > 0:
-            ItemLocation.objects.update_or_create(
+            StockLocation.objects.update_or_create(
                 stock_id=location_stock_id, location_id=ldi, defaults={'quantity': quantity})
         else:
-            ItemLocation.objects.filter(
+            StockLocation.objects.filter(
                 stock_id=location_stock_id, location_id=ldi).delete()
 
     return JsonResponse({'data': 'success'})
