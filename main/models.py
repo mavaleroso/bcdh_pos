@@ -285,7 +285,7 @@ class Location(models.Model):
         db_table = 'location'
 
 
-class ItemLocation(models.Model):
+class StockLocation(models.Model):
     stock = models.ForeignKey(Stocks, models.DO_NOTHING)
     location = models.ForeignKey(Location, models.DO_NOTHING)
     quantity = models.IntegerField(max_length=128, blank=True, null=True)
@@ -294,7 +294,7 @@ class ItemLocation(models.Model):
 
     class Meta:
         managed = True
-        db_table = 'item_location'
+        db_table = 'stock_location'
 
 
 class Discounts(models.Model):

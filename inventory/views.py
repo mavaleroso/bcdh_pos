@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
-from main.models import (Stocks, Items, ItemLocation, SystemConfiguration,
+from main.models import (Stocks, Items, StockLocation, SystemConfiguration,
                          ItemType, Company, Generic, SubGeneric, Brand, AuthUser, OutItems, Location)
 from datetime import date, datetime
 import math
@@ -133,7 +133,7 @@ def inventory_load(request):
         filters['company_id__in'] = _company_filter
 
     if len(_location_filter) > 0:
-        stock_id = ItemLocation.objects.filter(
+        stock_id = StockLocation.objects.filter(
             location_id__in=_location_filter)
         filters['id__in'] = stock_id
 
@@ -215,12 +215,12 @@ def inventory_load(request):
     for stock in stock_data:
         userData = AuthUser.objects.filter(id=stock.user.id)
         outItemsData = OutItems.objects.filter(stock_id=stock.id)
-        itemLocation = ItemLocation.objects.select_related().filter(stock_id=stock.id)
+        stockLocation = StockLocation.objects.select_related().filter(stock_id=stock.id)
         full_name = userData[0].first_name + ' ' + userData[0].last_name
 
         location_data = []
 
-        for il in itemLocation:
+        for il in stockLocation:
             il_obj = {
                 'name': il.location.name,
                 'quantity': il.quantity
@@ -420,7 +420,7 @@ def export_excel(request):
 
     for stock in stock_data:
         outItemsData = OutItems.objects.filter(stock_id=stock.id)
-        itemLocation = ItemLocation.objects.select_related().filter(stock_id=stock.id)
+        stockLocation = StockLocation.objects.select_related().filter(stock_id=stock.id)
 
         expended_stock = 0
         damage_stock = stock.is_damaged if stock.is_damaged else 0
@@ -449,7 +449,7 @@ def export_excel(request):
         ]
 
 
-        for il in itemLocation:
+        for il in stockLocation:
             columns.append(il.location.name)
             stock_obj.append(il.quantity)
 
