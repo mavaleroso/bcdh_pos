@@ -79,18 +79,18 @@
                                 <table class="table mt-4">
                                     <thead>
                                         <tr>
+                                            <th></th>
                                             <th>Barcode</th>
                                             <th>Item Type</th>
                                             <th>Brand</th>
                                             <th>Details</th>
                                             <th>Quantity</th>
                                             <th>Unit Price</th>
-                                            <th>Retail Price</th>
                                             <th>Expiration Date</th>
                                         </tr>
                                     </thead>
                                     <tbody id="tbl-item">
-                                        <tr id="notif-item-first">
+                                        <tr class="notif-alert-box">
                                             <td colspan="8">
                                                 <div class="alert alert-info d-flex align-items-center" role="alert">
                                                     <span class="alert-icon text-info me-2">
@@ -106,53 +106,10 @@
                             <div class="col-12">
                                 <input type="hidden" id="item-id" name="ItemID" />
                             </div>
-                            <div class="col-12 row g-3">
-                                <!-- <div class="col-md-4">
-                                    <label class="form-label" for="item-quantity-pcs">Quantity</label>
-                                    <div class="input-group input-group-merge">
-                                        <input type="number" id="item-quantity-pcs" name="ItemQuantityPcs" class="form-control" />
-                                        <span class="input-group-text">PC/s</span>
-                                    </div>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label" for="unit-price">Unit Price</label>
-                                    <input dir="rtl" type="number" name="UnitPrice" id="unit-price" class="form-control" />
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label" for="retail-price-pcs">Retail Price Per PC/s</label>
-                                    <input type="number" dir="rtl" id="retail-price-pcs" name="RetailPricePcs" class="form-control" />
-                                </div> -->
-
-                                <!-- <div class="col-md-4">
-                                    <label class="form-label" for="expiration-date">Expiration Date</label>
-                                    <input type="date" id="expiration-date" name="ExpirationDate" class="form-control" />
-                                </div> -->
-                            </div>
                         </div>
                     </div>
                 </div>
             </form>
-        </div>
-        <div class="col-12">
-            <div class="card mt-4 p-3">
-                <h5 class="card-header">Received Item/s Today</h5>
-                <div class="table-responsive text-nowrap">
-                    <table id="tbl-received-items-today" class="table table-striped">
-                        <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Type</th>
-                                <th>Details</th>
-                                <th>Quantity</th>
-                                <th>Delivered Date</th>
-                                <th>Expiration Date</th>
-                                <th>Created By</th>
-                            </tr>
-                        </thead>
-                        <tbody class="table-border-bottom-0"></tbody>
-                    </table>
-                </div>
-            </div>
         </div>
     </div>
     <!-- /Sticky Actions -->
@@ -244,23 +201,23 @@
 <!-- / Content -->
 {% endblock %} {% block footer_scripts %}
 <script>
+    let item_count = 0
+
+    const toast_options = (toastr.options = {
+        maxOpened: 1,
+        autoDismiss: true,
+        closeButton: true,
+        newestOnTop: true,
+        progressBar: true,
+        positionClass: 'toast-top-right',
+        rtl: isRtl,
+    })
+
     $(document).ready(function () {
-        let tbl_received_items_today = $('#tbl-received-items-today')
         let item_quantity_pcs = $('#item-quantity-pcs')
         let delivered_date = $('#delivered-date')
-        let item_data = []
 
         delivered_date.val(dateToday())
-
-        const toast_options = (toastr.options = {
-            maxOpened: 1,
-            autoDismiss: true,
-            closeButton: true,
-            newestOnTop: true,
-            progressBar: true,
-            positionClass: 'toast-top-right',
-            rtl: isRtl,
-        })
 
         const InFormValidation = document.getElementById('in-frm'),
             ItemFormValidation = document.getElementById('item-form'),
@@ -284,19 +241,35 @@
             offCanvasEl.show()
         })
 
+        const quantityValidation = {
+            validators: {
+                notEmpty: {
+                    message: 'Required',
+                },
+            },
+        }
+        const unitPriceValidation = {
+            validators: {
+                notEmpty: {
+                    message: 'Required',
+                },
+            },
+        }
+
+        const expiryDateValidation = {
+            validators: {
+                notEmpty: {
+                    message: 'Required',
+                },
+            },
+        }
+
         const fv = FormValidation.formValidation(InFormValidation, {
             fields: {
                 DeliveredDate: {
                     validators: {
                         notEmpty: {
                             message: 'Please delivery date',
-                        },
-                    },
-                },
-                ExpirationDate: {
-                    validators: {
-                        notEmpty: {
-                            message: 'Please expiration date',
                         },
                     },
                 },
@@ -307,24 +280,10 @@
                         },
                     },
                 },
-                UnitPrice: {
-                    validators: {
-                        notEmpty: {
-                            message: 'Please enter unit price',
-                        },
-                    },
-                },
                 ItemQuantityPcs: {
                     validators: {
                         notEmpty: {
                             message: 'Please enter item quantity in pcs',
-                        },
-                    },
-                },
-                RetailPricePcs: {
-                    validators: {
-                        notEmpty: {
-                            message: 'Please enter retail price per pcs',
                         },
                     },
                 },
@@ -337,7 +296,7 @@
             },
             init: (instance) => {
                 instance.on('plugins.message.placed', function (e) {
-                    if (e.element.parentElement.classList.contains('input-group')) {
+                    if (e.element.parentElement.classList.contains('form-group')) {
                         e.element.parentElement.insertAdjacentElement('afterend', e.messageElement)
                     }
                     if (e.element.parentElement.parentElement.classList.contains('custom-option')) {
@@ -565,25 +524,41 @@
             }).done(function (data) {
                 if (data.status == 'success') {
                     let field = data.data
-                    let notif = $('#notif-item-first')
+                    let notif = $('.notif-alert-box')
                     notif.remove()
                     itemID.val(field.id)
-                    toastr.success('Item fetch successfully!', 'Search Barcode', toast_options)
-                    item_data.push(field.id)
-                    tblItem.append(`<tr>
+                    toastr.success('Added successfully!', 'Item', toast_options)
+                    item_count++
+                    tblItem.append(`<tr id="item-row-${item_count}">
+                                <td>
+                                    <button
+                                        type="button"
+                                        class="btn btn-icon btn-label-danger waves-effect waves-light"
+                                        onclick="cancelItem(${item_count})"
+                                    >
+                                        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-x" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                        <path d="M18 6l-12 12"></path>
+                                        <path d="M6 6l12 12"></path>
+                                        </svg>
+                                    </button>
+                                </td>
                                 <td><span class="badge bg-primary">${field.barcode}</span></td>
                                 <td>${field.item_type}</td>
                                 <td>${field.brand}</td>
                                 <td>${field.details}</td>
-                                <td><input class="form-control" type="number" /></td>
-                                <td><input class="form-control" type="number" /></td>
-                                <td><input class="form-control" type="number" /></td>
-                                <td><input class="form-control" type="date" /></td>
+                                <td><div class="form-group"><input name="quantity[${item_count}]" class="form-control" type="number" /></div></td>
+                                <td><div class="form-group"><input name="unit_price[${item_count}]" class="form-control" type="number" /></div></td>
+                                <td><div class="form-group"><input name="expiration_date[${item_count}]" class="form-control" type="date" /></div></td>
                             </tr>`)
+
+                    fv.addField(`quantity[${item_count}]`, quantityValidation)
+                        .addField(`unit_price[${item_count}]`, unitPriceValidation)
+                        .addField(`expiration_date[${item_count}]`, expiryDateValidation)
                 } else if (data.status == 'error') {
                     let message = data.message
                     toastr.warning('No barcode found', 'Search Barcode', toast_options)
-                    tblItem.html(`<tr>
+                    tblItem.html(`<tr class="notif-alert-box">
                                 <td colspan="8"">
                                     <div class="alert alert-warning d-flex align-items-center" role="alert">
                                         <span class="alert-icon text-warning me-2">
@@ -597,35 +572,24 @@
                 }
             })
         })
-
-        let dataTable = tbl_received_items_today.DataTable({
-            processing: true,
-            serverSide: true,
-            ajax: "{% url 'received-item-load' %}",
-            columns: [
-                { data: 'id' },
-                { data: 'item_type' },
-                { data: 'details' },
-                { data: 'quantity' },
-                { data: 'delivered_date', className: 'text-end' },
-                { data: 'expiration_date', className: 'text-end' },
-                { data: 'created_by' },
-            ],
-            columnDefs: [
-                {
-                    targets: 3,
-                    render: function (data) {
-                        return `${data} pcs`
-                    },
-                },
-                {
-                    targets: [4, 5],
-                    render: function (data) {
-                        return moment(data).format('LLL')
-                    },
-                },
-            ],
-        })
     })
+
+    function cancelItem(idx) {
+        $(`#item-row-${idx}`).remove()
+        toastr.success('Has been cancelled', 'Item', toast_options)
+        item_count--
+        if (item_count === 0) {
+            $('#tbl-item').html(`<tr class="notif-alert-box">
+                                            <td colspan="8">
+                                                <div class="alert alert-info d-flex align-items-center" role="alert">
+                                                    <span class="alert-icon text-info me-2">
+                                                        <i class="ti ti-info-circle ti-xs"></i>
+                                                    </span>
+                                                    Select item first
+                                                </div>
+                                            </td>
+                                        </tr>`)
+        }
+    }
 </script>
 {% endblock footer_scripts %}
