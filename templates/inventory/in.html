@@ -23,6 +23,24 @@
                     </div>
                     <div class="card-body">
                         <div class="row">
+                            <div class="col-md-6">
+                                <label class="form-label" for="company">Company</label>
+                                <select id="company" name="Company" class="form-select" data-allow-clear="true">
+                                    <option></option>
+                                    {% for row in company %}
+                                    <option value="{{ row.id }}">{{ row.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label" for="delivered-date">Delivery Date</label>
+                                <input type="date" id="delivered-date" name="DeliveredDate" class="form-control" />
+                            </div>
+                            <div class="col-12">
+                                <div class="divider divider-dashed my-4">
+                                    <div class="divider-text">Incoming Items</div>
+                                </div>
+                            </div>
                             <div class="col-12 row mt-3">
                                 <div class="col-md-4">
                                     <div class="d-flex">
@@ -65,11 +83,15 @@
                                             <th>Item Type</th>
                                             <th>Brand</th>
                                             <th>Details</th>
+                                            <th>Quantity</th>
+                                            <th>Unit Price</th>
+                                            <th>Retail Price</th>
+                                            <th>Expiration Date</th>
                                         </tr>
                                     </thead>
                                     <tbody id="tbl-item">
-                                        <tr>
-                                            <td colspan="4">
+                                        <tr id="notif-item-first">
+                                            <td colspan="8">
                                                 <div class="alert alert-info d-flex align-items-center" role="alert">
                                                     <span class="alert-icon text-info me-2">
                                                         <i class="ti ti-info-circle ti-xs"></i>
@@ -82,15 +104,10 @@
                                 </table>
                             </div>
                             <div class="col-12">
-                                <div class="divider divider-dashed my-4">
-                                    <div class="divider-text">Incoming Details</div>
-                                </div>
-                            </div>
-                            <div class="col-12">
                                 <input type="hidden" id="item-id" name="ItemID" />
                             </div>
                             <div class="col-12 row g-3">
-                                <div class="col-md-4">
+                                <!-- <div class="col-md-4">
                                     <label class="form-label" for="item-quantity-pcs">Quantity</label>
                                     <div class="input-group input-group-merge">
                                         <input type="number" id="item-quantity-pcs" name="ItemQuantityPcs" class="form-control" />
@@ -104,24 +121,12 @@
                                 <div class="col-md-4">
                                     <label class="form-label" for="retail-price-pcs">Retail Price Per PC/s</label>
                                     <input type="number" dir="rtl" id="retail-price-pcs" name="RetailPricePcs" class="form-control" />
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label" for="company">Company</label>
-                                    <select id="company" name="Company" class="form-select" data-allow-clear="true">
-                                        <option></option>
-                                        {% for row in company %}
-                                        <option value="{{ row.id }}">{{ row.name }}</option>
-                                        {% endfor %}
-                                    </select>
-                                </div>
-                                <div class="col-md-4">
-                                    <label class="form-label" for="delivered-date">Delivery Date</label>
-                                    <input type="date" id="delivered-date" name="DeliveredDate" class="form-control" />
-                                </div>
-                                <div class="col-md-4">
+                                </div> -->
+
+                                <!-- <div class="col-md-4">
                                     <label class="form-label" for="expiration-date">Expiration Date</label>
                                     <input type="date" id="expiration-date" name="ExpirationDate" class="form-control" />
-                                </div>
+                                </div> -->
                             </div>
                         </div>
                     </div>
@@ -243,6 +248,7 @@
         let tbl_received_items_today = $('#tbl-received-items-today')
         let item_quantity_pcs = $('#item-quantity-pcs')
         let delivered_date = $('#delivered-date')
+        let item_data = []
 
         delivered_date.val(dateToday())
 
@@ -559,19 +565,26 @@
             }).done(function (data) {
                 if (data.status == 'success') {
                     let field = data.data
+                    let notif = $('#notif-item-first')
+                    notif.remove()
                     itemID.val(field.id)
                     toastr.success('Item fetch successfully!', 'Search Barcode', toast_options)
-                    tblItem.html(`<tr>
+                    item_data.push(field.id)
+                    tblItem.append(`<tr>
                                 <td><span class="badge bg-primary">${field.barcode}</span></td>
                                 <td>${field.item_type}</td>
                                 <td>${field.brand}</td>
                                 <td>${field.details}</td>
+                                <td><input class="form-control" type="number" /></td>
+                                <td><input class="form-control" type="number" /></td>
+                                <td><input class="form-control" type="number" /></td>
+                                <td><input class="form-control" type="date" /></td>
                             </tr>`)
                 } else if (data.status == 'error') {
                     let message = data.message
                     toastr.warning('No barcode found', 'Search Barcode', toast_options)
                     tblItem.html(`<tr>
-                                <td colspan="4"">
+                                <td colspan="8"">
                                     <div class="alert alert-warning d-flex align-items-center" role="alert">
                                         <span class="alert-icon text-warning me-2">
                                         <i class="ti ti-bell ti-xs"></i>
