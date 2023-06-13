@@ -198,7 +198,8 @@ class ItemType(models.Model):
 
 class Items(models.Model):
     id = models.BigAutoField(primary_key=True)
-    barcode = models.CharField(max_length=128, blank=True, null=True, unique=True)
+    barcode = models.CharField(
+        max_length=128, blank=True, null=True, unique=True)
     type = models.ForeignKey(ItemType, models.DO_NOTHING)
     generic = models.ForeignKey(Generic, models.DO_NOTHING)
     sub_generic = models.ForeignKey(SubGeneric, models.DO_NOTHING)
@@ -217,14 +218,8 @@ class Items(models.Model):
 
 class Stocks(models.Model):
     code = models.CharField(max_length=128, blank=True, null=True)
-    item = models.ForeignKey(Items, models.DO_NOTHING)
     company = models.ForeignKey(Company, models.DO_NOTHING)
-    pcs_quantity = models.IntegerField(max_length=128, blank=True, null=True)
-    unit_price = models.DecimalField(max_digits=30, decimal_places=10, blank=True, null=True)
-    retail_price = models.DecimalField(max_digits=30, decimal_places=10, blank=True, null=True)
-    is_damaged = models.IntegerField(max_length=50, default=0, blank=False, null=False)
     user = models.ForeignKey(AuthUser, models.DO_NOTHING)
-    expiration_date = models.DateField(blank=True, null=True)
     delivered_date = models.DateField(blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     updated_at = models.DateTimeField(blank=True, null=True, auto_now=True)
@@ -233,6 +228,21 @@ class Stocks(models.Model):
     class Meta:
         managed = True
         db_table = 'stocks'
+
+
+class StocksItems(models.Model):
+    stock = models.ForeignKey(Stocks, models.DO_NOTHING)
+    item = models.ForeignKey(Items, models.DO_NOTHING)
+    pcs_quantity = models.IntegerField(max_length=128, blank=True, null=True)
+    unit_price = models.DecimalField(
+        max_digits=30, decimal_places=10, blank=True, null=True)
+    is_damaged = models.IntegerField(
+        max_length=50, default=0, blank=False, null=False)
+    expiration_date = models.DateField(blank=True, null=True)
+
+    class Meta:
+        managed = True
+        db_table = 'stock_items'
 
 
 class EditRequests(models.Model):
@@ -314,13 +324,15 @@ class Sales(models.Model):
     id = models.BigAutoField(primary_key=True)
     client = models.ForeignKey(Clients, models.DO_NOTHING)
     transaction_code = models.CharField(max_length=128, blank=True, null=True)
-    discount = models.ForeignKey(Discounts, models.DO_NOTHING, blank=True, null=True)
+    discount = models.ForeignKey(
+        Discounts, models.DO_NOTHING, blank=True, null=True)
     is_er = models.BooleanField(null=True, default=None)
     user = models.ForeignKey(AuthUser, models.DO_NOTHING)
     status = models.CharField(max_length=128, blank=True, null=True)
     remarks = models.CharField(max_length=255, blank=True, null=True)
     payment_status = models.CharField(max_length=255, blank=True, null=True)
-    exact_amount_paid = models.DecimalField(max_digits=30, decimal_places=10, blank=True, null=True)
+    exact_amount_paid = models.DecimalField(
+        max_digits=30, decimal_places=10, blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     updated_at = models.DateTimeField(blank=True, null=True, auto_now=True)
 
@@ -331,7 +343,8 @@ class Sales(models.Model):
 
 class Payment(models.Model):
     sales = models.ForeignKey(Sales, models.DO_NOTHING)
-    amount_paid = models.DecimalField(max_digits=30, decimal_places=10, blank=True, null=True)
+    amount_paid = models.DecimalField(
+        max_digits=30, decimal_places=10, blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
 
     class Meta:

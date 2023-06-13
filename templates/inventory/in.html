@@ -48,7 +48,7 @@
                                             <label class="form-label" for="barcode">Barcode</label>
                                             <div class="input-group input-group-merge">
                                                 <span class="input-group-text"><i class="ti ti-barcode"></i></span>
-                                                <input type="text" id="barcode" name="Barcode" class="form-control" />
+                                                <input type="text" id="barcode" class="form-control" />
                                             </div>
                                         </div>
                                         <button
@@ -65,7 +65,7 @@
                                         <label class="form-label" for="quick-search">Quick Search</label>
                                         <div class="input-group input-group-merge">
                                             <span class="input-group-text"><i class="ti ti-search"></i></span>
-                                            <input type="text" id="quick-search" name="quick_search" class="form-control" />
+                                            <input type="text" id="quick-search" class="form-control" />
                                         </div>
                                     </div>
                                 </div>
@@ -76,6 +76,7 @@
                                 </div>
                             </div>
                             <div class="col-12">
+                                <input type="hidden" name="item_count" id="item-count" />
                                 <table class="table mt-4">
                                     <thead>
                                         <tr>
@@ -103,9 +104,6 @@
                                     </tbody>
                                 </table>
                             </div>
-                            <div class="col-12">
-                                <input type="hidden" id="item-id" name="ItemID" />
-                            </div>
                         </div>
                     </div>
                 </div>
@@ -123,7 +121,6 @@
     </div>
     <div class="offcanvas-body flex-grow-1">
         <form class="add-new-record pt-0 row g-2" id="item-form">
-            <input type="hidden" id="item-id" name="ItemID" />
             <div class="col-sm-12">
                 <label class="form-label" for="item-barcode">Barcode</label>
                 <input type="text" id="item-barcode" class="form-control" name="ItemBarcode" placeholder="Enter Barcode" />
@@ -214,8 +211,9 @@
     })
 
     $(document).ready(function () {
-        let item_quantity_pcs = $('#item-quantity-pcs')
-        let delivered_date = $('#delivered-date')
+        const item_quantity_pcs = $('#item-quantity-pcs')
+        const delivered_date = $('#delivered-date')
+        const item_count_field = $('#item-count')
 
         delivered_date.val(dateToday())
 
@@ -305,6 +303,17 @@
                 })
             },
         }).on('core.form.valid', function () {
+            if (item_count === 0) {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Cannot be saved!',
+                    text: 'Please select item first',
+                    customClass: {
+                        confirmButton: 'btn btn-info',
+                    },
+                })
+                return false
+            }
             Swal.fire({
                 title: 'Are you sure?',
                 text: "You won't be able to revert this!",
@@ -503,7 +512,6 @@
         $('#btn-fetch-barcode').on('click', function () {
             let barcode = $('#barcode').val()
             let tblItem = $('#tbl-item')
-            let itemID = $('#item-id')
 
             if (!barcode) {
                 Swal.fire({
@@ -526,11 +534,12 @@
                     let field = data.data
                     let notif = $('.notif-alert-box')
                     notif.remove()
-                    itemID.val(field.id)
                     toastr.success('Added successfully!', 'Item', toast_options)
                     item_count++
+                    item_count_field.val(item_count)
                     tblItem.append(`<tr id="item-row-${item_count}">
                                 <td>
+                                    <input type="hidden" name="item_id[${item_count}]" value="${field.id}"/>
                                     <button
                                         type="button"
                                         class="btn btn-icon btn-label-danger waves-effect waves-light"
@@ -580,15 +589,15 @@
         item_count--
         if (item_count === 0) {
             $('#tbl-item').html(`<tr class="notif-alert-box">
-                                            <td colspan="8">
-                                                <div class="alert alert-info d-flex align-items-center" role="alert">
-                                                    <span class="alert-icon text-info me-2">
-                                                        <i class="ti ti-info-circle ti-xs"></i>
-                                                    </span>
-                                                    Select item first
-                                                </div>
-                                            </td>
-                                        </tr>`)
+                                    <td colspan="8">
+                                        <div class="alert alert-info d-flex align-items-center" role="alert">
+                                            <span class="alert-icon text-info me-2">
+                                                <i class="ti ti-info-circle ti-xs"></i>
+                                            </span>
+                                            Select item first
+                                        </div>
+                                    </td>
+                                </tr>`)
         }
     }
 </script>

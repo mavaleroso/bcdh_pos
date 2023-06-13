@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
-from main.models import (Stocks, Items, StockLocation, SystemConfiguration,
+from main.models import (Stocks, StocksItems, Items, StockLocation, SystemConfiguration,
                          ItemType, Company, Generic, SubGeneric, Brand, AuthUser, OutItems, Location)
 from datetime import date, datetime
 import math
@@ -294,18 +294,15 @@ def generate_code():
 @csrf_exempt
 def store_items(request):
     if request.method == 'POST':
-        item_id = request.POST.get('ItemID')
         company = request.POST.get('Company')
-        unit_price = request.POST.get('UnitPrice')
-        item_quantity_pcs = request.POST.get('ItemQuantityPcs')
-        retail_price = request.POST.get('RetailPricePcs')
-        expiration_date = request.POST.get('ExpirationDate')
         delivery_date = request.POST.get('DeliveredDate')
+        item_count = request.POST.get('item_count')
+
         user_id = request.session.get('user_id', 0)
         code = generate_code()
 
-        stocks = Stocks(code=code, item_id=item_id, company_id=company, unit_price=unit_price, pcs_quantity=item_quantity_pcs,
-                        retail_price=retail_price, delivered_date=delivery_date, expiration_date=expiration_date, user_id=user_id)
+        stocks = Stocks(code=code, company_id=company,
+                        delivered_date=delivery_date, user_id=user_id)
 
         stocks.save()
 
@@ -313,6 +310,17 @@ def store_items(request):
             system_config = SystemConfiguration.objects.first()
             system_config.inventory_code = code
             system_config.save()
+
+        for i in item_count:
+            item_id = request.POST.get('item_id['+i+']')
+            quantity = request.POST.get('quantity['+i+']')
+            unit_price = request.POST.get('unit_price['+i+']')
+            expiration_date = request.POST.get('expiration_date['+i+']')
+
+            stock_items = StocksItems(stock_id=stocks.id, item_id=item_id, pcs_quantity=quantity,
+                                      unit_price=unit_price, expiration_date=expiration_date)
+
+            stock_items.save()
 
         return JsonResponse({'data': 'success'})
 
