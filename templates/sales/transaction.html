@@ -294,96 +294,102 @@
             aria-label="Close"
           ></button>
         </div>
+      <form id="add-client-frm">  
         <div class="modal-body">
-
+          
           <div class="row">
-             <div class="col mb-4">
-              <label for="nameBackdrop" class="form-label">FirstName</label>
+            
+              <div class="col mb-4">
+                <label for="nameBackdrop" class="form-label">FirstName</label>
+                <input
+                  type="text"
+                  id="ct-first-name"
+                  name="CtFirstName"
+                  class="form-control ct-first-name"
+                  placeholder="Enter name"
+                />
+              </div>
+
+              <div class="col mb-4">
+                <label for="nameBackdrop" class="form-label">Middlename</label>
+                <input
+                  type="text"
+                  id="ct-middle-name"
+                  name="CtMiddleName"
+                  class="form-control ct-middle-name"
+                  placeholder="Enter Middle name"
+                />
+              </div>
+              <div class="col mb-4">
+                <label for="nameBackdrop" class="form-label">Lastname</label>
+                <input
+                  type="text"
+                  id="ct-last-name"
+                  name="CtLastName"
+                  class="form-control ct-last-name"
+                  placeholder="Enter Last name"
+                />
+              </div>
+            </div>
+
+            <div class="row">
+              <div class="col mb-4">
+              <label for="nameBackdrop" class="form-label">Birthdate</label>
               <input
-                type="text"
-                id="ct-first-name"
-                name="ct-first-name"
-                class="form-control ct-first-name"
-                placeholder="Enter name"
+                type="date"
+                id="ct-birth-date"
+                name="CtBirthDate"
+                class="form-control ct-birth-date"
+                placeholder="Enter Birthdate"
               />
             </div>
 
             <div class="col mb-4">
-              <label for="nameBackdrop" class="form-label">Middlename</label>
-              <input
-                type="text"
-                id="ct-middle-name"
-                name="ct-middle-name"
-                class="form-control ct-middle-name"
-                placeholder="Enter Middle name"
-              />
+              <label for="nameBackdrop" class="form-label">Sex</label>
+
+              <select id="ct-sex" class="select2 form-select" name="CtSex" data-allow-clear="true">
+                <option></option>
+                <option value="male">Male</option>	
+                <option value="female">Female</option>	
+              
+              </select>
+              
             </div>
             <div class="col mb-4">
-              <label for="nameBackdrop" class="form-label">Lastname</label>
-              <input
-                type="text"
-                id="ct-last-name"
-                name="ct-last-name"
-                class="form-control ct-last-name"
-                placeholder="Enter Last name"
-              />
+              <label for="nameBackdrop" class="form-label">Client type</label>
+
+              <select id="ct-client-type" name="CtClientType" class="select2 form-select ct-client-type" data-allow-clear="true">
+                  <option></option>
+                  {% for row in client_type %}
+                  <option value="{{ row.id }}">{{ row.name }}</option>
+                  {% endfor %}
+              </select>
             </div>
           </div>
 
           <div class="row">
-            <div class="col mb-4">
-             <label for="nameBackdrop" class="form-label">Birthdate</label>
-             <input
-               type="date"
-               id="ct-birth-date"
-               name="ct-birth-date"
-               class="form-control ct-birth-date"
-               placeholder="Enter Birthdate"
-             />
-           </div>
+            <div class="col mb-6">
+            <label for="nameBackdrop" class="form-label">Occupation (Optional)</label>
+            <textarea class="form-control ct-occupation" id="ct-occupation" name="CtOccupation" placeholder="Enter occupation" rows="3"></textarea>
+          </div>
 
-           <div class="col mb-4">
-             <label for="nameBackdrop" class="form-label">Sex</label>
-
-             <select id="ct-sex" class="select2 form-select" data-allow-clear="true">
-              <option></option>
-              <option value="male">Male</option>	
-              <option value="female">Female</option>	
-             
-            </select>
-            
-           </div>
-           <div class="col mb-4">
-             <label for="nameBackdrop" class="form-label">Client type</label>
-
-             <select id="ct-client-type" class="select2 form-select ct-client-type" data-allow-clear="true">
-                <option></option>
-                {% for row in client_type %}
-                <option value="{{ row.id }}">{{ row.name }}</option>
-                {% endfor %}
-            </select>
-           </div>
-         </div>
-
-         <div class="row">
-          <div class="col mb-6">
-           <label for="nameBackdrop" class="form-label">Occupation (Optional)</label>
-           <textarea class="form-control ct-occupation" id="ct-occupation" placeholder="Enter occupation" rows="3"></textarea>
-         </div>
-
+          
+          <div class="col mb-4"></div>
+          <div class="col mb-4"></div>
         
-        <div class="col mb-4"></div>
-        <div class="col mb-4"></div>
-        </div>
+      </div>
+    
 
-        </div>
+    </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
             Close
           </button>
-          <button type="button" class="btn btn-primary add-client" id="add-client">Add Client</button>
+          <button name="submitButton" class="btn btn-primary add-client" id="add-client">Add Client</button>
         </div>
+      </form>
       </div>
+    
     </div>
   </div>
   <!--end new client modal-->
@@ -477,6 +483,140 @@ $(document).ready(function(){
             rtl: isRtl,
     })
     
+
+    const InFormValidation = document.getElementById('add-client-frm'),
+      CtFirstName = jQuery(InFormValidation.querySelector('[name="CtFirstName"]')),
+      CtMiddleName = jQuery(InFormValidation.querySelector('[name="CtMiddleName"]')),
+      CtLastName = jQuery(InFormValidation.querySelector('[name="CtLastName"]')),
+      CtBirthDate = jQuery(InFormValidation.querySelector('[name="CtBirthDate"]')),
+      CtSex = jQuery(InFormValidation.querySelector('[name="CtSex"]')),
+      CtClientType = jQuery(InFormValidation.querySelector('[name="CtClientType"]'))
+
+    const fv1 = FormValidation.formValidation(InFormValidation, {
+            fields: {
+                CtFirstName: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Please enter Firstname',
+                        },
+                    },
+                },
+                CtMiddleName: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Please enter Middle name',
+                        },
+                    },
+                },
+                CtLastName: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Please enter Lastname',
+                        },
+                    },
+                },
+                CtBirthDate: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Please enter Birthdate',
+                        },
+                    },
+                },
+                CtSex: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Please enter Sex',
+                        },
+                    },
+                },
+                CtClientType: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Please enter Client type',
+                        },
+                    },
+                },
+            },
+            plugins: {
+                trigger: new FormValidation.plugins.Trigger(),
+                bootstrap5: new FormValidation.plugins.Bootstrap5(),
+                submitButton: new FormValidation.plugins.SubmitButton(),
+                autoFocus: new FormValidation.plugins.AutoFocus(),
+            },
+            init: (instance) => {
+                instance.on('plugins.message.placed', function (e) {
+                    if (e.element.parentElement.classList.contains('input-group')) {
+                        e.element.parentElement.insertAdjacentElement('afterend', e.messageElement)
+                    }
+                    if (e.element.parentElement.parentElement.classList.contains('custom-option')) {
+                        e.element.closest('.row').insertAdjacentElement('afterend', e.messageElement)
+                    }
+                })
+            },
+        }).on('core.form.valid', function () {
+          patient_details();
+      let fname = $('#ct-first-name').val();
+      let mname = $('#ct-middle-name').val();
+      let lname = $('#ct-last-name').val();
+      let bdate = $('#ct-birth-date').val();
+      let sex_ = $('#ct-sex').val();
+      let cl_type = $('#ct-client-type').find(":selected").val();
+      let occpt = $('#ct-occupation').val();
+
+      Swal.fire({
+        title: 'Are you sure?',
+        text: "You won't be able to revert this!",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonText: 'Confirm',
+        customClass: {
+          confirmButton: 'btn btn-primary me-3',
+          cancelButton: 'btn btn-label-secondary'
+        },
+        buttonsStyling: false
+    }).then(function (result) {
+    
+      if (result.value) {
+          event.preventDefault();
+          $.ajax({
+              type: "POST",
+              url: "{% url 'add-client' %}",
+              data:{
+                firstname : fname, middlename : mname, lastname: lname, birthdate: bdate, sex : sex_, client_type: cl_type, occupation: occpt
+              }
+          }).done(function(data){
+            if(data.data == "success"){
+              
+              Swal.fire({
+                  icon: 'success',
+                  title: 'Successfully save!',
+                  text:' Client has been saved.',
+                  customClass: {
+                    confirmButton: 'btn btn-success'
+                  }
+                });
+                $('#clientomodal').modal('hide');
+                patient_details();
+                // window.location.reload();
+                
+            }
+            else{
+              Swal.fire({
+                  icon: 'error',
+                  title: 'Invalid Client details',
+                  text: fname + lname +' cannot added',
+                  customClass: {
+                    confirmButton: 'btn btn-success'
+                  }});
+                }
+              });
+            }});
+
+        });
+
+    
+
+
     //discounts ------------------------------------------------------->
     // $(".spn-discount").hide();
     $('#select-discount').on('change', function() {
@@ -542,65 +682,65 @@ $(document).ready(function(){
       }  
     });
 
-    $('.add-client').click(function(event){
-      patient_details();
-      let fname = $('#ct-first-name').val();
-      let mname = $('#ct-middle-name').val();
-      let lname = $('#ct-last-name').val();
-      let bdate = $('#ct-birth-date').val();
-      let sex_ = $('#ct-sex').val();
-      let cl_type = $('#ct-client-type').find(":selected").val();
-      let occpt = $('#ct-occupation').val();
+    // $('.add-client').click(function(event){
+    //   patient_details();
+    //   let fname = $('#ct-first-name').val();
+    //   let mname = $('#ct-middle-name').val();
+    //   let lname = $('#ct-last-name').val();
+    //   let bdate = $('#ct-birth-date').val();
+    //   let sex_ = $('#ct-sex').val();
+    //   let cl_type = $('#ct-client-type').find(":selected").val();
+    //   let occpt = $('#ct-occupation').val();
 
-      Swal.fire({
-        title: 'Are you sure?',
-        text: "You won't be able to revert this!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Confirm',
-        customClass: {
-          confirmButton: 'btn btn-primary me-3',
-          cancelButton: 'btn btn-label-secondary'
-        },
-        buttonsStyling: false
-    }).then(function (result) {
+    //   Swal.fire({
+    //     title: 'Are you sure?',
+    //     text: "You won't be able to revert this!",
+    //     icon: 'warning',
+    //     showCancelButton: true,
+    //     confirmButtonText: 'Confirm',
+    //     customClass: {
+    //       confirmButton: 'btn btn-primary me-3',
+    //       cancelButton: 'btn btn-label-secondary'
+    //     },
+    //     buttonsStyling: false
+    // }).then(function (result) {
     
-      if (result.value) {
-          event.preventDefault();
-          $.ajax({
-              type: "POST",
-              url: "{% url 'add-client' %}",
-              data:{
-                firstname : fname, middlename : mname, lastname: lname, birthdate: bdate, sex : sex_, client_type: cl_type, occupation: occpt
-              }
-          }).done(function(data){
-            if(data.data == "success"){
+    //   if (result.value) {
+    //       event.preventDefault();
+    //       $.ajax({
+    //           type: "POST",
+    //           url: "{% url 'add-client' %}",
+    //           data:{
+    //             firstname : fname, middlename : mname, lastname: lname, birthdate: bdate, sex : sex_, client_type: cl_type, occupation: occpt
+    //           }
+    //       }).done(function(data){
+    //         if(data.data == "success"){
               
-              Swal.fire({
-                  icon: 'success',
-                  title: 'Successfully save!',
-                  text:' Client has been saved.',
-                  customClass: {
-                    confirmButton: 'btn btn-success'
-                  }
-                });
-                $('#clientomodal').modal('hide');
-                patient_details();
-                // window.location.reload();
+    //           Swal.fire({
+    //               icon: 'success',
+    //               title: 'Successfully save!',
+    //               text:' Client has been saved.',
+    //               customClass: {
+    //                 confirmButton: 'btn btn-success'
+    //               }
+    //             });
+    //             $('#clientomodal').modal('hide');
+    //             patient_details();
+    //             // window.location.reload();
                 
-            }
-            else{
-              Swal.fire({
-                  icon: 'error',
-                  title: 'Invalid Client details',
-                  text: fname + lname +' cannot added',
-                  customClass: {
-                    confirmButton: 'btn btn-success'
-                  }});
-                }
-              });
-            }});
-    });
+    //         }
+    //         else{
+    //           Swal.fire({
+    //               icon: 'error',
+    //               title: 'Invalid Client details',
+    //               text: fname + lname +' cannot added',
+    //               customClass: {
+    //                 confirmButton: 'btn btn-success'
+    //               }});
+    //             }
+    //           });
+    //         }});
+    // });
 
     function remove_all(){
       var $checkbox = $(`input[type=checkbox][name=checkboxtype]`);
