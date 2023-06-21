@@ -8,7 +8,7 @@ from django.core.serializers import serialize
 from django.http import HttpResponse
 from django.db import IntegrityError
 import math
-import json
+from django.db.models import Q
 
 
 def item(request):
@@ -123,7 +123,13 @@ def item_load(request):
 def item_collections(request):
     filter = request.GET.get('q')
     data = []
-    item_data = Items.objects.select_related().filter(barcode__contains=filter)
+    item_data = Items.objects.select_related().filter(
+        Q(barcode__icontains=filter) |
+        Q(description__icontains=filter) |
+        Q(classification__icontains=filter) |
+        Q(generic__name__icontains=filter) |
+        Q(sub_generic__name__icontains=filter)
+    )
     for item in item_data:
 
         item_desc = '['+item.barcode+'] ' + item.generic.name + ' ' + \
