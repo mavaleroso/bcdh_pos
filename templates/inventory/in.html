@@ -42,7 +42,7 @@
                                 </div>
                             </div>
                             <div class="col-12 row mt-3">
-                                <div class="col-md-4">
+                                <div class="col-md-3">
                                     <div class="d-flex">
                                         <div class="form-group">
                                             <label class="form-label" for="barcode">Barcode</label>
@@ -60,18 +60,15 @@
                                         </button>
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-7">
                                     <div class="form-group">
                                         <label class="form-label" for="quick-search">Quick Search</label>
-                                        <div class="input-group input-group-merge">
-                                            <span class="input-group-text"><i class="ti ti-search"></i></span>
-                                            <input type="text" id="quick-search" class="form-control" />
-                                        </div>
+                                        <input type="text" id="quick-search" class="form-control" />
                                     </div>
                                 </div>
-                                <div class="col-md-4">
+                                <div class="col-md-2">
                                     <button class="btn btn-secondary create-new btn-primary mt-4 ms-auto d-block" type="button">
-                                        <span><i class="ti ti-plus me-sm-1"></i> <span class="d-none d-sm-inline-block">Add New Item</span></span>
+                                        <span><i class="ti ti-plus me-sm-1"></i> <span class="d-none d-xl-inline-block">Add New Item</span></span>
                                     </button>
                                 </div>
                             </div>
@@ -197,6 +194,8 @@
 </div>
 <!-- / Content -->
 {% endblock %} {% block footer_scripts %}
+<script src="{% static 'assets/js/autofill.js' %}"></script>
+
 <script>
     let item_count = 0
 
@@ -214,8 +213,16 @@
         const item_quantity_pcs = $('#item-quantity-pcs')
         const delivered_date = $('#delivered-date')
         const item_count_field = $('#item-count')
+        const quick_search = $('#quick-search')
+        const tblItem = $('#tbl-item')
 
         delivered_date.val(dateToday())
+        quick_search.autofill({
+            datasetURL: "{% url 'item-collections' %}",
+            onSelect: (v) => {
+                append_item_element(v)
+            },
+        })
 
         const InFormValidation = document.getElementById('in-frm'),
             ItemFormValidation = document.getElementById('item-form'),
@@ -511,7 +518,6 @@
 
         $('#btn-fetch-barcode').on('click', function () {
             let barcode = $('#barcode').val()
-            let tblItem = $('#tbl-item')
 
             if (!barcode) {
                 Swal.fire({
@@ -532,12 +538,32 @@
             }).done(function (data) {
                 if (data.status == 'success') {
                     let field = data.data
-                    let notif = $('.notif-alert-box')
-                    notif.remove()
-                    toastr.success('Added successfully!', 'Item', toast_options)
-                    item_count++
-                    item_count_field.val(item_count)
-                    tblItem.append(`<tr id="item-row-${item_count}">
+                    append_item_element(field)
+                } else if (data.status == 'error') {
+                    let message = data.message
+                    toastr.warning('No barcode found', 'Search Barcode', toast_options)
+                    tblItem.html(`<tr class="notif-alert-box">
+                                <td colspan="8"">
+                                    <div class="alert alert-warning d-flex align-items-center" role="alert">
+                                        <span class="alert-icon text-warning me-2">
+                                        <i class="ti ti-bell ti-xs"></i>
+                                        </span>
+                                        ${message}
+                                    </div>
+                                </td>
+                            </tr>`)
+                } else {
+                }
+            })
+        })
+
+        function append_item_element(field) {
+            let notif = $('.notif-alert-box')
+            notif.remove()
+            toastr.success('Added successfully!', 'Item', toast_options)
+            item_count++
+            item_count_field.val(item_count)
+            tblItem.append(`<tr id="item-row-${item_count}">
                                 <td>
                                     <input type="hidden" name="item_id[${item_count}]" value="${field.id}"/>
                                     <button
@@ -561,26 +587,10 @@
                                 <td><div class="form-group"><input name="expiration_date[${item_count}]" class="form-control" type="date" /></div></td>
                             </tr>`)
 
-                    fv.addField(`quantity[${item_count}]`, quantityValidation)
-                        .addField(`unit_price[${item_count}]`, unitPriceValidation)
-                        .addField(`expiration_date[${item_count}]`, expiryDateValidation)
-                } else if (data.status == 'error') {
-                    let message = data.message
-                    toastr.warning('No barcode found', 'Search Barcode', toast_options)
-                    tblItem.html(`<tr class="notif-alert-box">
-                                <td colspan="8"">
-                                    <div class="alert alert-warning d-flex align-items-center" role="alert">
-                                        <span class="alert-icon text-warning me-2">
-                                        <i class="ti ti-bell ti-xs"></i>
-                                        </span>
-                                        ${message}
-                                    </div>
-                                </td>
-                            </tr>`)
-                } else {
-                }
-            })
-        })
+            fv.addField(`quantity[${item_count}]`, quantityValidation)
+                .addField(`unit_price[${item_count}]`, unitPriceValidation)
+                .addField(`expiration_date[${item_count}]`, expiryDateValidation)
+        }
     })
 
     function cancelItem(idx) {
