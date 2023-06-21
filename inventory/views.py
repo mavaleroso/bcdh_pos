@@ -4,7 +4,7 @@ from django.shortcuts import render
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
-from main.models import (Stocks, Items, StockLocation, SystemConfiguration,
+from main.models import (Stocks, StocksItems, Items, StockLocation, SystemConfiguration,
                          ItemType, Company, Generic, SubGeneric, Brand, AuthUser, OutItems, Location)
 from datetime import date, datetime
 import math
@@ -294,18 +294,15 @@ def generate_code():
 @csrf_exempt
 def store_items(request):
     if request.method == 'POST':
-        item_id = request.POST.get('ItemID')
         company = request.POST.get('Company')
-        unit_price = request.POST.get('UnitPrice')
-        item_quantity_pcs = request.POST.get('ItemQuantityPcs')
-        retail_price = request.POST.get('RetailPricePcs')
-        expiration_date = request.POST.get('ExpirationDate')
         delivery_date = request.POST.get('DeliveredDate')
+        item_count = request.POST.get('item_count')
+
         user_id = request.session.get('user_id', 0)
         code = generate_code()
 
-        stocks = Stocks(code=code, item_id=item_id, company_id=company, unit_price=unit_price, pcs_quantity=item_quantity_pcs,
-                        retail_price=retail_price, delivered_date=delivery_date, expiration_date=expiration_date, user_id=user_id)
+        stocks = Stocks(code=code, company_id=company,
+                        delivered_date=delivery_date, user_id=user_id)
 
         stocks.save()
 
@@ -314,59 +311,18 @@ def store_items(request):
             system_config.inventory_code = code
             system_config.save()
 
+        for i in item_count:
+            item_id = request.POST.get('item_id['+i+']')
+            quantity = request.POST.get('quantity['+i+']')
+            unit_price = request.POST.get('unit_price['+i+']')
+            expiration_date = request.POST.get('expiration_date['+i+']')
+
+            stock_items = StocksItems(stock_id=stocks.id, item_id=item_id, pcs_quantity=quantity,
+                                      unit_price=unit_price, expiration_date=expiration_date)
+
+            stock_items.save()
+
         return JsonResponse({'data': 'success'})
-
-
-def received_item_load(request):
-    dateToday = date.today()
-
-    stock_data = Stocks.objects.select_related().filter(created_at__date=dateToday)
-    total = stock_data.count()
-
-    _start = request.GET.get('start')
-    _length = request.GET.get('length')
-    if _start and _length:
-        start = int(_start)
-        length = int(_length)
-        page = math.ceil(start / length) + 1
-        per_page = length
-
-        stock_data = stock_data[start:start + length]
-
-    data = []
-
-    for stock in stock_data:
-        userData = AuthUser.objects.filter(id=stock.user.id)
-        itemData = Items.objects.select_related().filter(id=stock.item.id)
-
-        full_name = userData[0].first_name + ' ' + userData[0].last_name
-        item_details = itemData[0].generic.name + ' ' + itemData[0].sub_generic.name + \
-            ' ' + itemData[0].classification + ' ' + itemData[0].description
-
-        stock_item = {
-            'id': stock.id,
-            'item_type': itemData[0].type.name,
-            'quantity': stock.pcs_quantity,
-            'details': item_details,
-            'unit_price': stock.unit_price,
-            'retail_price': stock.retail_price,
-            'expiration_date': stock.expiration_date,
-            'delivered_date': stock.delivered_date,
-            'created_at': stock.created_at,
-            'updated_at': stock.updated_at,
-            'created_by': full_name
-        }
-
-        data.append(stock_item)
-
-    response = {
-        'data': data,
-        'page': page,
-        'per_page': per_page,
-        'recordsTotal': total,
-        'recordsFiltered': total,
-    }
-    return JsonResponse(response)
 
 
 def inventory_list_edit(request, stock_id):
@@ -400,9 +356,11 @@ def update_stock(request, stock_id):
 
     return JsonResponse({'data': 'success'})
 
+
 def export_excel(request):
     response = HttpResponse(content_type='application/ms-excel')
-    response['Content-Disposition'] = 'attachment; filename="bcdh_inventory_"'+datetime.now().strftime("%m_%d_%Y")+'".xls"'
+    response['Content-Disposition'] = 'attachment; filename="bcdh_inventory_"' + \
+        datetime.now().strftime("%m_%d_%Y")+'".xls"'
 
     wb = xlwt.Workbook(encoding='utf-8')
     ws = wb.add_sheet('Users Data')
@@ -412,7 +370,8 @@ def export_excel(request):
     font_style = xlwt.XFStyle()
     font_style.font.bold = True
 
-    columns = ['Code', 'Company', 'Item Description', 'Inventory Evaluation Method', 'Unit Price', 'Retail Price', 'Quantity in Stocks', 'Unit of Measurement', 'Total Cost', 'Expiration Date', 'Aging', 'Delivery Date', 'Prev. Qty.' ]
+    columns = ['Code', 'Company', 'Item Description', 'Inventory Evaluation Method', 'Unit Price', 'Retail Price',
+               'Quantity in Stocks', 'Unit of Measurement', 'Total Cost', 'Expiration Date', 'Aging', 'Delivery Date', 'Prev. Qty.']
 
     stock_data = Stocks.objects.all().select_related()
 
@@ -435,7 +394,8 @@ def export_excel(request):
         stock_obj = [
             stock.code,
             stock.company.name,
-            stock.item.generic.name + ' ' + stock.item.sub_generic.name + ' ' + stock.item.classification + ' ' + stock.item.description,
+            stock.item.generic.name + ' ' + stock.item.sub_generic.name +
+            ' ' + stock.item.classification + ' ' + stock.item.description,
             'FIFO',
             stock.unit_price,
             stock.retail_price,
@@ -448,17 +408,14 @@ def export_excel(request):
             stock.pcs_quantity
         ]
 
-
         for il in stockLocation:
             columns.append(il.location.name)
             stock_obj.append(il.quantity)
 
         data.append(stock_obj)
 
-        
-
     for col_num in range(len(columns)):
-        ws.write(row_num, col_num, columns[col_num], font_style) 
+        ws.write(row_num, col_num, columns[col_num], font_style)
 
     font_style = xlwt.XFStyle()
 

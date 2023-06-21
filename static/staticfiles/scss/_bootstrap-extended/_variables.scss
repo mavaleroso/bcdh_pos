@@ -26,15 +26,15 @@ $gray-900: rgba($black, 0.9) !default;
 
 // scss-docs-start gray-colors-map
 $grays: (
-  '25': $gray-25,
-  '50': $gray-50
+    '25': $gray-25,
+    '50': $gray-50,
 ) !default;
 // scss-docs-end gray-colors-map
 
 // scss-docs-start color-variables
 $blue: #007bff !default;
 $indigo: #6610f2 !default;
-$purple: #7367f0 !default;
+$purple: #1051d1 !default;
 $pink: #e83e8c !default;
 $red: #ea5455 !default;
 $orange: #fd7e14 !default;
@@ -58,15 +58,15 @@ $gray: $gray-100 !default; // (C)
 
 // scss-docs-start theme-colors-map
 $theme-colors: (
-  'primary': $primary,
-  'secondary': $secondary,
-  'success': $success,
-  'info': $info,
-  'warning': $warning,
-  'danger': $danger,
-  'light': $light,
-  'dark': $dark,
-  'gray': $gray
+    'primary': $primary,
+    'secondary': $secondary,
+    'success': $success,
+    'info': $info,
+    'warning': $warning,
+    'danger': $danger,
+    'light': $light,
+    'dark': $dark,
+    'gray': $gray,
 ) !default;
 // scss-docs-end theme-colors-map
 
@@ -90,25 +90,25 @@ $variable-prefix: bs- !default;
 $spacer: 1rem !default;
 
 $sizes-px: (
-  px-14: 14px,
-  px-18: 18px,
-  px-20: 20px,
-  px-30: 30px,
-  px-40: 40px,
-  px-50: 50px,
-  px-75: 75px,
-  px-100: 100px,
-  px-150: 150px,
-  px-200: 200px,
-  px-250: 250px,
-  px-300: 300px,
-  px-350: 350px,
-  px-400: 400px,
-  px-500: 500px,
-  px-600: 600px,
-  px-700: 700px,
-  px-800: 800px,
-  auto: auto
+    px-14: 14px,
+    px-18: 18px,
+    px-20: 20px,
+    px-30: 30px,
+    px-40: 40px,
+    px-50: 50px,
+    px-75: 75px,
+    px-100: 100px,
+    px-150: 150px,
+    px-200: 200px,
+    px-250: 250px,
+    px-300: 300px,
+    px-350: 350px,
+    px-400: 400px,
+    px-500: 500px,
+    px-600: 600px,
+    px-700: 700px,
+    px-800: 800px,
+    auto: auto,
 ) !default; // (C)
 
 // * Body
@@ -135,11 +135,11 @@ $link-hover-decoration: null !default;
 
 // scss-docs-start container-max-widths
 $container-max-widths: (
-  sm: 540px,
-  md: 720px,
-  lg: 960px,
-  xl: 1140px,
-  xxl: 1440px // Custom xxl size
+    sm: 540px,
+    md: 720px,
+    lg: 960px,
+    xl: 1140px,
+    xxl: 1440px // Custom xxl size,
 ) !default;
 // scss-docs-end container-max-widths
 
@@ -197,8 +197,8 @@ $caret-spacing: 0.5em !default;
 // *******************************************************************************
 
 // scss-docs-start font-variables
-$font-family-sans-serif: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Oxygen', 'Ubuntu', 'Cantarell',
-  'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif !default;
+$font-family-sans-serif: 'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans',
+    'Helvetica Neue', sans-serif !default;
 $font-family-serif: Georgia, 'Times New Roman', serif !default; // (C)
 $font-family-monospace: 'SFMono-Regular', Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace !default;
 // stylelint-enable value-keyword-case
@@ -242,12 +242,12 @@ $headings-color: rgba-to-hex($gray-900, $rgba-to-hex-bg) !default;
 
 // scss-docs-start display-headings
 $display-font-sizes: (
-  1: 4.75rem,
-  2: 4.375rem,
-  3: 3.875rem,
-  4: 3.375rem,
-  5: 3rem,
-  6: 2.625rem
+    1: 4.75rem,
+    2: 4.375rem,
+    3: 3.875rem,
+    4: 3.375rem,
+    5: 3rem,
+    6: 2.625rem,
 ) !default;
 
 $display-font-weight: 500 !default;
@@ -433,15 +433,11 @@ $input-focus-box-shadow: $box-shadow-sm !default;
 
 $input-placeholder-color: rgba-to-hex($gray-400, $rgba-to-hex-bg) !default;
 
-$input-height-inner: px-to-rem(
-  floor(rem-to-px(($input-btn-font-size * $input-btn-line-height) + ($input-btn-padding-y * 2)))
-) !default;
+$input-height-inner: px-to-rem(floor(rem-to-px(($input-btn-font-size * $input-btn-line-height) + ($input-btn-padding-y * 2)))) !default;
 $input-height-inner-sm: px-to-rem(
-  floor(rem-to-px(($input-btn-font-size-sm * $input-btn-line-height-sm) + ($input-btn-padding-y-sm * 2)))
+    floor(rem-to-px(($input-btn-font-size-sm * $input-btn-line-height-sm) + ($input-btn-padding-y-sm * 2)))
 ) !default; // (C)
-$input-height-inner-lg: px-to-rem(
-  floor(rem-to-px(($font-size-lg * $line-height-lg) + ($input-btn-padding-y-lg * 2)))
-) !default; // (C)
+$input-height-inner-lg: px-to-rem(floor(rem-to-px(($font-size-lg * $line-height-lg) + ($input-btn-padding-y-lg * 2)))) !default; // (C)
 // scss-docs-end form-input-variables
 
 // scss-docs-start form-check-variables
@@ -837,9 +833,9 @@ $breadcrumb-color: $component-active-bg !default; // (C)
 $breadcrumb-divider-check: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' class='icon icon-tabler icon-tabler-check' width='16' height='24' viewBox='0 0 24 24' stroke-width='1.75' stroke='#{$breadcrumb-divider-color}' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath stroke='none' d='M0 0h24v24H0z' fill='none'%3E%3C/path%3E%3Cpath d='M5 12l5 5l10 -10'%3E%3C/path%3E%3C/svg%3E");
 
 $breadcrumb-icon-check-svg: str-replace(
-  str-replace($breadcrumb-divider-check, '#{$breadcrumb-divider-color}', $breadcrumb-divider-color),
-  '#',
-  '%23'
+    str-replace($breadcrumb-divider-check, '#{$breadcrumb-divider-color}', $breadcrumb-divider-color),
+    '#',
+    '%23'
 ); // (C)
 
 // * Carousel

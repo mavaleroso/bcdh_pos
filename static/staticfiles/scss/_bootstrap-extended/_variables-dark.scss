@@ -30,15 +30,15 @@ $gray-900: rgba($black, 0.65) !default;
 
 // scss-docs-start gray-colors-map
 $grays: (
-  '25': $gray-25,
-  '50': $gray-50
+    '25': $gray-25,
+    '50': $gray-50,
 ) !default;
 // scss-docs-end gray-colors-map
 
 // scss-docs-start color-variables
 $blue: #007bff !default;
 $indigo: #6610f2 !default;
-$purple: #7367f0 !default;
+$purple: #1051d1 !default;
 $pink: #e83e8c !default;
 $red: #ea5455 !default;
 $orange: #fd7e14 !default;
@@ -62,15 +62,15 @@ $gray: $gray-100 !default; // (C)
 
 // scss-docs-start theme-colors-map
 $theme-colors: (
-  'primary': $primary,
-  'secondary': $secondary,
-  'success': $success,
-  'info': $info,
-  'warning': $warning,
-  'danger': $danger,
-  'light': $light,
-  'dark': $dark,
-  'gray': $gray
+    'primary': $primary,
+    'secondary': $secondary,
+    'success': $success,
+    'info': $info,
+    'warning': $warning,
+    'danger': $danger,
+    'light': $light,
+    'dark': $dark,
+    'gray': $gray,
 ) !default;
 // scss-docs-end theme-colors-map
 

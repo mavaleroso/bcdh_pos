@@ -9,6 +9,5 @@ urlpatterns = [
     path('list/edit/<int:stock_id>', views.inventory_list_edit,
          name='inventory-list-edit'),
     path('load', views.inventory_load, name='inventory-load'),
-    path('received_item_load', views.received_item_load, name='received-item-load'),
     path('export_excel', views.export_excel, name='export-excel')
 ]
