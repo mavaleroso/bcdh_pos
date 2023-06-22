@@ -1,0 +1,71 @@
+{% extends 'index.html' %} {% block content %} {% load staticfiles %}
+
+<!-- Content wrapper -->
+<div class="content-wrapper">
+    <!-- Content -->
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Inventory / PO /</span> List</h4>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-2 offset-md-10">
+                        <div class="py-4">
+                            <a href="{% url 'po-export-excel' %}" class="btn btn-primary waves-effect waves-light ma-auto d-block">
+                                <span class="ti-xs ti ti-file-export me-1"></span>Export Excel
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card-datatable text-nowrap">
+                    <table id="tbl-po-list" class="table display compact">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>PO Code</th>
+                                <th>Company</th>
+                                <th>Delivered Date</th>
+                                <th>Created By</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} {% block footer_scripts %}
+<script>
+    $(document).ready(function () {
+        const table = $('#tbl-po-list')
+
+        var poTable = table.DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: "{% url 'inventory-po-load' %}",
+            },
+            columns: [{ data: 'id' }, { data: 'code' }, { data: 'company' }, { data: 'delivered_date' }, { data: 'created_by' }],
+            columnDefs: [
+                {
+                    targets: 0,
+                    orderable: false,
+                    searchable: false,
+                    render: function (data) {
+                        return `<a href="view/${data}" class="item-edit text-body"><i class="text-primary ti ti-file-description"></i></a>`
+                    },
+                },
+                {
+                    targets: 1,
+                    render: function (data) {
+                        return '<span class="badge bg-label-primary">' + data + '</span>'
+                    },
+                },
+            ],
+            order: [[3, 'asc']],
+            scrollX: true,
+        })
+    })
+</script>
+{% endblock footer_scripts %}

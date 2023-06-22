@@ -9,6 +9,7 @@ from django.http import HttpResponse
 from django.db import IntegrityError
 import math
 from django.db.models import Q
+from functools import reduce
 
 
 def item(request):
@@ -123,20 +124,16 @@ def item_load(request):
 def item_collections(request):
     filter = request.GET.get('q')
     data = []
-    item_data = Items.objects.select_related().filter(
-        Q(barcode__icontains=filter) |
-        Q(description__icontains=filter) |
-        Q(classification__icontains=filter) |
-        Q(generic__name__icontains=filter) |
-        Q(sub_generic__name__icontains=filter)
-    )
+    item_data = Items.objects.select_related()
+
     for item in item_data:
 
         item_desc = '['+item.barcode+'] ' + item.generic.name + ' ' + \
             item.sub_generic.name + ' ' + item.classification + ' ' + item.description
 
-        data.append({'item_id': item.id, 'barcode': item.barcode,
-                    'item_type': item.type.name, 'brand': item.brand.name, 'item_desc': item_desc})
+        if (filter in item_desc):
+            data.append({'item_id': item.id, 'barcode': item.barcode,
+                         'item_type': item.type.name, 'brand': item.brand.name, 'item_desc': item_desc})
 
     return JsonResponse(data, safe=False)
 
@@ -167,7 +164,3 @@ def fetch_item_by_barcode(request):
         }
 
     return JsonResponse(response)
-
-    # print(items)
-    # data = serialize("json", [items])
-    # return HttpResponse(data, content_type="application/json")
