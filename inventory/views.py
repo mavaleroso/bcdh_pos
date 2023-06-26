@@ -292,7 +292,7 @@ def generate_code():
 
 
 @csrf_exempt
-def store_items(request):
+def store_stock_data(request):
     if request.method == 'POST':
         company = request.POST.get('Company')
         delivery_date = request.POST.get('DeliveredDate')
@@ -323,6 +323,45 @@ def store_items(request):
                                       unit_price=unit_price, expiration_date=expiration_date)
 
             stock_items.save()
+
+        return JsonResponse({'data': 'success'})
+
+
+def update_stock_data(request):
+    if request.method == 'POST':
+        stock_id = request.POST.get('stock_id')
+        company = request.POST.get('Company')
+        delivery_date = request.POST.get('DeliveredDate')
+        item_count = request.POST.get('item_count')
+
+        user_id = request.session.get('user_id', 0)
+
+        stocks = Stocks.objects.get(pk=stock_id)
+        stocks.company_id = company
+        stocks.delivery_date = delivery_date
+        stocks.user_id = user_id
+
+        stocks.save()
+
+        StocksItems.objects.filter(stock_id=stock_id).delete()
+
+        for i in range(int(item_count)):
+            counter = i + 1
+            counter = str(counter)
+            stock_item_id = request.POST.get('stock_item_id['+counter+']')
+            item_id = request.POST.get('item_id['+counter+']')
+            quantity = request.POST.get('quantity['+counter+']')
+            unit_price = request.POST.get('unit_price['+counter+']')
+            expiration_date = request.POST.get('expiration_date['+counter+']')
+
+            if stock_item_id == '0':
+                stock_items_1 = StocksItems(stock_id=stocks.id, item_id=item_id, pcs_quantity=quantity,
+                                            unit_price=unit_price, expiration_date=expiration_date)
+                stock_items_1.save()
+            else:
+                stock_items_2 = StocksItems(id=stock_item_id, stock_id=stocks.id, item_id=item_id, pcs_quantity=quantity,
+                                            unit_price=unit_price, expiration_date=expiration_date)
+                stock_items_2.save()
 
         return JsonResponse({'data': 'success'})
 
@@ -549,7 +588,14 @@ def po_view(request, stock_id):
         'generic': Generic.objects.filter().order_by('name'),
         'sub_generic': SubGeneric.objects.filter().order_by('name'),
         'brand': Brand.objects.filter().order_by('name'),
-        'stock_data': Stocks.objects.select_related().filter(id=stock_id),
+        'stock_data': Stocks.objects.select_related().get(id=stock_id),
         'stock_items_data': StocksItems.objects.select_related().filter(stock_id=stock_id)
     }
     return render(request, 'inventory/po_view.html', context)
+
+
+def po_delete(request):
+    stock_id = request.POST.get('stock_id')
+    stock_data = Stocks.objects.get(pk=stock_id)
+    stock_data.delete()
+    return JsonResponse({'data': 'success'})

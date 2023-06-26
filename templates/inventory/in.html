@@ -335,7 +335,7 @@
                     var form_data = $('#in-frm').serialize()
                     $.ajax({
                         type: 'POST',
-                        url: "{% url 'store-items' %}",
+                        url: "{% url 'store-stock-data' %}",
                         data: form_data,
                     }).done(function (data) {
                         if (data.data == 'success') {

@@ -225,6 +225,10 @@ class Stocks(models.Model):
     updated_at = models.DateTimeField(blank=True, null=True, auto_now=True)
     deleted_at = models.DateTimeField(blank=True, null=True)
 
+    def delete(self):
+        StocksItems.objects.filter(stock_id=self).delete()
+        super(Stocks, self).delete()
+
     class Meta:
         managed = True
         db_table = 'stocks'
