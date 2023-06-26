@@ -115,20 +115,26 @@
 
                         <li class="menu-item {% if url_name == 'inventory-in' %}active{% endif %}">
                             <a href="{% url 'inventory-in' %}" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-layout-sidebar"></i>
+                                <i class="menu-icon tf-icons ti ti-stack-push"></i>
                                 <div data-i18n="In">In</div>
                             </a>
                         </li>
                         <li class="menu-item">
                             <a href="app-email.html" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-checkbox"></i>
+                                <i class="menu-icon tf-icons ti ti-stack-pop"></i>
                                 <div data-i18n="Out">Out</div>
                             </a>
                         </li>
                         <li class="menu-item {% if url_name == 'inventory-list' or url_name == 'inventory-list-edit' %}active{% endif %}">
                             <a href="{% url 'inventory-list' %}" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-layout-grid"></i>
-                                <div data-i18n="List">List</div>
+                                <i class="menu-icon tf-icons ti ti-brand-stackoverflow"></i>
+                                <div data-i18n="Available Stocks">Available Stocks</div>
+                            </a>
+                        </li>
+                        <li class="menu-item {% if url_name == 'inventory-po-list' or url_name == 'po-view' %}active{% endif %}">
+                            <a href="{% url 'inventory-po-list' %}" class="menu-link">
+                                <i class="menu-icon tf-icons ti ti-shopping-cart"></i>
+                                <div data-i18n="Purchase Orders">Purchase Orders</div>
                             </a>
                         </li>
                         <li class="menu-item">

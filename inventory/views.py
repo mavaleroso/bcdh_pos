@@ -292,7 +292,7 @@ def generate_code():
 
 
 @csrf_exempt
-def store_items(request):
+def store_stock_data(request):
     if request.method == 'POST':
         company = request.POST.get('Company')
         delivery_date = request.POST.get('DeliveredDate')
@@ -311,16 +311,57 @@ def store_items(request):
             system_config.inventory_code = code
             system_config.save()
 
-        for i in item_count:
-            item_id = request.POST.get('item_id['+i+']')
-            quantity = request.POST.get('quantity['+i+']')
-            unit_price = request.POST.get('unit_price['+i+']')
-            expiration_date = request.POST.get('expiration_date['+i+']')
+        for i in range(int(item_count)):
+            counter = i + 1
+            counter = str(counter)
+            item_id = request.POST.get('item_id['+counter+']')
+            quantity = request.POST.get('quantity['+counter+']')
+            unit_price = request.POST.get('unit_price['+counter+']')
+            expiration_date = request.POST.get('expiration_date['+counter+']')
 
             stock_items = StocksItems(stock_id=stocks.id, item_id=item_id, pcs_quantity=quantity,
                                       unit_price=unit_price, expiration_date=expiration_date)
 
             stock_items.save()
+
+        return JsonResponse({'data': 'success'})
+
+
+def update_stock_data(request):
+    if request.method == 'POST':
+        stock_id = request.POST.get('stock_id')
+        company = request.POST.get('Company')
+        delivery_date = request.POST.get('DeliveredDate')
+        item_count = request.POST.get('item_count')
+
+        user_id = request.session.get('user_id', 0)
+
+        stocks = Stocks.objects.get(pk=stock_id)
+        stocks.company_id = company
+        stocks.delivery_date = delivery_date
+        stocks.user_id = user_id
+
+        stocks.save()
+
+        StocksItems.objects.filter(stock_id=stock_id).delete()
+
+        for i in range(int(item_count)):
+            counter = i + 1
+            counter = str(counter)
+            stock_item_id = request.POST.get('stock_item_id['+counter+']')
+            item_id = request.POST.get('item_id['+counter+']')
+            quantity = request.POST.get('quantity['+counter+']')
+            unit_price = request.POST.get('unit_price['+counter+']')
+            expiration_date = request.POST.get('expiration_date['+counter+']')
+
+            if stock_item_id == '0':
+                stock_items_1 = StocksItems(stock_id=stocks.id, item_id=item_id, pcs_quantity=quantity,
+                                            unit_price=unit_price, expiration_date=expiration_date)
+                stock_items_1.save()
+            else:
+                stock_items_2 = StocksItems(id=stock_item_id, stock_id=stocks.id, item_id=item_id, pcs_quantity=quantity,
+                                            unit_price=unit_price, expiration_date=expiration_date)
+                stock_items_2.save()
 
         return JsonResponse({'data': 'success'})
 
@@ -427,3 +468,134 @@ def export_excel(request):
     wb.save(response)
 
     return response
+
+
+def inventory_po_list(request):
+    context = {
+
+    }
+    return render(request, 'inventory/po_list.html', context)
+
+
+def inventory_po_load(request):
+    _search = request.GET.get('search[value]')
+    _start = request.GET.get('start')
+    _length = request.GET.get('length')
+    _order_dir = request.GET.get('order[0][dir]')
+    _order_dash = '-' if _order_dir == 'desc' else ''
+    _order_col_num = request.GET.get('order[0][column]')
+
+    def _order_col():
+        prefix_col = ''
+        column = request.GET.get('columns['+_order_col_num+'][data]')
+
+        if column == 'company':
+            prefix_col = 'company__' + column
+        else:
+            prefix_col = column
+
+        return prefix_col
+
+    stock_data = Stocks.objects.select_related().filter(
+        Q(code__icontains=_search) |
+        Q(company__name__icontains=_search) |
+        Q(delivered_date__icontains=_search) |
+        Q(user__username__icontains=_search)
+    ).order_by(_order_dash + _order_col())
+
+    total = stock_data.count()
+
+    if _start and _length:
+        start = int(_start)
+        length = int(_length)
+        page = math.ceil(start / length) + 1
+        per_page = length
+
+        stock_data = stock_data[start:start + length]
+
+    data = []
+
+    for stock in stock_data:
+        stock_obj = {
+            'id': stock.id,
+            'code': stock.code,
+            'company': stock.company.name,
+            'delivered_date': stock.delivered_date,
+            'created_by': stock.user.username
+        }
+
+        data.append(stock_obj)
+
+    response = {
+        'data': data,
+        'page': page,
+        'per_page': per_page,
+        'recordsTotal': total,
+        'recordsFiltered': total,
+    }
+
+    return JsonResponse(response)
+
+
+def po_export_excel(request):
+    response = HttpResponse(content_type='application/ms-excel')
+    response['Content-Disposition'] = 'attachment; filename="bcdh_inventory_po_"' + \
+        datetime.now().strftime("%m_%d_%Y")+'".xls"'
+
+    wb = xlwt.Workbook(encoding='utf-8')
+    ws = wb.add_sheet('Users Data')
+
+    row_num = 0
+
+    font_style = xlwt.XFStyle()
+    font_style.font.bold = True
+
+    columns = ['PO Code', 'Company', 'Delivered Date', 'Created By']
+
+    stock_data = Stocks.objects.all().select_related()
+
+    data = []
+
+    for stock in stock_data:
+        stock_obj = [
+            stock.code,
+            stock.company.name,
+            stock.delivered_date,
+            stock.user.username
+        ]
+
+        data.append(stock_obj)
+
+    for col_num in range(len(columns)):
+        ws.write(row_num, col_num, columns[col_num], font_style)
+
+    font_style = xlwt.XFStyle()
+
+    for row in data:
+        row_num += 1
+        for col_num in range(len(row)):
+            ws.write(row_num, col_num, row[col_num], font_style)
+
+    wb.save(response)
+
+    return response
+
+
+def po_view(request, stock_id):
+    context = {
+        'item_type': ItemType.objects.filter().order_by('name'),
+        'company': Company.objects.filter().order_by('name'),
+        'generic': Generic.objects.filter().order_by('name'),
+        'sub_generic': SubGeneric.objects.filter().order_by('name'),
+        'brand': Brand.objects.filter().order_by('name'),
+        'stock_data': Stocks.objects.select_related().get(id=stock_id),
+        'stock_items_data': StocksItems.objects.select_related().filter(stock_id=stock_id)
+    }
+    return render(request, 'inventory/po_view.html', context)
+
+
+def po_delete(request):
+    stock_id = request.POST.get('stock_id')
+    stock_data = Stocks.objects.get(pk=stock_id)
+    stock_data.delete()
+    return JsonResponse({'data': 'success'})

@@ -2,27 +2,44 @@
 <!-- Content -->
 <div class="container-xxl flex-grow-1 container-p-y">
     <h4 class="fw-bold py-3 mb-4">
-        <span class="text-muted fw-light">Inventory/</span>
-        Incoming
+        <span class="text-muted fw-light">Inventory / Purchase Orders / </span>
+        View
     </h4>
     <!-- Sticky Actions -->
     <div class="row">
         <div class="col-12">
-            <form id="in-frm">
+            <form id="po-frm">
+                <input type="hidden" name="stock_id" value="{{ stock_data.id }}" />
                 <div class="card">
                     <div
                         class="card-header sticky-element bg-label-secondary d-flex justify-content-sm-between align-items-sm-center flex-column flex-sm-row"
                     >
-                        <h5 class="card-title mb-sm-0 me-2">Incoming Form</h5>
+                        <h5 class="card-title mb-sm-0 me-2">
+                            <button type="button" class="btn btn-primary waves-effect waves-light">{{ stock_data.code }}</button>
+                        </h5>
+                        <h6 class="card-subtitle text-muted">Purchase Order Form</h6>
                         <div class="action-btns">
-                            <button name="submitButton" class="btn btn-primary">Submit</button>
+                            <a href="{% url 'inventory-po-list' %}" class="btn btn-label-primary waves-effect">
+                                <span class="ti-xs ti ti-arrow-back me-1"></span>Back
+                            </a>
+                            <button onclick="window.location.reload()" type="button" class="btn btn-label-primary waves-effect d-none">
+                                <span class="ti-xs ti ti-x me-1"></span>Cancel
+                            </button>
+                            <button id="update-btn" type="button" class="btn btn-primary waves-effect">
+                                <span class="ti-xs ti ti-edit me-1"></span>Update
+                            </button>
+                            <button id="delete-btn" type="button" class="btn btn-danger"><span class="ti-xs ti ti-trash me-1"></span>Delete</button>
+                            <button name="submitButton" class="btn btn-success d-none">
+                                <span class="ti-xs ti ti-device-floppy me-1"></span>
+                                Save
+                            </button>
                         </div>
                     </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6">
                                 <label class="form-label" for="company">Company</label>
-                                <select id="company" name="Company" class="form-select" data-allow-clear="true">
+                                <select id="company" name="Company" class="form-select" data-allow-clear="true" disabled>
                                     <option></option>
                                     {% for row in company %}
                                     <option value="{{ row.id }}">{{ row.name }}</option>
@@ -31,14 +48,15 @@
                             </div>
                             <div class="col-md-6">
                                 <label class="form-label" for="delivered-date">Delivery Date</label>
-                                <input type="date" id="delivered-date" name="DeliveredDate" class="form-control" />
+                                <!--prettier-ignore-->
+                                <input type="date" id="delivered-date" name="DeliveredDate" class="form-control" value="{{ stock_data.delivered_date|date:"Y-m-d" }}" disabled/>
                             </div>
                             <div class="col-12">
                                 <div class="divider divider-dashed my-4">
-                                    <div class="divider-text">Incoming Items</div>
+                                    <div class="divider-text">Purchase Items</div>
                                 </div>
                             </div>
-                            <div class="col-12 row mt-3">
+                            <div class="col-12 row mt-3 d-none">
                                 <div class="col-md-3">
                                     <div class="d-flex">
                                         <div class="form-group">
@@ -70,11 +88,11 @@
                                 </div>
                             </div>
                             <div class="col-12">
-                                <input type="hidden" name="item_count" id="item-count" />
+                                <input type="hidden" name="item_count" id="item-count" value="{{ stock_items_data|length }}" />
                                 <table class="table mt-4">
                                     <thead>
                                         <tr>
-                                            <th></th>
+                                            <th class="d-none"></th>
                                             <th>Barcode</th>
                                             <th>Item Type</th>
                                             <th>Brand</th>
@@ -85,16 +103,71 @@
                                         </tr>
                                     </thead>
                                     <tbody id="tbl-item">
-                                        <tr class="notif-alert-box">
-                                            <td colspan="8">
-                                                <div class="alert alert-info d-flex align-items-center" role="alert">
-                                                    <span class="alert-icon text-info me-2">
-                                                        <i class="ti ti-info-circle ti-xs"></i>
-                                                    </span>
-                                                    Select item first
+                                        {% for row in stock_items_data %}
+                                        <tr id="item-row-{{ forloop.counter }}">
+                                            <td class="d-none">
+                                                <input type="hidden" name="stock_item_id[{{ forloop.counter }}]" value="{{ row.id }}" />
+                                                <input type="hidden" name="item_id[{{ forloop.counter }}]" value="{{ row.item_id }}" />
+                                                <button
+                                                    type="button"
+                                                    class="btn btn-icon btn-label-danger waves-effect waves-light"
+                                                    onclick="cancelItem()"
+                                                >
+                                                    <svg
+                                                        xmlns="http://www.w3.org/2000/svg"
+                                                        class="icon icon-tabler icon-tabler-x"
+                                                        width="24"
+                                                        height="24"
+                                                        viewBox="0 0 24 24"
+                                                        stroke-width="2"
+                                                        stroke="currentColor"
+                                                        fill="none"
+                                                        stroke-linecap="round"
+                                                        stroke-linejoin="round"
+                                                    >
+                                                        <path stroke="none" d="M0 0h24v24H0z" fill="none"></path>
+                                                        <path d="M18 6l-12 12"></path>
+                                                        <path d="M6 6l12 12"></path>
+                                                    </svg>
+                                                </button>
+                                            </td>
+                                            <td><span class="badge bg-primary">{{ row.item.barcode }}</span></td>
+                                            <td>{{ row.item.type.name }}</td>
+                                            <td>{{ row.item.brand.name }}</td>
+                                            <td>
+                                                <!--prettier-ignore-->
+                                                {{ row.item.generic.name }} {{ row.item.sub_generic.name }} {{ row.item.classification }} {{row.item.description }}
+                                            </td>
+                                            <td>
+                                                <div class="form-group">
+                                                    <input
+                                                        name="quantity[{{ forloop.counter }}]"
+                                                        class="form-control"
+                                                        type="number"
+                                                        value="{{ row.pcs_quantity }}"
+                                                        disabled
+                                                    />
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-group">
+                                                    <input
+                                                        name="unit_price[{{ forloop.counter }}]"
+                                                        class="form-control"
+                                                        type="number"
+                                                        value="{{ row.unit_price|floatformat:2 }}"
+                                                        disabled
+                                                    />
+                                                </div>
+                                            </td>
+                                            <td>
+                                                <div class="form-group">
+                                                    <!--prettier-ignore-->
+                                                    <input name="expiration_date[{{ forloop.counter }}]" class="form-control" type="date" value="{{row.expiration_date|date:"Y-m-d" }}" disabled/>
                                                 </div>
                                             </td>
                                         </tr>
+                                        {% endfor %}
                                     </tbody>
                                 </table>
                             </div>
@@ -194,7 +267,8 @@
 <script src="{% static 'assets/js/autofill.js' %}"></script>
 
 <script>
-    let item_count = 0
+    let item_count = '{{ stock_items_data|length }}'
+    var csrftoken = getCookie('csrftoken')
 
     const toast_options = (toastr.options = {
         maxOpened: 1,
@@ -208,23 +282,22 @@
 
     $(document).ready(function () {
         const item_quantity_pcs = $('#item-quantity-pcs')
-        const delivered_date = $('#delivered-date')
         const item_count_field = $('#item-count')
         const quick_search = $('#quick-search')
         const tblItem = $('#tbl-item')
+        const delete_btn = $('#delete-btn')
+        const update_btn = $('#update-btn')
 
-        delivered_date.val(dateToday())
         quick_search.autofill({
             datasetURL: "{% url 'item-collections' %}",
-            minCharacters: 1,
             onSelect: (v) => {
                 append_item_element(v)
             },
         })
 
-        const InFormValidation = document.getElementById('in-frm'),
+        const PoFormValidation = document.getElementById('po-frm'),
             ItemFormValidation = document.getElementById('item-form'),
-            Company = jQuery(InFormValidation.querySelector('[name="Company"]')),
+            Company = jQuery(PoFormValidation.querySelector('[name="Company"]')),
             ItemType = jQuery(document.querySelector('[name="ItemType"]')),
             Generic = jQuery(document.querySelector('[name="Generic"]')),
             SubGeneric = jQuery(document.querySelector('[name="SubGeneric"]')),
@@ -267,7 +340,7 @@
             },
         }
 
-        const fv = FormValidation.formValidation(InFormValidation, {
+        const fv = FormValidation.formValidation(PoFormValidation, {
             fields: {
                 DeliveredDate: {
                     validators: {
@@ -332,17 +405,20 @@
                 buttonsStyling: false,
             }).then(function (result) {
                 if (result.value) {
-                    var form_data = $('#in-frm').serialize()
+                    var form_data = $('#po-frm').serialize()
                     $.ajax({
                         type: 'POST',
-                        url: "{% url 'store-stock-data' %}",
+                        url: "{% url 'update-stock-data' %}",
                         data: form_data,
+                        headers: {
+                            'X-CSRFToken': csrftoken,
+                        },
                     }).done(function (data) {
                         if (data.data == 'success') {
                             Swal.fire({
                                 icon: 'success',
-                                title: 'Successfully save!',
-                                text: 'Item has been added.',
+                                title: 'Successfully updated!',
+                                text: 'Stock data has been updated.',
                                 customClass: {
                                     confirmButton: 'btn btn-success',
                                 },
@@ -466,6 +542,8 @@
                 // Revalidate the color field when an option is chosen
                 fv.revalidateField('Company')
             })
+
+            $('#company').val('{{ stock_data.company_id }}').trigger('change')
         }
 
         // Select2 (Item Type)
@@ -555,6 +633,65 @@
             })
         })
 
+        delete_btn.on('click', function () {
+            Swal.fire({
+                title: 'Delete Stock',
+                text: 'Are you sure you want to delete this stock?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                customClass: {
+                    confirmButton: 'btn btn-primary me-3',
+                    cancelButton: 'btn btn-label-secondary',
+                },
+                buttonsStyling: false,
+            }).then(function (result) {
+                if (result.value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: "{% url 'po-delete' %}",
+                        data: { stock_id: '{{ stock_data.id }}' },
+                        headers: {
+                            'X-CSRFToken': csrftoken,
+                        },
+                    }).done(function (data) {
+                        if (data.data == 'success') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Successfully save!',
+                                text: 'Item has been added.',
+                                customClass: {
+                                    confirmButton: 'btn btn-success',
+                                },
+                            })
+                            setTimeout(() => {
+                                window.location.href = "{% url 'inventory-po-list' %}"
+                            }, 2000)
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error saving!',
+                                text: 'Encountered error on saving item!',
+                                customClass: {
+                                    confirmButton: 'btn btn-success',
+                                },
+                            })
+                        }
+                    })
+                }
+            })
+        })
+
+        update_btn.on('click', function () {
+            Company.removeAttr('disabled')
+            $('[disabled]').removeAttr('disabled')
+            $('.d-none').removeClass('d-none')
+            delete_btn.addClass('d-none')
+            update_btn.addClass('d-none')
+
+            toastr.info('Form is now ready for updating', 'Update Action', toast_options)
+        })
+
         function append_item_element(field) {
             let notif = $('.notif-alert-box')
             notif.remove()
@@ -563,6 +700,7 @@
             item_count_field.val(item_count)
             tblItem.append(`<tr id="item-row-${item_count}">
                                 <td>
+                                    <input type="hidden" name="stock_item_id[${item_count}]" value="0"/>
                                     <input type="hidden" name="item_id[${item_count}]" value="${field.id}"/>
                                     <button
                                         type="button"
