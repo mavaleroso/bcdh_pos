@@ -10,7 +10,7 @@ from datetime import date, datetime
 import math
 import xlwt
 from django.db.models import Q
-
+from django.db.models import Sum
 
 def inventory_in(request):
     context = {
@@ -61,30 +61,29 @@ def get_stock_id_availability(stock_data=[], return_val='', availability=False):
 
 
 def inventory_load(request):
-
-    _inventory_code_filter = request.GET.getlist(
-        'inventory_code_filter[]') if request.GET.getlist('inventory_code_filter[]') else []
-    _barcode_filter = request.GET.getlist(
-        'barcode_filter[]') if request.GET.getlist('barcode_filter[]') else []
-    _item_type_filter = request.GET.getlist(
-        'item_type_filter[]') if request.GET.getlist('item_type_filter[]') else []
-    _generic_filter = request.GET.getlist(
-        'generic_filter[]') if request.GET.getlist('generic_filter[]') else []
-    _subgeneric_filter = request.GET.getlist(
-        'subgeneric_filter[]') if request.GET.getlist('subgeneric_filter[]') else []
-    _classification_filter = request.GET.get('classification_filter')
-    _description_filter = request.GET.get('description_filter')
-    _brand_filter = request.GET.getlist(
-        'brand_filter[]') if request.GET.getlist('brand_filter[]') else []
-    _company_filter = request.GET.getlist(
-        'company_filter[]') if request.GET.getlist('company_filter[]') else []
-    _location_filter = request.GET.getlist(
-        'location_filter[]') if request.GET.getlist('location_filter[]') else []
-    _is_damage_filter = request.GET.get('is_damage_filter')
-    _is_available_filter = request.GET.get('is_available_filter')
-    _is_expired_filter = request.GET.get('is_expired_filter')
-    _expiration_date_filter = request.GET.get('expiration_date_filter')
-    _delivered_date_filter = request.GET.get('delivered_date_filter')
+    # _inventory_code_filter = request.GET.getlist(
+    #     'inventory_code_filter[]') if request.GET.getlist('inventory_code_filter[]') else []
+    # _barcode_filter = request.GET.getlist(
+    #     'barcode_filter[]') if request.GET.getlist('barcode_filter[]') else []
+    # _item_type_filter = request.GET.getlist(
+    #     'item_type_filter[]') if request.GET.getlist('item_type_filter[]') else []
+    # _generic_filter = request.GET.getlist(
+    #     'generic_filter[]') if request.GET.getlist('generic_filter[]') else []
+    # _subgeneric_filter = request.GET.getlist(
+    #     'subgeneric_filter[]') if request.GET.getlist('subgeneric_filter[]') else []
+    # _classification_filter = request.GET.get('classification_filter')
+    # _description_filter = request.GET.get('description_filter')
+    # _brand_filter = request.GET.getlist(
+    #     'brand_filter[]') if request.GET.getlist('brand_filter[]') else []
+    # _company_filter = request.GET.getlist(
+    #     'company_filter[]') if request.GET.getlist('company_filter[]') else []
+    # _location_filter = request.GET.getlist(
+    #     'location_filter[]') if request.GET.getlist('location_filter[]') else []
+    # _is_damage_filter = request.GET.get('is_damage_filter')
+    # _is_available_filter = request.GET.get('is_available_filter')
+    # _is_expired_filter = request.GET.get('is_expired_filter')
+    # _expiration_date_filter = request.GET.get('expiration_date_filter')
+    # _delivered_date_filter = request.GET.get('delivered_date_filter')
 
     _search = request.GET.get('search[value]')
     _start = request.GET.get('start')
@@ -109,96 +108,98 @@ def inventory_load(request):
 
     _order_dash = '-' if _order_dir == 'desc' else ''
 
-    filters = {}
+    # filters = {}
 
-    if len(_inventory_code_filter) > 0:
-        filters['code__in'] = _inventory_code_filter
+    # if len(_inventory_code_filter) > 0:
+    #     filters['code__in'] = _inventory_code_filter
 
-    if len(_barcode_filter) > 0:
-        filters['item__barcode__in'] = _barcode_filter
+    # if len(_barcode_filter) > 0:
+    #     filters['item__barcode__in'] = _barcode_filter
 
-    if len(_item_type_filter) > 0:
-        filters['item__type_id__in'] = _item_type_filter
+    # if len(_item_type_filter) > 0:
+    #     filters['item__type_id__in'] = _item_type_filter
 
-    if len(_generic_filter) > 0:
-        filters['item__generic_id__in'] = _generic_filter
+    # if len(_generic_filter) > 0:
+    #     filters['item__generic_id__in'] = _generic_filter
 
-    if len(_subgeneric_filter) > 0:
-        filters['item__sub_generic_id__in'] = _subgeneric_filter
+    # if len(_subgeneric_filter) > 0:
+    #     filters['item__sub_generic_id__in'] = _subgeneric_filter
 
-    if len(_brand_filter) > 0:
-        filters['item__brand_id__in'] = _brand_filter
+    # if len(_brand_filter) > 0:
+    #     filters['item__brand_id__in'] = _brand_filter
 
-    if len(_company_filter) > 0:
-        filters['company_id__in'] = _company_filter
+    # if len(_company_filter) > 0:
+    #     filters['company_id__in'] = _company_filter
 
-    if len(_location_filter) > 0:
-        stock_id = StockLocation.objects.filter(
-            location_id__in=_location_filter)
-        filters['id__in'] = stock_id
+    # if len(_location_filter) > 0:
+    #     stock_id = StockLocation.objects.filter(
+    #         location_id__in=_location_filter)
+    #     filters['id__in'] = stock_id
 
-    if _classification_filter:
-        filters['item__classification__icontains'] = _classification_filter
+    # if _classification_filter:
+    #     filters['item__classification__icontains'] = _classification_filter
 
-    if _description_filter:
-        filters['item__description__icontains'] = _description_filter
+    # if _description_filter:
+    #     filters['item__description__icontains'] = _description_filter
 
-    if _is_damage_filter == 'yes':
-        filters['is_damaged__gt'] = 0
-    elif _is_damage_filter == 'no':
-        filters['is_damaged__lt'] = 1
+    # if _is_damage_filter == 'yes':
+    #     filters['is_damaged__gt'] = 0
+    # elif _is_damage_filter == 'no':
+    #     filters['is_damaged__lt'] = 1
 
-    if _is_available_filter == 'yes':
-        stock_data = Stocks.objects.select_related()
-        stock_id = get_stock_id_availability(stock_data, 'stock_id', True)
+    # if _is_available_filter == 'yes':
+    #     stock_data = Stocks.objects.select_related()
+    #     stock_id = get_stock_id_availability(stock_data, 'stock_id', True)
 
-        filters['id__in'] = stock_id
-    elif _is_available_filter == 'no':
-        stock_data = Stocks.objects.select_related()
-        stock_id = get_stock_id_availability(stock_data, 'stock_id', False)
+    #     filters['id__in'] = stock_id
+    # elif _is_available_filter == 'no':
+    #     stock_data = Stocks.objects.select_related()
+    #     stock_id = get_stock_id_availability(stock_data, 'stock_id', False)
 
-        filters['id__in'] = stock_id
+    #     filters['id__in'] = stock_id
 
-    if _is_expired_filter == 'yes':
-        stock_data = Stocks.objects.select_related()
-        stock_id = []
-        for stock in stock_data:
-            expiration_aging = stock.expiration_date - datetime.now().date()
-            if expiration_aging.days <= 0:
-                stock_id.append(stock.id)
-        filters['id__in'] = stock_id
-    elif _is_expired_filter == 'no':
-        stock_data = Stocks.objects.select_related()
-        stock_id = []
-        for stock in stock_data:
-            expiration_aging = stock.expiration_date - datetime.now().date()
-            if expiration_aging.days > 0:
-                stock_id.append(stock.id)
-        filters['id__in'] = stock_id
+    # if _is_expired_filter == 'yes':
+    #     stock_data = Stocks.objects.select_related()
+    #     stock_id = []
+    #     for stock in stock_data:
+    #         expiration_aging = stock.expiration_date - datetime.now().date()
+    #         if expiration_aging.days <= 0:
+    #             stock_id.append(stock.id)
+    #     filters['id__in'] = stock_id
+    # elif _is_expired_filter == 'no':
+    #     stock_data = Stocks.objects.select_related()
+    #     stock_id = []
+    #     for stock in stock_data:
+    #         expiration_aging = stock.expiration_date - datetime.now().date()
+    #         if expiration_aging.days > 0:
+    #             stock_id.append(stock.id)
+    #     filters['id__in'] = stock_id
 
-    if _expiration_date_filter:
-        filters['expiration_date'] = _expiration_date_filter
+    # if _expiration_date_filter:
+    #     filters['expiration_date'] = _expiration_date_filter
 
-    if _delivered_date_filter:
-        filters['delivered_date'] = _delivered_date_filter
+    # if _delivered_date_filter:
+    #     filters['delivered_date'] = _delivered_date_filter
 
-    stock_data = Stocks.objects.select_related().filter(**filters).filter(
-        Q(code__icontains=_search) |
-        Q(item__barcode__icontains=_search) |
-        Q(item__type__name__icontains=_search) |
-        Q(item__brand__name__icontains=_search) |
-        Q(company__name__icontains=_search) |
-        Q(item__generic__name__icontains=_search) |
-        Q(item__sub_generic__name__icontains=_search) |
-        Q(item__classification__icontains=_search) |
-        Q(item__description__icontains=_search) |
-        Q(pcs_quantity__icontains=_search) |
-        Q(is_damaged__icontains=_search) |
-        Q(unit_price__icontains=_search) |
-        Q(retail_price__icontains=_search) |
-        Q(expiration_date__icontains=_search) |
-        Q(delivered_date__icontains=_search)
-    ).order_by(_order_dash + _order_col())
+    # stock_data = Stocks.objects.select_related().filter(**filters).filter(
+    #     Q(code__icontains=_search) |
+    #     Q(item__barcode__icontains=_search) |
+    #     Q(item__type__name__icontains=_search) |
+    #     Q(item__brand__name__icontains=_search) |
+    #     Q(company__name__icontains=_search) |
+    #     Q(item__generic__name__icontains=_search) |
+    #     Q(item__sub_generic__name__icontains=_search) |
+    #     Q(item__classification__icontains=_search) |
+    #     Q(item__description__icontains=_search) |
+    #     Q(pcs_quantity__icontains=_search) |
+    #     Q(is_damaged__icontains=_search) |
+    #     Q(unit_price__icontains=_search) |
+    #     Q(retail_price__icontains=_search) |
+    #     Q(expiration_date__icontains=_search) |
+    #     Q(delivered_date__icontains=_search)
+    # ).order_by(_order_dash + _order_col())
+
+    stock_data = StocksItems.objects.select_related().annotate(quantity=Sum('pcs_quantity')).filter()
 
     total = stock_data.count()
 
@@ -213,50 +214,37 @@ def inventory_load(request):
     data = []
 
     for stock in stock_data:
-        userData = AuthUser.objects.filter(id=stock.user.id)
-        outItemsData = OutItems.objects.filter(stock_id=stock.id)
-        stockLocation = StockLocation.objects.select_related().filter(stock_id=stock.id)
-        full_name = userData[0].first_name + ' ' + userData[0].last_name
+        # userData = AuthUser.objects.filter(id=stock.user.id)
+        # outItemsData = OutItems.objects.filter(stock_id=stock.id)
+        # stockLocation = StockLocation.objects.select_related().filter(stock_id=stock.id)
+        # full_name = userData[0].first_name + ' ' + userData[0].last_name
 
-        location_data = []
+        # location_data = []
 
-        for il in stockLocation:
-            il_obj = {
-                'name': il.location.name,
-                'quantity': il.quantity
-            }
-            location_data.append(il_obj)
+        # for il in stockLocation:
+        #     il_obj = {
+        #         'name': il.location.name,
+        #         'quantity': il.quantity
+        #     }
+        #     location_data.append(il_obj)
 
-        expended_stock = 0
-        damage_stock = stock.is_damaged if stock.is_damaged else 0
+        # expended_stock = 0
+        # damage_stock = stock.is_damaged if stock.is_damaged else 0
 
-        for outItem in outItemsData:
-            expended_stock = expended_stock + outItem.quantity
+        # for outItem in outItemsData:
+        #     expended_stock = expended_stock + outItem.quantity
 
-        available = stock.pcs_quantity - expended_stock - damage_stock
+        # available = stock.pcs_quantity - expended_stock - damage_stock
 
-        expiration_aging = stock.expiration_date - datetime.now().date()
+        # expiration_aging = stock.expiration_date - datetime.now().date()
 
         stock_obj = {
             'id': stock.id,
-            'code': stock.code,
-            'barcode': stock.item.barcode,
             'item_type': stock.item.type.name,
-            'brand': stock.item.brand.name,
-            'company': stock.company.name,
-            'location': location_data,
             'details': stock.item.generic.name + ' ' + stock.item.sub_generic.name + ' ' + stock.item.classification + ' ' + stock.item.description,
-            'pcs_quantity': stock.pcs_quantity,
-            'damage_stock': stock.is_damaged,
-            'available_stock': available,
+            'pcs_quantity': stock.quantity,
+            'damage_stock': stock.damaged,
             'unit_price': stock.unit_price,
-            'retail_price': stock.retail_price,
-            'expiration_date': stock.expiration_date,
-            'expiration_aging': expiration_aging.days,
-            'delivered_date': stock.delivered_date,
-            'created_at': stock.created_at,
-            'updated_at': stock.updated_at,
-            'created_by': full_name
         }
 
         data.append(stock_obj)

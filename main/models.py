@@ -240,7 +240,7 @@ class StocksItems(models.Model):
     pcs_quantity = models.IntegerField(max_length=128, blank=True, null=True)
     unit_price = models.DecimalField(
         max_digits=30, decimal_places=10, blank=True, null=True)
-    is_damaged = models.IntegerField(
+    damaged = models.IntegerField(
         max_length=50, default=0, blank=False, null=False)
     expiration_date = models.DateField(blank=True, null=True)
 

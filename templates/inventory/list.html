@@ -3,7 +3,7 @@
 <!-- Content wrapper -->
 <div class="content-wrapper">
     <!-- Content -->
-    <div class="container-fluid flex-grow-1 container-p-y">
+    <div class="container-xxl flex-grow-1 container-p-y">
         <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Inventory /</span> List</h4>
 
         <div class="card">
@@ -239,25 +239,12 @@
                     <table id="tbl-items" class="table display compact">
                         <thead>
                             <tr>
-                                <th>Action</th>
-                                <th>Inv-code</th>
-                                <th>Barcode</th>
+                                <th></th>
                                 <th>Item Type</th>
                                 <th>Item Description</th>
-                                <th>Brand</th>
-                                <th>Company</th>
-                                <th>Location</th>
                                 <th>Quantity</th>
-                                <th>Damage Stock</th>
-                                <th>Available Stock</th>
                                 <th>Unit Price</th>
-                                <th>Retail Price</th>
-                                <th>Expiration Date</th>
-                                <th>Aging</th>
-                                <th>Delivery Date</th>
-                                <th>created_at</th>
-                                <th>updated_at</th>
-                                <th>created_by</th>
+                                <th>Damage</th>
                             </tr>
                         </thead>
                     </table>
@@ -324,44 +311,31 @@
             serverSide: true,
             ajax: {
                 url: "{% url 'inventory-load' %}",
-                data: function (d) {
-                    d.inventory_code_filter = inventory_code_filter.val()
-                    d.barcode_filter = barcode_filter.val()
-                    d.item_type_filter = item_type_filter.val()
-                    d.generic_filter = generic_filter.val()
-                    d.subgeneric_filter = subgeneric_filter.val()
-                    d.classification_filter = classification_filter.val()
-                    d.description_filter = description_filter.val()
-                    d.brand_filter = brand_filter.val()
-                    d.company_filter = company_filter.val()
-                    d.location_filter = location_filter.val()
-                    d.is_damage_filter = is_damage_filter.val()
-                    d.is_available_filter = is_available_filter.val()
-                    d.is_expired_filter = is_expired_filter.val()
-                    d.expiration_date_filter = expiration_date_filter.val()
-                    d.delivered_date_filter = delivered_date_filter.val()
-                },
+                // data: function (d) {
+                //     d.inventory_code_filter = inventory_code_filter.val()
+                //     d.barcode_filter = barcode_filter.val()
+                //     d.item_type_filter = item_type_filter.val()
+                //     d.generic_filter = generic_filter.val()
+                //     d.subgeneric_filter = subgeneric_filter.val()
+                //     d.classification_filter = classification_filter.val()
+                //     d.description_filter = description_filter.val()
+                //     d.brand_filter = brand_filter.val()
+                //     d.company_filter = company_filter.val()
+                //     d.location_filter = location_filter.val()
+                //     d.is_damage_filter = is_damage_filter.val()
+                //     d.is_available_filter = is_available_filter.val()
+                //     d.is_expired_filter = is_expired_filter.val()
+                //     d.expiration_date_filter = expiration_date_filter.val()
+                //     d.delivered_date_filter = delivered_date_filter.val()
+                // },
             },
             columns: [
                 { data: 'id' },
-                { data: 'code' },
-                { data: 'barcode' },
                 { data: 'item_type' },
                 { data: 'details' },
-                { data: 'brand' },
-                { data: 'company' },
-                { data: 'location' },
-                { data: 'pcs_quantity', className: 'text-end' },
-                { data: 'damage_stock', className: 'text-end' },
-                { data: 'available_stock', className: 'text-end' },
-                { data: 'unit_price', className: 'text-end' },
-                { data: 'retail_price', className: 'text-end' },
-                { data: 'expiration_date', className: 'text-end' },
-                { data: 'expiration_aging' },
-                { data: 'delivered_date', className: 'text-end' },
-                { data: 'created_at', className: 'text-end' },
-                { data: 'updated_at', className: 'text-end' },
-                { data: 'created_by' },
+                { data: 'pcs_quantity' },
+                { data: 'unit_price' },
+                { data: 'damage_stock' },
             ],
             columnDefs: [
                 {
@@ -383,117 +357,117 @@
                             <a href="list/edit/${id}" class="item-edit text-body"><i class="text-primary ti ti-pencil"></i></a>`
                     },
                 },
-                {
-                    targets: 1,
-                    render: function (data) {
-                        return '<span class="badge bg-primary">' + data + '</span>'
-                    },
-                },
-                {
-                    targets: 2,
-                    render: function (data) {
-                        return '<span class="badge bg-label-primary">' + data + '</span>'
-                    },
-                },
-                {
-                    targets: [4, 6, 18],
-                    orderable: false,
-                    searchable: false,
-                },
-                {
-                    targets: 7,
-                    orderable: false,
-                    searchable: false,
-                    render: function (data) {
-                        let elem = ''
-                        if (data.length > 0) {
-                            data.forEach(function (e) {
-                                elem += `<button type="button" class="btn btn-sm btn-label-dark waves-effect me-2 mt-1">
-                                              ${e.name}
-                                              <span class="badge bg-white text-dark badge-center ms-1">${e.quantity}</span>
-                                          </button>
-                                          </br>`
-                            })
-                        }
-                        return elem
-                    },
-                },
-                {
-                    targets: 8,
-                    render: function (data) {
-                        let elem = data ?? ''
-                        if (elem) {
-                            elem = `<span class="badge bg-info">${data} pcs</span>`
-                        }
-                        return elem
-                    },
-                },
-                {
-                    targets: 9,
-                    orderable: false,
-                    searchable: false,
-                    render: function (data) {
-                        let elem = ''
-                        if (data) {
-                            elem = `<span class="badge bg-danger">${data} pcs</span>`
-                        }
-                        return elem
-                    },
-                },
-                {
-                    targets: 10,
-                    orderable: false,
-                    searchable: false,
-                    render: function (data) {
-                        let elem = data ?? 0
-                        elem = `<span class="badge bg-success">${data} pcs</span>`
-                        return elem
-                    },
-                },
-                {
-                    targets: 11,
-                    render: function (data) {
-                        let elem = ''
-                        if (data) {
-                            elem = `<span class="badge bg-label-secondary">${currencyFormat(data)}</span>`
-                        }
-                        return elem
-                    },
-                },
-                {
-                    targets: 12,
-                    render: function (data) {
-                        let elem = ''
-                        if (data) {
-                            elem = `<span class="badge bg-label-dark">${currencyFormat(data)}</span>`
-                        }
-                        return elem
-                    },
-                },
-                {
-                    targets: 14,
-                    orderable: false,
-                    searchable: false,
-                    render: function (data) {
-                        let background_color = 'bg-secondary'
-                        if (data > 30) {
-                            background_color = 'bg-success'
-                        } else if (data <= 30 && data > 0) {
-                            background_color = 'bg-warning'
-                        } else if (data <= 0) {
-                            background_color = 'bg-danger'
-                        }
-                        return `<span class="badge ${background_color}">${data}</span>`
-                    },
-                },
-                {
-                    targets: [16, 17],
-                    render: function (data) {
-                        return moment(data).format('LLL')
-                    },
-                },
+                // {
+                //     targets: 1,
+                //     render: function (data) {
+                //         return '<span class="badge bg-primary">' + data + '</span>'
+                //     },
+                // },
+                // {
+                //     targets: 2,
+                //     render: function (data) {
+                //         return '<span class="badge bg-label-primary">' + data + '</span>'
+                //     },
+                // },
+                // {
+                //     targets: [4, 6, 18],
+                //     orderable: false,
+                //     searchable: false,
+                // },
+                // {
+                //     targets: 7,
+                //     orderable: false,
+                //     searchable: false,
+                //     render: function (data) {
+                //         let elem = ''
+                //         if (data.length > 0) {
+                //             data.forEach(function (e) {
+                //                 elem += `<button type="button" class="btn btn-sm btn-label-dark waves-effect me-2 mt-1">
+                //                               ${e.name}
+                //                               <span class="badge bg-white text-dark badge-center ms-1">${e.quantity}</span>
+                //                           </button>
+                //                           </br>`
+                //             })
+                //         }
+                //         return elem
+                //     },
+                // },
+                // {
+                //     targets: 8,
+                //     render: function (data) {
+                //         let elem = data ?? ''
+                //         if (elem) {
+                //             elem = `<span class="badge bg-info">${data} pcs</span>`
+                //         }
+                //         return elem
+                //     },
+                // },
+                // {
+                //     targets: 9,
+                //     orderable: false,
+                //     searchable: false,
+                //     render: function (data) {
+                //         let elem = ''
+                //         if (data) {
+                //             elem = `<span class="badge bg-danger">${data} pcs</span>`
+                //         }
+                //         return elem
+                //     },
+                // },
+                // {
+                //     targets: 10,
+                //     orderable: false,
+                //     searchable: false,
+                //     render: function (data) {
+                //         let elem = data ?? 0
+                //         elem = `<span class="badge bg-success">${data} pcs</span>`
+                //         return elem
+                //     },
+                // },
+                // {
+                //     targets: 11,
+                //     render: function (data) {
+                //         let elem = ''
+                //         if (data) {
+                //             elem = `<span class="badge bg-label-secondary">${currencyFormat(data)}</span>`
+                //         }
+                //         return elem
+                //     },
+                // },
+                // {
+                //     targets: 12,
+                //     render: function (data) {
+                //         let elem = ''
+                //         if (data) {
+                //             elem = `<span class="badge bg-label-dark">${currencyFormat(data)}</span>`
+                //         }
+                //         return elem
+                //     },
+                // },
+                // {
+                //     targets: 14,
+                //     orderable: false,
+                //     searchable: false,
+                //     render: function (data) {
+                //         let background_color = 'bg-secondary'
+                //         if (data > 30) {
+                //             background_color = 'bg-success'
+                //         } else if (data <= 30 && data > 0) {
+                //             background_color = 'bg-warning'
+                //         } else if (data <= 0) {
+                //             background_color = 'bg-danger'
+                //         }
+                //         return `<span class="badge ${background_color}">${data}</span>`
+                //     },
+                // },
+                // {
+                //     targets: [16, 17],
+                //     render: function (data) {
+                //         return moment(data).format('LLL')
+                //     },
+                // },
             ],
-            order: [[15, 'asc']],
+            // order: [[15, 'asc']],
             scrollY: '300px',
             scrollX: true,
         })
@@ -515,7 +489,7 @@
             } else {
                 columns_name.val([2, 5, 6, 7, 8, 9, 10, 11, 12, 15, 16, 17])
             }
-            toggle_columns()
+            // toggle_columns()
             columns_name.selectpicker()
         })
 
