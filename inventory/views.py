@@ -12,6 +12,7 @@ import xlwt
 from django.db.models import Q
 from django.db.models import Sum, Count
 
+
 def inventory_in(request):
     context = {
         'item_type': ItemType.objects.filter().order_by('name'),
@@ -202,37 +203,36 @@ def inventory_load(request):
     stock_data = StocksItems.objects.raw(
         """
         SELECT 
-            si.item_id, 
-            it.name, 
-            CONCAT(g.name,' ',sg.name,' ',i.classification, ' ', i.description) AS item_details, 
-            SUM(si.pcs_quantity) AS total_quantity, SUM(damaged) AS total_damaged, 
-            si.unit_price,
-            s.delivered_date 
+                    si.item_id AS id, 
+                    it.name AS item_type_name, 
+                    CONCAT(g.name,' ',sg.name,' ',i.classification, ' ', i.description) AS item_details, 
+                    si.pcs_quantity AS total_quantity, 
+                    si.damaged AS total_damaged, 
+                    si.unit_price
         FROM stock_items AS si 
-        JOIN stocks AS s ON s.id = si.stock_id 
-        JOIN items AS i ON i.id = si.item_id 
-        JOIN item_type AS it ON it.id = i.type_id 
-        JOIN generic AS g ON g.id = i.generic_id 
-        JOIN sub_generic AS sg ON sg.id = i.sub_generic_id 
-        GROUP BY si.item_id 
+        JOIN stocks AS s ON s.id = si.stock_id
+        JOIN items AS i ON i.id = si.item_id
+        JOIN item_type AS it ON it.id = i.type_id
+        JOIN generic AS g ON g.id = i.generic_id
+        JOIN sub_generic AS sg ON sg.id = i.sub_generic_id
         ORDER BY s.delivered_date ASC
         """
     )
 
-
-    total = stock_data.count()
+    total = sum(1 for result in stock_data)
 
     if _start and _length:
         start = int(_start)
         length = int(_length)
         page = math.ceil(start / length) + 1
-        per_page = length 
+        per_page = length
 
         stock_data = stock_data[start:start + length]
 
     data = []
 
     for stock in stock_data:
+        print(stock)
         # userData = AuthUser.objects.filter(id=stock.user.id)
         # outItemsData = OutItems.objects.filter(stock_id=stock.id)
         # stockLocation = StockLocation.objects.select_related().filter(stock_id=stock.id)
@@ -259,10 +259,10 @@ def inventory_load(request):
 
         stock_obj = {
             'id': stock.id,
-            'item_type': stock.item.type.name,
+            'item_type': stock.item_type_name,
             'details': stock.item_details,
-            'pcs_quantity': stock.quantity,
-            'damage_stock': stock.damaged,
+            'pcs_quantity': stock.total_quantity,
+            'damage_stock': stock.total_damaged,
             'unit_price': stock.unit_price,
         }
 
