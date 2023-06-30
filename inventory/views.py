@@ -199,7 +199,26 @@ def inventory_load(request):
     #     Q(delivered_date__icontains=_search)
     # ).order_by(_order_dash + _order_col())
 
-    stock_data = StocksItems.objects.raw("SELECT si.item_id, it.name, CONCAT(g.name,' ',sg.name,' ',i.classification, ' ', i.description) AS item_details, SUM(si.pcs_quantity) AS total_quantity, SUM(damaged) AS total_damaged, si.unit_price,s.delivered_date FROM stock_items AS si JOIN stocks AS s ON s.id = si.stock_id JOIN items AS i ON i.id = si.item_id JOIN  item_type AS it ON it.id = i.type_id JOIN generic AS g ON g.id = i.generic_id JOIN sub_generic AS sg ON sg.id = i.sub_generic_id GROUP BY si.item_id ORDER BY s.delivered_date ASC")
+    stock_data = StocksItems.objects.raw(
+        """
+        SELECT 
+            si.item_id, 
+            it.name, 
+            CONCAT(g.name,' ',sg.name,' ',i.classification, ' ', i.description) AS item_details, 
+            SUM(si.pcs_quantity) AS total_quantity, SUM(damaged) AS total_damaged, 
+            si.unit_price,
+            s.delivered_date 
+        FROM stock_items AS si 
+        JOIN stocks AS s ON s.id = si.stock_id 
+        JOIN items AS i ON i.id = si.item_id 
+        JOIN item_type AS it ON it.id = i.type_id 
+        JOIN generic AS g ON g.id = i.generic_id 
+        JOIN sub_generic AS sg ON sg.id = i.sub_generic_id 
+        GROUP BY si.item_id 
+        ORDER BY s.delivered_date ASC
+        """
+    )
+
 
     total = stock_data.count()
 

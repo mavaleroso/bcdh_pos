@@ -130,10 +130,11 @@ def item_collections(request):
 
         item_desc = '['+item.barcode+'] ' + item.generic.name + ' ' + \
             item.sub_generic.name + ' ' + item.classification + ' ' + item.description
+        
+        brand_name = item.brand.name if item.brand else ''
 
         if (filter in item_desc):
-            data.append({'item_id': item.id, 'barcode': item.barcode,
-                         'item_type': item.type.name, 'brand': item.brand.name, 'item_desc': item_desc})
+            data.append({'item_id': item.id, 'barcode': item.barcode, 'item_type': item.type.name, 'brand': brand_name, 'item_desc': item_desc})
 
     return JsonResponse(data, safe=False)
 
