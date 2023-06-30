@@ -27,7 +27,7 @@
                         {% if row.is_active == True %}<span class="badge bg-label-success">Active</span> {% else %}<span class="badge bg-label-danger">Inactive</span> {% endif %}
                     </td>
                     <td>{{row.created_at}}</td>
-                    <td><a class="btn btn-sm btn-icon item-edit" id={{row.id}} value="{{row.name}}" status="{{row.is_active}}"><i class="text-primary ti ti-pencil"></i></a></td>
+                    <td><a class="btn btn-sm btn-icon item-edit" id={{row.id}} value="{{row.name}}" status="{{row.is_active}}" generic="{{row.generic_id}}"><i class="text-primary ti ti-pencil"></i></a></td>
                   </tr>
                  {% endfor %}
                  </tbody> 
@@ -50,7 +50,7 @@
     <div class="offcanvas-body flex-grow-1">
       <form class="add-new-record pt-0 row g-2" id="form-add-new-record" action="javascript:;">
         <div class="col-sm-12">
-          <label class="form-label" for="SubGenericname">SubGeneric Name</label>
+          <label class="form-label" for="SubGenericname">Sub Generic Name</label>
           <div class="input-group input-group-merge">
             <span id="SubGenericname2" class="input-group-text"><i class="ti ti-user"></i></span>
             <input
@@ -58,25 +58,40 @@
               id="SubGenericname"
               class="form-control dt-sub-generic-name"
               name="SubGenericname"
-              placeholder="Enter SubGeneric name"
+              placeholder="Enter Sub Generic name"
               aria-label="Oxytocin"
               aria-describedby="SubGenericname2"
             />
           </div>
         </div>
 
-        <div class="col-sm-12 subgeneric-status">
-          <label class="form-label" for="SubGenericname">Status</label>
+        <div class="col-sm-12 generic-status">
+          <label class="form-label" for="Genericname">Generic</label>
           <div class="input-group input-group-merge">
-            <span id="SubGenericname2" class="input-group-text"><i class="ti ti-user"></i></span>
+            <span id="Genericname2" class="input-group-text"><i class="ti ti-user"></i></span>
 
+            <select id="GenericName" name="GenericName" class="form-select dt-generic-name" >
+              <option></option>
+              {% for row in generic %}
+              <option value="{{ row.id }}">{{ row.name }}</option>
+              {% endfor %}
+          </select>
+    
+          </div>
+        </div>
+
+        <div class="col-sm-12 sub-generic-status">
+          <label class="form-label" for="SubGenericnamestatus">Status</label>
+          <div class="input-group input-group-merge">
+            <span id="SubGenericname2status" class="input-group-text"><i class="ti ti-user"></i></span>
               <select class="form-select select-status" id="select">
                 <option value="1">Active</option>
                 <option value="0">Inactive</option>
               </select>
-    
           </div>
         </div>
+
+
                 
         <div class="col-sm-12 update-div-sub-generic">
           <br>
@@ -93,14 +108,17 @@
 {% endblock %} 
 {% block footer_scripts %}
 <script>
-  let id,name,status,identifier_swal;
+  let id,name,status,identifier_swal,generic;
+  let subgen_id="";
 $(document).ready(function(){
   
     $('.item-edit').click(function (event) {
       $('.sub-generic-status').show();
-      id = $(this).attr('id');
-      name = $(this).attr('value')
-      status = $(this).attr('status')
+      id = $(this).attr('generic');
+      name = $(this).attr('value');
+      subgen_id = $(this).attr('id');
+  
+      status = $(this).attr('status');
       if (status == "True"){status =1}
       else {status =0}
       $('.title-name').text('Update Record');
@@ -108,17 +126,20 @@ $(document).ready(function(){
       offCanvasElement = document.querySelector('#add-new-record'); 
       let fv, offCanvasEl;
       offCanvasEl = new bootstrap.Offcanvas(offCanvasElement);
-      (offCanvasElement.querySelector('.dt-sub-generic-name').value = name);
+      (offCanvasElement.querySelector('.dt-sub-generic-name').value = name),
+      (offCanvasElement.querySelector('.dt-generic-name').value = id),
       (offCanvasElement.querySelector('.select-status').value = status),
         offCanvasEl.show();
     });
 
     $('#add-sub-generic').on('click', function(){
+      
         $subgenericname = $('#SubGenericname').val();
+        $genericname = $('#GenericName').find(":selected").val();
         $selectvalue = $('#select').find(":selected").val();
-        if(id){request_url = "{% url 'update-sub-generic' %}";identifier_swal = "Update";}
+        if(subgen_id){request_url = "{% url 'update-sub-generic' %}";identifier_swal = "Update";}
         else{identifier_swal = "Add";request_url = "{% url 'add-sub-generic' %}";}
-        if($subgenericname != ""){
+        if($subgenericname != "" && $genericname != ""){
           Swal.fire({
             title: 'Are you sure?',
             html: identifier_swal+" "+'<strong>'+$subgenericname+ " ?"+'</strong>',
@@ -136,7 +157,7 @@ $(document).ready(function(){
                 type: "POST",
                 url: request_url,
                 data:{
-                    subgenericname: $subgenericname,is_active : $selectvalue, subgeneric_id: id
+                    subgenericname: $subgenericname,generic_id: $genericname,is_active : $selectvalue, subgeneric_id: subgen_id
                 }
             }).done(function(data){
               if(data.data == "success"){
@@ -179,6 +200,7 @@ document.addEventListener('DOMContentLoaded', function (e) {
         newRecord.addEventListener('click', function () {
           $('.title-name').text('Add Record');
           $('.sub-generic-status').hide();
+          
           $('.update-div-sub-generic update-sub-generic').hide();
           id = "";
           identifier_swal = "Add";
@@ -201,6 +223,13 @@ document.addEventListener('DOMContentLoaded', function (e) {
           validators: {
             notEmpty: {
               message: 'The name is required'
+            }
+          }
+        },
+        GenericName: {
+          validators: {
+            notEmpty: {
+              message: 'Generic name is required'
             }
           }
         },

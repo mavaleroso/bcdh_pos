@@ -141,6 +141,7 @@ class Generic(models.Model):
 
 class SubGeneric(models.Model):
     name = models.CharField(max_length=128, blank=True, null=True)
+    generic = models.ForeignKey(Generic, models.DO_NOTHING)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     updated_at = models.DateTimeField(blank=True, null=True, auto_now=True)

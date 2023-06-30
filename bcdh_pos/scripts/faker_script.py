@@ -9,7 +9,7 @@ Faker.seed(313)
 
 generic_name = ['Oxytocin','Co-amoxiclav','Clindamycin','Docusate Sodium','Paracetamol/Orphenadrine Tablet','BUDESONIDE',
                 'CEFUROXIME','FEBUXOSTAT','Aluminum/magnesium/Semiticone','AMLODIPINE','Amoxicillin','CEFIXIME','CITIRIZINE',
-                'MEtronidazole','Multivitamins/Buclizine']
+                'MEtronidazole','Multivitamins/Buclizine','Multivitamins/Zinc','Hexaminine']
 
 sub_generic_name = ['GYNE-TOCIN/AMBTOCYN','EUROCLAV/XOVAX','INDIMAX','IRWAX','NEOTIC','ORPHEN PLUS',
                 'MEDCORT','JAZCEF','FEBUNAZ','Alsium','AMLO-10','Altomox','CEFTRI',
@@ -33,7 +33,7 @@ last_name = ['Valdehueza','Docdoc','Valeroso','Villanueva']
 
 
 client_type_id = ['1','2','3','1']
-
+sub_generic_id = ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17']
 
 
 active = True
@@ -43,8 +43,12 @@ for gen in generic_name:
     gen_val = Generic(name=gen,is_active = active)
     gen_val.save()
 
-for sub_gen in sub_generic_name: 
-    sub_gen_val = SubGeneric(name=sub_gen,is_active = active)
+# for sub_gen in sub_generic_name: 
+#     sub_gen_val = SubGeneric(name=sub_gen,is_active = active)
+#     sub_gen_val.save()
+
+for i in range(len(sub_generic_name)):
+    sub_gen_val = SubGeneric(name=sub_generic_name[i],is_active = active,generic_id = sub_generic_id[i])
     sub_gen_val.save()
 
 for unit in unit_name:
