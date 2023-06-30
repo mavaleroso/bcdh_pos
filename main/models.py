@@ -358,7 +358,7 @@ class Payment(models.Model):
 
 class OutItems(models.Model):
     sales = models.ForeignKey(Sales, models.DO_NOTHING)
-    item = models.ForeignKey(Items, models.DO_NOTHING)
+    stock_item = models.ForeignKey(StocksItems, models.DO_NOTHING)
     quantity = models.IntegerField(max_length=128, blank=True, null=True)
     discounted_amount = models.DecimalField(
         max_digits=30, decimal_places=10, blank=True, null=True)

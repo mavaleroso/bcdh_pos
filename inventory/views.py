@@ -200,26 +200,31 @@ def inventory_load(request):
     #     Q(delivered_date__icontains=_search)
     # ).order_by(_order_dash + _order_col())
 
-    stock_data = StocksItems.objects.raw(
-        """
-        SELECT 
-                    si.item_id AS id, 
-                    it.name AS item_type_name, 
-                    CONCAT(g.name,' ',sg.name,' ',i.classification, ' ', i.description) AS item_details, 
-                    si.pcs_quantity AS total_quantity, 
-                    si.damaged AS total_damaged, 
-                    si.unit_price
-        FROM stock_items AS si 
-        JOIN stocks AS s ON s.id = si.stock_id
-        JOIN items AS i ON i.id = si.item_id
-        JOIN item_type AS it ON it.id = i.type_id
-        JOIN generic AS g ON g.id = i.generic_id
-        JOIN sub_generic AS sg ON sg.id = i.sub_generic_id
-        ORDER BY s.delivered_date ASC
-        """
-    )
+    # stock_data = StocksItems.objects.raw(
+    #     """
+    #     SELECT 
+    #                 si.item_id AS id, 
+    #                 it.name AS item_type_name, 
+    #                 CONCAT(g.name,' ',sg.name,' ',i.classification, ' ', i.description) AS item_details, 
+    #                 si.pcs_quantity AS total_quantity, 
+    #                 si.damaged AS total_damaged, 
+    #                 si.unit_price
+    #     FROM stock_items AS si 
+    #     JOIN stocks AS s ON s.id = si.stock_id
+    #     JOIN items AS i ON i.id = si.item_id
+    #     JOIN item_type AS it ON it.id = i.type_id
+    #     JOIN generic AS g ON g.id = i.generic_id
+    #     JOIN sub_generic AS sg ON sg.id = i.sub_generic_id
+    #     ORDER BY s.delivered_date ASC
+    #     """
+    # )
 
-    total = sum(1 for result in stock_data)
+    # total = sum(1 for result in stock_data)
+
+    stock_data = StocksItems.objects.select_related()
+    out_items_data = OutItems.objects.select_related()
+    
+    total = stock_data.count()
 
     if _start and _length:
         start = int(_start)
@@ -232,7 +237,10 @@ def inventory_load(request):
     data = []
 
     for stock in stock_data:
-        print(stock)
+        out_items_data = OutItems.objects.select_related().filter(stock_item_id=stock.item.id)
+
+        # if out_items_data.count() > 0 :
+            
         # userData = AuthUser.objects.filter(id=stock.user.id)
         # outItemsData = OutItems.objects.filter(stock_id=stock.id)
         # stockLocation = StockLocation.objects.select_related().filter(stock_id=stock.id)
@@ -258,11 +266,11 @@ def inventory_load(request):
         # expiration_aging = stock.expiration_date - datetime.now().date()
 
         stock_obj = {
-            'id': stock.id,
-            'item_type': stock.item_type_name,
-            'details': stock.item_details,
-            'pcs_quantity': stock.total_quantity,
-            'damage_stock': stock.total_damaged,
+            'id': stock.item.id,
+            'item_type': stock.item.type.name,
+            'details': stock.item.generic.name + ' ' + stock.item.sub_generic.name + ' ' + stock.item.classification + ' ' + stock.item.description,
+            'pcs_quantity': stock.pcs_quantity,
+            'damage_stock': stock.damaged,
             'unit_price': stock.unit_price,
         }
 
