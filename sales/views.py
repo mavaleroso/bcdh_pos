@@ -16,6 +16,7 @@ from django.contrib.auth.hashers import make_password
 
 from django.db.models import F
 
+@login_required(login_url='login')
 @csrf_exempt
 def salestransaction(request):
     context = {
@@ -27,6 +28,7 @@ def salestransaction(request):
 	}
     return render(request, 'sales/transaction.html', context)
 
+@login_required(login_url='login')
 @csrf_exempt
 def saleslist(request):
     context = {
@@ -34,7 +36,7 @@ def saleslist(request):
 	}
     return render(request, 'sales/list.html', context)
     
-    
+@login_required(login_url='login')   
 @csrf_exempt
 def patientdetails(request):
     patient_id = request.POST.get('patient')
@@ -47,6 +49,7 @@ def patientdetails(request):
     )
     return JsonResponse({'data': qs_list})
 
+@login_required(login_url='login')
 @csrf_exempt
 def patientalldetails(request):
     qs_list = list(
@@ -58,7 +61,7 @@ def patientalldetails(request):
     )
     return JsonResponse({'data': qs_list})
 
-
+@login_required(login_url='login')
 @csrf_exempt
 def discountdetails(request):
     discount_id = request.POST.get('dis_id')

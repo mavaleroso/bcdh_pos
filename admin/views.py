@@ -7,7 +7,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from main.models import ( ItemType, Company, Generic, SubGeneric, Brand, Unit, AuthUser, UserDetails, Clients, ClientType )
@@ -17,12 +17,18 @@ import datetime
 from django.contrib.auth.hashers import make_password
 
 
+def is_member_of_inventory_staff(user):
+    return user.groups.filter(name='inventory_staff').exists()
+    # @user_passes_test(is_member_of_inventory_staff)
+
+@login_required(login_url='login')
 def brand(request):
     context = {
 		'brand' : Brand.objects.filter().order_by('name'),
 	}
     return render(request, 'admin/brand.html', context)
 
+@login_required(login_url='login')
 def company(request):
     qs_json = serializers.serialize('json', Company.objects.filter().order_by('name'))
     contextold = {
@@ -33,30 +39,36 @@ def company(request):
 	}
     return render(request, 'admin/company.html', context)
 
+@login_required(login_url='login')
 def generic(request):
     context = {
         'generic' : Generic.objects.filter().order_by('id'),
 	}
     return render(request, 'admin/generic.html', context)
 
+@login_required(login_url='login')
 def subgeneric(request):
     context = {
-		'sub_generic' : SubGeneric.objects.filter().order_by('name'),
+		'sub_generic' : SubGeneric.objects.filter().order_by('name').select_related(),
+        'generic' : Generic.objects.filter()
 	}
     return render(request, 'admin/sub_generic.html', context)
 
+@login_required(login_url='login')
 def units(request):
     context = {
 		'units' : Unit.objects.filter().order_by('name'),
 	}
     return render(request, 'admin/units.html', context)
 
+@login_required(login_url='login')
 def user(request):
     context = {
 		'users' : AuthUser.objects.filter().exclude(id=1).order_by('first_name').select_related('userdetails')
 	}
     return render(request, 'admin/users.html', context)
 
+@login_required(login_url='login')
 def clients(request):
     context = {
 		'clients' : Clients.objects.filter().exclude(id=1).order_by('first_name').select_related(),
@@ -64,6 +76,7 @@ def clients(request):
         
 	}
     return render(request, 'admin/clients.html', context)
+
 
 @csrf_exempt
 def addgeneric(request):
@@ -228,15 +241,17 @@ def updatebrand(request):
 @csrf_exempt
 def addsubgeneric(request):
     if request.method == 'POST':
-        check_brand = False
+        print("bahokaaaaaaaa")
         subgeneric_name = request.POST.get('subgenericname')
+        generic_id = request.POST.get('generic_id')
+
         if SubGeneric.objects.filter(name=subgeneric_name):
             return JsonResponse({'data': 'error'})
         else:
             check_subgeneric = True        
         if check_subgeneric:
             add = SubGeneric(
-                name= subgeneric_name)
+                name= subgeneric_name, generic_id =generic_id )
             add.save()
             return JsonResponse({'data': 'success'})
 
@@ -245,16 +260,22 @@ def updatesubgeneric(request):
     if request.method == 'POST':
         subgeneric_id = request.POST.get('subgeneric_id')
         subgeneric_name = request.POST.get('subgenericname')
+        gen_id = request.POST.get('generic_id')
         status = request.POST.get('is_active')
 
+        print("testko")
+        print(subgeneric_id)
+        print(subgeneric_name)
+        print(gen_id)
+        print(status)
+
         check_subgeneric = False
-        subgeneric_name = request.POST.get('subgenericname')
         if SubGeneric.objects.filter(name=subgeneric_name).exclude(id=subgeneric_id):
             return JsonResponse({'data': 'error'})
         else:
             check_subgeneric = True        
         if check_subgeneric:
-            SubGeneric.objects.filter(id=subgeneric_id).update(name=subgeneric_name, is_active=status)
+            SubGeneric.objects.filter(id=subgeneric_id).update(name=subgeneric_name, generic_id=gen_id,is_active=status)
             return JsonResponse({'data': 'success'})
 
 @csrf_exempt
