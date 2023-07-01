@@ -11,6 +11,8 @@ import math
 import xlwt
 from django.db.models import Q
 from django.db.models import Sum, Count
+import json
+import re
 
 
 def inventory_in(request):
@@ -202,14 +204,14 @@ def inventory_load(request):
 
     # stock_data = StocksItems.objects.raw(
     #     """
-    #     SELECT 
-    #                 si.item_id AS id, 
-    #                 it.name AS item_type_name, 
-    #                 CONCAT(g.name,' ',sg.name,' ',i.classification, ' ', i.description) AS item_details, 
-    #                 si.pcs_quantity AS total_quantity, 
-    #                 si.damaged AS total_damaged, 
+    #     SELECT
+    #                 si.item_id AS id,
+    #                 it.name AS item_type_name,
+    #                 CONCAT(g.name,' ',sg.name,' ',i.classification, ' ', i.description) AS item_details,
+    #                 si.pcs_quantity AS total_quantity,
+    #                 si.damaged AS total_damaged,
     #                 si.unit_price
-    #     FROM stock_items AS si 
+    #     FROM stock_items AS si
     #     JOIN stocks AS s ON s.id = si.stock_id
     #     JOIN items AS i ON i.id = si.item_id
     #     JOIN item_type AS it ON it.id = i.type_id
@@ -223,7 +225,7 @@ def inventory_load(request):
 
     stock_data = StocksItems.objects.select_related()
     out_items_data = OutItems.objects.select_related()
-    
+
     total = stock_data.count()
 
     if _start and _length:
@@ -236,17 +238,56 @@ def inventory_load(request):
 
     data = []
 
+    shapes = [
+        {
+            'shape': 'square',
+            'width': 40,
+            'height': 40
+        },
+        {
+            'shape': 'rectangle',
+            'width': 30,
+            'height': 40
+
+        }
+    ]
+
     for stock in stock_data:
-        out_items_data = OutItems.objects.select_related().filter(stock_item_id=stock.item.id)
+        out_items_data = OutItems.objects.select_related().filter(
+            stock_item_id=stock.item.id)
 
         # if out_items_data.count() > 0 :
-            
+
         # userData = AuthUser.objects.filter(id=stock.user.id)
         # outItemsData = OutItems.objects.filter(stock_id=stock.id)
         # stockLocation = StockLocation.objects.select_related().filter(stock_id=stock.id)
         # full_name = userData[0].first_name + ' ' + userData[0].last_name
 
         # location_data = []
+
+        if len(data) == 0:
+            data.append({
+                'id': stock.item.id,
+                'item_type': stock.item.type.name,
+                'details': stock.item.generic.name + ' ' + stock.item.sub_generic.name + ' ' + stock.item.classification + ' ' + stock.item.description,
+                'pcs_quantity': stock.pcs_quantity,
+                'damage_stock': stock.damaged,
+                'unit_price': stock.unit_price,
+            })
+        else:
+            if not [item for item in data if item['id'] == stock.item.id]:
+
+                # for i, d in enumerate(data):
+                # if d['id'] != stock.item.id:
+                data.append({
+                    'id': stock.item.id,
+                    'item_type': stock.item.type.name,
+                    'details': stock.item.generic.name + ' ' + stock.item.sub_generic.name + ' ' + stock.item.classification + ' ' + stock.item.description,
+                    'pcs_quantity': stock.pcs_quantity,
+                    'damage_stock': stock.damaged,
+                    'unit_price': stock.unit_price,
+                })
+                # break
 
         # for il in stockLocation:
         #     il_obj = {
@@ -265,16 +306,16 @@ def inventory_load(request):
 
         # expiration_aging = stock.expiration_date - datetime.now().date()
 
-        stock_obj = {
-            'id': stock.item.id,
-            'item_type': stock.item.type.name,
-            'details': stock.item.generic.name + ' ' + stock.item.sub_generic.name + ' ' + stock.item.classification + ' ' + stock.item.description,
-            'pcs_quantity': stock.pcs_quantity,
-            'damage_stock': stock.damaged,
-            'unit_price': stock.unit_price,
-        }
+        # stock_obj = {
+        #     'id': stock.item.id,
+        #     'item_type': stock.item.type.name,
+        #     'details': stock.item.generic.name + ' ' + stock.item.sub_generic.name + ' ' + stock.item.classification + ' ' + stock.item.description,
+        #     'pcs_quantity': stock.pcs_quantity,
+        #     'damage_stock': stock.damaged,
+        #     'unit_price': stock.unit_price,
+        # }
 
-        data.append(stock_obj)
+        # data.append(data)
 
     response = {
         'data': data,
