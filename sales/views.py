@@ -8,7 +8,7 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from main.models import (Stocks, Clients, ClientType, Discounts, Sales, Payment,OutItems,SystemConfiguration)
+from main.models import (Stocks,StocksItems, Clients, ClientType, Discounts, Sales, Payment,OutItems,SystemConfiguration,UserDetails,RoleDetails)
 import json 
 from django.core import serializers
 from datetime import date, datetime
@@ -16,25 +16,45 @@ from django.contrib.auth.hashers import make_password
 
 from django.db.models import F
 
+
+
+def get_user_details(request):
+    return UserDetails.objects.filter(user_id=request.user.id).first()    
+
 @login_required(login_url='login')
 @csrf_exempt
 def salestransaction(request):
-    context = {
-		'clients' : Clients.objects.filter().order_by('first_name'),
-        'items' : Stocks.objects.filter().exclude(pcs_quantity=0).select_related(),
-        'discount' : Discounts.objects.filter(),
-        'client_type' : ClientType.objects.filter()
-        
-	}
-    return render(request, 'sales/transaction.html', context)
+    user_details = get_user_details(request)
+    role = RoleDetails.objects.filter(id=user_details.role_id).first()
+    allowed_roles = ["Sales Staff", "Admin"] 
+    
+    if role.role_name in allowed_roles:
+        context = {
+            'clients' : Clients.objects.filter().order_by('first_name'),
+            'items' : StocksItems.objects.filter().exclude(pcs_quantity=0).select_related(),
+            'discount' : Discounts.objects.filter(),
+            'client_type' : ClientType.objects.filter(),
+            'role_permission': role.role_name,
+            
+        }
+        return render(request, 'sales/transaction.html', context)
+    else:
+        return render(request, 'pages/unauthorized.html')
 
 @login_required(login_url='login')
 @csrf_exempt
 def saleslist(request):
-    context = {
-        'sales' : Sales.objects.filter().select_related()
-	}
-    return render(request, 'sales/list.html', context)
+    user_details = get_user_details(request)
+    role = RoleDetails.objects.filter(id=user_details.role_id).first()
+    allowed_roles = ["Sales Staff", "Admin"] 
+    if role.role_name in allowed_roles:
+        context = {
+            'sales' : Sales.objects.filter().select_related(),
+            'role_permission': role.role_name,
+        }
+        return render(request, 'sales/list.html', context)
+    else:
+        return render(request, 'pages/unauthorized.html')
     
 @login_required(login_url='login')   
 @csrf_exempt

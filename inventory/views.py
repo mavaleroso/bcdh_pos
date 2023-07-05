@@ -5,37 +5,56 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 from main.models import (Stocks, StocksItems, Items, StockLocation, SystemConfiguration,
-                         ItemType, Company, Generic, SubGeneric, Brand, AuthUser, OutItems, Location)
+                         ItemType, Company, Generic, SubGeneric, Brand, AuthUser, OutItems, Location, UserDetails, RoleDetails)
 from datetime import date, datetime
 import math
 import xlwt
 from django.db.models import Q
+from django.contrib.auth.decorators import login_required
 
 
+def get_user_details(request):
+    return UserDetails.objects.filter(user_id=request.user.id).first()
+
+@login_required(login_url='login')
 def inventory_in(request):
-    context = {
-        'item_type': ItemType.objects.filter().order_by('name'),
-        'company': Company.objects.filter().order_by('name'),
-        'generic': Generic.objects.filter().order_by('name'),
-        'sub_generic': SubGeneric.objects.filter().order_by('name'),
-        'brand': Brand.objects.filter().order_by('name'),
-    }
-    return render(request, 'inventory/in.html', context)
+    user_details = get_user_details(request)
+    role = RoleDetails.objects.filter(id=user_details.role_id).first()
+    allowed_roles = ["Inventory Staff", "Admin"] 
+    if role.role_name in allowed_roles:
+        context = {
+            'item_type': ItemType.objects.filter().order_by('name'),
+            'company': Company.objects.filter().order_by('name'),
+            'generic': Generic.objects.filter().order_by('name'),
+            'sub_generic': SubGeneric.objects.filter().order_by('name'),
+            'brand': Brand.objects.filter().order_by('name'),
+            'role_permission': role.role_name,
+        }
+        return render(request, 'inventory/in.html', context)
+    else:
+        return render(request, 'pages/unauthorized.html')
 
 
 def inventory_list(request):
-    context = {
-        'item_type': ItemType.objects.filter().order_by('name'),
-        'company': Company.objects.filter().order_by('name'),
-        'generic': Generic.objects.filter().order_by('name'),
-        'sub_generic': SubGeneric.objects.filter().order_by('name'),
-        'brand': Brand.objects.filter().order_by('name'),
-        'company': Company.objects.filter().order_by('name'),
-        'inventory_code': Stocks.objects.filter().order_by('code'),
-        'barcode': Items.objects.filter().order_by('barcode'),
-        'location': Location.objects.filter().order_by('name'),
-    }
-    return render(request, 'inventory/list.html', context)
+    user_details = get_user_details(request)
+    role = RoleDetails.objects.filter(id=user_details.role_id).first()
+    allowed_roles = ["Inventory Staff","Sales Staff", "Admin"] 
+    if role.role_name in allowed_roles:
+        context = {
+            'item_type': ItemType.objects.filter().order_by('name'),
+            'company': Company.objects.filter().order_by('name'),
+            'generic': Generic.objects.filter().order_by('name'),
+            'sub_generic': SubGeneric.objects.filter().order_by('name'),
+            'brand': Brand.objects.filter().order_by('name'),
+            'company': Company.objects.filter().order_by('name'),
+            'inventory_code': Stocks.objects.filter().order_by('code'),
+            'barcode': Items.objects.filter().order_by('barcode'),
+            'location': Location.objects.filter().order_by('name'),
+            'role_permission': role.role_name
+        }
+        return render(request, 'inventory/list.html', context)
+    else:
+        return render(request, 'pages/unauthorized.html')
 
 
 def get_stock_id_availability(stock_data=[], return_val='', availability=False):
@@ -470,12 +489,18 @@ def export_excel(request):
     return response
 
 
+
 def inventory_po_list(request):
-    context = {
-
-    }
-    return render(request, 'inventory/po_list.html', context)
-
+    user_details = get_user_details(request)
+    role = RoleDetails.objects.filter(id=user_details.role_id).first()
+    allowed_roles = ["Inventory Staff","Sales Staff","Admin"] 
+    if role.role_name in allowed_roles:
+        context = {
+            'role_permission': role.role_name
+        }
+        return render(request, 'inventory/po_list.html', context)
+    else:
+        return render(request, 'pages/unauthorized.html')
 
 def inventory_po_load(request):
     _search = request.GET.get('search[value]')
