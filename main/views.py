@@ -6,6 +6,11 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
+from main.models import (UserDetails, RoleDetails )
+
+
+def get_user_details(request):
+    return UserDetails.objects.filter(user_id=request.user.id).first()
 
 
 def index(request):
@@ -37,7 +42,16 @@ def login(request):
 
 @login_required(login_url='login')
 def dashboard(request):
-    return render(request, 'dashboard.html')
+    user_details = get_user_details(request)
+    allowed_roles = ["Admin", "Management"]
+    role = RoleDetails.objects.filter(id=user_details.role_id).first()
+
+    context = {
+        'user_role' : role.role_name,
+        'role_permission': role.role_name,
+    }
+
+    return render(request, 'dashboard.html',context)
 
 
 @csrf_exempt

@@ -5,22 +5,32 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 from main.models import (Stocks, StocksItems, Items, StockLocation, SystemConfiguration,
-                         ItemType, Company, Generic, SubGeneric, Brand, AuthUser, OutItems, Location)
+                         ItemType, Company, Generic, SubGeneric, Brand, AuthUser, OutItems, Location, UserDetails, RoleDetails)
 from datetime import date, datetime
 import math
 import xlwt
 from django.db.models import Q
+from django.contrib.auth.decorators import login_required
 
 
+def get_user_details(request):
+    return UserDetails.objects.filter(user_id=request.user.id).first()
+
+@login_required(login_url='login')
 def inventory_in(request):
-    context = {
-        'item_type': ItemType.objects.filter().order_by('name'),
-        'company': Company.objects.filter().order_by('name'),
-        'generic': Generic.objects.filter().order_by('name'),
-        'sub_generic': SubGeneric.objects.filter().order_by('name'),
-        'brand': Brand.objects.filter().order_by('name'),
-    }
-    return render(request, 'inventory/in.html', context)
+    user_details = get_user_details(request)
+    role = RoleDetails.objects.filter(id=user_details.role_id).first()
+    allowed_roles = ["Inventory Staff"] 
+    if role.role_name in allowed_roles:
+        context = {
+            'item_type': ItemType.objects.filter().order_by('name'),
+            'company': Company.objects.filter().order_by('name'),
+            'generic': Generic.objects.filter().order_by('name'),
+            'sub_generic': SubGeneric.objects.filter().order_by('name'),
+            'brand': Brand.objects.filter().order_by('name'),
+            'role_permission': role.role_name,
+        }
+        return render(request, 'inventory/in.html', context)
 
 
 def inventory_list(request):

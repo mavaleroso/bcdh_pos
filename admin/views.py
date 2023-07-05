@@ -10,18 +10,23 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from main.models import ( ItemType, Company, Generic, SubGeneric, Brand, Unit, AuthUser, UserDetails, Clients, ClientType )
+from main.models import ( ItemType, Company, Generic, SubGeneric, Brand, Unit, AuthUser, UserDetails, Clients, ClientType, RoleDetails )
 import json 
 from django.core import serializers
 import datetime
 from django.contrib.auth.hashers import make_password
 
 
+
 def is_member_of_inventory_staff(user):
     return user.groups.filter(name='inventory_staff').exists()
-    # @user_passes_test(is_member_of_inventory_staff)
+
+
+def get_user_details(request):
+    return UserDetails.objects.filter(user_id=request.user.id).first()
 
 @login_required(login_url='login')
+# @role_required(allowed_roles=["admin"])
 def brand(request):
     context = {
 		'brand' : Brand.objects.filter().order_by('name'),
@@ -30,21 +35,32 @@ def brand(request):
 
 @login_required(login_url='login')
 def company(request):
-    qs_json = serializers.serialize('json', Company.objects.filter().order_by('name'))
-    contextold = {
-		'company' : qs_json,
-	}
-    context = {
-		'company' : Company.objects.filter().order_by('name'),
-	}
-    return render(request, 'admin/company.html', context)
+    if request.role =="Admin":
+        qs_json = serializers.serialize('json', Company.objects.filter().order_by('name'))
+        contextold = {
+            'company' : qs_json,
+        }
+        context = {
+            'company' : Company.objects.filter().order_by('name'),
+        }
+        return render(request, 'admin/company.html', context)
+        
+
 
 @login_required(login_url='login')
 def generic(request):
-    context = {
-        'generic' : Generic.objects.filter().order_by('id'),
-	}
-    return render(request, 'admin/generic.html', context)
+    user_details = get_user_details(request)
+    allowed_roles = ["Admin", "Management"] 
+    role = RoleDetails.objects.filter(id=user_details.role_id).first()
+    if role.role_name in allowed_roles:
+        context = {
+            'generic' : Generic.objects.filter().order_by('id'),
+            'user_role' : role.role_name,
+        }
+        return render(request, 'admin/generic.html', context)
+    else:
+        return render(request, 'pages/unauthorized.html')
+        
 
 @login_required(login_url='login')
 def subgeneric(request):
@@ -241,7 +257,6 @@ def updatebrand(request):
 @csrf_exempt
 def addsubgeneric(request):
     if request.method == 'POST':
-        print("bahokaaaaaaaa")
         subgeneric_name = request.POST.get('subgenericname')
         generic_id = request.POST.get('generic_id')
 
