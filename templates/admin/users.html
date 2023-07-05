@@ -15,6 +15,7 @@
                 <tr>
                   <th>Username</th>
                   <th>Fullname</th>
+                  <th>Role</th>
                   <th>Email</th>
                   <th>Birthdate</th>
                   <th>Sex</th>
@@ -29,13 +30,14 @@
                   <tr>
                     <td>{{row.username}}</td>
                     <td>{{row.first_name}} {{row.userdetails.middle_name}} {{row.last_name}}</td>
+                    <td>{{row.userdetails.role.role_name}}</td>
                     <td>{{row.email}}</td>
                     <td>{{row.userdetails.birthdate}}</td>
                     <td>{{row.userdetails.sex}}</td>
                     <td>{{row.userdetails.address}}</td>
                     <td>{{row.userdetails.position}}</td>
                     <td>{% if row.is_active == True %}<span class="badge bg-label-success">Active</span>{% else %}<span class="badge bg-label-danger">Inactive</span> {% endif %}</td>
-                    <td><a class="btn btn-sm btn-icon item-edit" id={{row.id}} firstname="{{row.first_name}}" email="{{row.email}}" middlename="{{row.userdetails.middle_name}}" lastname="{{row.last_name}}" username="{{row.username}}" password="{{row.password}}" status="{{row.is_active}}" address="{{row.userdetails.address}}" position = "{{row.userdetails.position}}" birthdate = "{{row.userdetails.birthdate|date:"Y-m-d"}}" roles = "{{row.is_superuser}}" ><i class="text-primary ti ti-pencil"></i></a></td>
+                    <td><a class="btn btn-sm btn-icon item-edit" id="{{row.id}}" firstname="{{row.first_name}}" email="{{row.email}}" sex="{{row.userdetails.sex}}" middlename="{{row.userdetails.middle_name}}" lastname="{{row.last_name}}" username="{{row.username}}" password="{{row.password}}" status="{{row.is_active}}" address="{{row.userdetails.address}}" position = "{{row.userdetails.position}}" birthdate = "{{row.userdetails.birthdate|date:"Y-m-d"}}" roles ="{{row.userdetails.role_id}}"><i class="text-primary ti ti-pencil"></i></a></td>
                   </tr>
                  {% endfor %}
                  </tbody> 
@@ -153,28 +155,26 @@
       <div class="col-sm-12 user-roles">
         <label class="form-label" for="status">Roles</label>
         <div class="input-group input-group-merge">
-          <span id="roles2" class="input-group-text"><i class="ti ti-user"></i></span>
-
-            <select class="form-select dt-roles" name="roles" id="roles">
-              <option value="2">Inventory staff</option>
-              <option value="3">Sales staff</option>
-              <option value="4">Management</option>
-              <option value="5">Admin</option>
+          <div class="col-12 col-xxl-12 col-xl-12">
+            <select class="select2 form-select dt-roles" name="roles" id="roles">
+              <option></option>
+              {% for row in role_details %}
+              <option value="{{ row.id }}">{{ row.role_name }}</option>
+              {% endfor %}
             </select>
-  
+          </div>
         </div>
       </div>
         
         <div class="col-sm-12 user-status">
           <label class="form-label" for="status">Status</label>
           <div class="input-group input-group-merge">
-            <span id="status2" class="input-group-text"><i class="ti ti-user"></i></span>
-
-              <select class="form-select select-status" id="select">
-                <option value="1">Active</option>
-                <option value="0">Inactive</option>
-              </select>
-    
+              <div class="col-12 col-xxl-12 col-xl-12">
+                <select class="select2 form-select select-status" id="select">
+                  <option value="1">Active</option>
+                  <option value="0">Inactive</option>
+                </select>
+              </div>
           </div>
         </div>
 
@@ -211,13 +211,14 @@
         <div class="col-sm-12 user-sex">
           <label class="form-label" for="Sex">Sex</label>
           <div class="input-group input-group-merge">
-            <span id="sex2" class="input-group-text"><i class="ti ti-user"></i></span>
+              <div class="col-12 col-xxl-12 col-xl-12">
+                <select class="select2 form-select dt-sex" id="sex">
+                  <option></option>
+                  <option value="Male">Male</option>
+                  <option value="Female">Female</option>
+                </select>
+              </div>
 
-              <select class="form-select dt-sex" id="sex">
-                <option value="Male">Male</option>
-                <option value="Female">Female</option>
-              </select>
-    
           </div>
         </div>
 
@@ -280,9 +281,8 @@ $(document).ready(function(){
       address = $(this).attr('address');
       birthdate = $(this).attr('birthdate');
       position = $(this).attr('position');
-      sex = $('.dt-sex').find(":selected").val();
-      roles = $('.dt-roles').find(":selected").val();
-      
+      sex = $(this).attr('sex');
+      roles = $(this).attr('roles');
       if (status == "True"){status =1}
       else {status =0}
       $('.title-name').text('Update Record');
@@ -290,7 +290,7 @@ $(document).ready(function(){
       offCanvasElement = document.querySelector('#add-new-record'); 
       let fv, offCanvasEl;
       offCanvasEl = new bootstrap.Offcanvas(offCanvasElement);
-      (offCanvasElement.querySelector('.dt-first-name').value = firstname),
+      (offCanvasElement.querySelector('.dt-first-name').value = "firstname"),
       (offCanvasElement.querySelector('.dt-middle-name').value = middlename),
       (offCanvasElement.querySelector('.select-status').value = status),
       (offCanvasElement.querySelector('.dt-last-name').value = lastname),
@@ -298,7 +298,8 @@ $(document).ready(function(){
       (offCanvasElement.querySelector('.dt-email').value = email),
       (offCanvasElement.querySelector('.dt-address').value = address),
       (offCanvasElement.querySelector('.dt-birthdate').value = birthdate),
-      (offCanvasElement.querySelector('.dt-position').value = position);
+      (offCanvasElement.querySelector('.dt-position').value = position),
+      (offCanvasElement.querySelector('.dt-sex').value =sex);
       (offCanvasElement.querySelector('.dt-roles').value = roles);
         offCanvasEl.show();
     });

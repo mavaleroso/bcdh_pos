@@ -29,11 +29,11 @@ def user(request):
     user_details = get_user_details(request)
     role = RoleDetails.objects.filter(id=user_details.role_id).first()
     allowed_roles = ["Admin"] 
-    
     if role.role_name in allowed_roles:
         context = {
-            'users' : AuthUser.objects.filter().exclude(id=1).order_by('first_name').select_related('userdetails'),
+            'users' : AuthUser.objects.filter().exclude(id=1).order_by('first_name').select_related(),
             'role_permission': role.role_name,
+            'role_details': RoleDetails.objects.filter().order_by('role_name'),
         }
         return render(request, 'admin/users.html', context)
     else:
@@ -74,6 +74,7 @@ def adduser(request):
         address_ = request.POST.get('address')
         sex_ = request.POST.get('sex')
         position_ = request.POST.get('position')
+        role_id = request.POST.get('roles')
         
 
         if AuthUser.objects.filter(username=username_):
@@ -84,7 +85,7 @@ def adduser(request):
             add_authuser.save()
             
             add_user_details = UserDetails(
-                middle_name = middle_name_ ,birthdate= birthdate, sex = sex_, address = address_, position = position_, user_id = AuthUser.objects.last().id)
+                middle_name = middle_name_ ,birthdate= birthdate, sex = sex_, address = address_, position = position_,role_id =role_id , user_id = AuthUser.objects.last().id)
             add_user_details.save()
 
             return JsonResponse({'data': 'success'})
@@ -113,7 +114,7 @@ def updateuser(request):
         
         else:
             AuthUser.objects.filter(id=user_id_).update(password = make_password(password_),is_superuser = roles,username=username_,first_name=firstname,last_name=lastname, email = email_, is_active = status)
-            UserDetails.objects.filter(user_id=user_id_).update(middle_name=middle_name_,birthdate=birthdate,sex=sex_, address = address_, position = position_)
+            UserDetails.objects.filter(user_id=user_id_).update(middle_name=middle_name_,birthdate=birthdate,sex=sex_, address = address_, position = position_, role_id = roles)
             return JsonResponse({'data': 'success'})
         
 
