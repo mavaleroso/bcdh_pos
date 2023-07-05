@@ -1,5 +1,5 @@
 from faker import Faker
-from main.models import Location, Generic, SubGeneric, Unit,Company,ClientType,Brand, ItemType, Discounts, SystemConfiguration, Clients
+from main.models import Location, Generic, SubGeneric, Unit,Company,ClientType,Brand, ItemType, Discounts, SystemConfiguration, Clients, UserDetails, RoleDetails
 import numpy as np
 import random
 import datetime
@@ -34,6 +34,9 @@ last_name = ['Valdehueza','Docdoc','Valeroso','Villanueva']
 
 client_type_id = ['1','2','3','1']
 sub_generic_id = ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17']
+
+role_details = ['Admin','Inventory Staff','Management','Sales Staff']
+
 
 
 active = True
@@ -87,9 +90,17 @@ for i in range(20):
 for i in range(len(clients_name)):
     db_cl = Clients(first_name=clients_name[i],middle_name = middle_name[i],last_name =last_name[i],birthdate =datetime.date.today(),sex="Male",address=fake.unique.address(),occupation=fake.address(),client_type_id =client_type_id[i] )
     db_cl.save()
+    
+for roles in role_details:
+    role = RoleDetails(role_name=roles)
+    role.save()
+
 
 system_configuration_db = SystemConfiguration(name='Bayugan City Doctors Hospital', inventory_code='23-05-00000', transaction_code = '23-05-00000', year='2023')
 system_configuration_db.save()
+
+userdb = UserDetails(middle_name='Vilanueva', sex = 'Male', address='J.P. Rizal', position ='CMT II', role_id = '1', user_id = '1')
+userdb.save()
 
 
 

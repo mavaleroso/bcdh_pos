@@ -43,9 +43,10 @@ def login(request):
 @login_required(login_url='login')
 def dashboard(request):
     user_details = get_user_details(request)
+    
     allowed_roles = ["Admin", "Management"]
+    
     role = RoleDetails.objects.filter(id=user_details.role_id).first()
-
     context = {
         'user_role' : role.role_name,
         'role_permission': role.role_name,
