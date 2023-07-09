@@ -175,6 +175,85 @@ def fetch_item_by_barcode(request):
     return JsonResponse(response)
 
 
+#start Company function ---------------->
+
+@csrf_exempt
+def company_add(request):
+    company_ = request.POST.get('Company')
+    code_ = request.POST.get('Code')
+    address_ = request.POST.get('Address')
+    remarks_ = request.POST.get('Remarks')
+    user_id = request.session.get('user_id', 0)
+    company_add = Company(name=company_, code=code_, address=address_,remarks=remarks_)
+    try:
+        company_add.save()
+        return JsonResponse({'data': 'success'})
+    except IntegrityError as e:
+        return JsonResponse({'data': 'error'})
+        
+@csrf_exempt
+def company_update(request):
+    id = request.POST.get('ItemID')
+    company_ = request.POST.get('Company')
+    code_ = request.POST.get('Code')
+    address_ = request.POST.get('Address')
+    remarks_ = request.POST.get('Remarks')
+    status = request.POST.get('Status')
+
+    if Company.objects.filter(name=company_).exclude(id=id):
+        return JsonResponse({'data': 'error', 'message': 'Duplicate Company'})
+    else:
+        Company.objects.filter(id=id).update(name=company_, code=code_, address=address_,remarks=remarks_,is_active=status)
+        return JsonResponse({'data': 'success'})
+        
+
+def company_edit(request):
+    id = request.GET.get('id')
+    items = Company.objects.get(pk=id)
+    data = serialize("json", [items])
+    return HttpResponse(data, content_type="application/json")
+
+def company_load(request):
+    company_data = Company.objects.select_related().order_by('-created_at').reverse()
+    total = company_data.count()
+
+    _start = request.GET.get('start')
+    _length = request.GET.get('length')
+    if _start and _length:
+        start = int(_start)
+        length = int(_length)
+        page = math.ceil(start / length) + 1
+        per_page = length
+
+        company_data = company_data[start:start + length]
+
+    data = []
+
+    for item in company_data:
+        item = {
+            'id': item.id,
+            'name': item.name,
+            'code': item.code,
+            'address': item.address,
+            'remarks': item.remarks,
+            'created_at': item.created_at,
+            'status': item.is_active
+
+        }
+
+        data.append(item)
+
+    response = {
+        'data': data,
+        'page': page,
+        'per_page': per_page,
+        'recordsTotal': total,
+        'recordsFiltered': total,
+    }
+    return JsonResponse(response)
+#end ----------->
+
+
 
 
 
