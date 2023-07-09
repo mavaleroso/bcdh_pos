@@ -175,7 +175,17 @@ def fetch_item_by_barcode(request):
     return JsonResponse(response)
 
 
-#start Company function ---------------->
+#starts Company function ---------------->
+
+@login_required(login_url='login')
+def company(request):
+    user_details = get_user_details(request)
+    role = RoleDetails.objects.filter(id=user_details.role_id).first()
+    context = {
+        'company' : Company.objects.filter().order_by('name'),
+        'role_permission' : role.role_name,
+    }
+    return render(request, 'libraries/company.html', context)
 
 @csrf_exempt
 def company_add(request):
@@ -206,7 +216,6 @@ def company_update(request):
         Company.objects.filter(id=id).update(name=company_, code=code_, address=address_,remarks=remarks_,is_active=status)
         return JsonResponse({'data': 'success'})
         
-
 def company_edit(request):
     id = request.GET.get('id')
     items = Company.objects.get(pk=id)
@@ -254,9 +263,6 @@ def company_load(request):
 #end ----------->
 
 
-
-
-
 @login_required(login_url='login')
 def brand(request):
     user_details = get_user_details(request)
@@ -266,18 +272,6 @@ def brand(request):
         'role_permission' : role.role_name,
 	}
     return render(request, 'libraries/brand.html', context)
-
-@login_required(login_url='login')
-def company(request):
-    user_details = get_user_details(request)
-    role = RoleDetails.objects.filter(id=user_details.role_id).first()
-    context = {
-        'company' : Company.objects.filter().order_by('name'),
-        'role_permission' : role.role_name,
-    }
-    return render(request, 'libraries/company.html', context)
-        
-
 
 @login_required(login_url='login')
 def generic(request):
@@ -363,45 +357,6 @@ def addbrand(request):
                 name= brand_name)
             add.save()
             return JsonResponse({'data': 'success'})
-        
-@csrf_exempt
-def addcompany(request):
-    if request.method == 'POST':
-        check_generic = False
-        generic_name = request.POST.get('companyname')
-        code_name = request.POST.get('code')
-        address_ = request.POST.get('address')
-        remarks = request.POST.get('remarks')
-        if Company.objects.filter(name=generic_name):
-            return JsonResponse({'data': 'error'})
-        else:
-            check_generic = True        
-        if check_generic:
-            add = Company(
-                name= generic_name, code = code_name, address = address_, remarks = remarks)
-            add.save()
-            return JsonResponse({'data': 'success'})
-        
-@csrf_exempt
-def updatecompany(request):
-    if request.method == 'POST':
-        company_id = request.POST.get('company_id')
-        company_name = request.POST.get('companyname')
-        status = request.POST.get('is_active')
-        code_name = request.POST.get('code')
-        address_ = request.POST.get('address')
-        remarks = request.POST.get('remarks')
-
-        check_company = False
-        if Company.objects.filter(name=company_name).exclude(id=company_id):
-            return JsonResponse({'data': 'error'})
-        else:
-            check_company = True        
-        if check_company:
-            Company.objects.filter(id=company_id).update(name=company_name, is_active=status,code = code_name, address = address_, remarks = remarks)
-            return JsonResponse({'data': 'success'})
-        
-        
 
 @csrf_exempt
 def updatebrand(request):
