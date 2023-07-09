@@ -12,21 +12,11 @@ urlpatterns = [
     path('item_collections', views.item_collections, name='item-collections'),
 
     # company ----------------->
-
     path('company', views.company, name='company-list'),
     path('company_add', views.company_add, name='company-add'),
     path('company_edit', views.company_edit, name='company-edit'),
     path('company_update', views.company_update, name='company-update'),
     path('company_load', views.company_load, name='company-load'),
-
-
-
-
-
-
-    # path('company', views.company, name='company-list'),
-    path('addcompany', views.addcompany, name='add-company'),
-    path('updatecompany', views.updatecompany, name='update-company'),
     # end --------------------->
     
 
