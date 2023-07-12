@@ -93,23 +93,25 @@ def inventory_load(request):
     _length = request.GET.get('length')
     _order_col_num = request.GET.get('order[0][column]')
     _order_dir = request.GET.get('order[0][dir]')
+    _column_name = request.GET.get('columns['+_order_col_num+'][data]')
+    _search_id = []
 
-    def _order_col():
-        prefix_col = ''
-        column = request.GET.get('columns['+_order_col_num+'][data]')
+    # def _order_col():
+    #     prefix_col = ''
+    #     column = request.GET.get('columns['+_order_col_num+'][data]')
 
-        if column == 'barcode':
-            prefix_col = 'item__' + column
-        elif column == 'brand':
-            prefix_col = 'item__' + column + '__name'
-        elif column == 'company':
-            prefix_col = column + '__name'
-        else:
-            prefix_col = column
+    #     if column == 'barcode':
+    #         prefix_col = 'item__' + column
+    #     elif column == 'brand':
+    #         prefix_col = 'item__' + column + '__name'
+    #     elif column == 'company':
+    #         prefix_col = column + '__name'
+    #     else:
+    #         prefix_col = column
 
-        return prefix_col
+    #     return prefix_col
 
-    _order_dash = '-' if _order_dir == 'desc' else ''
+    # _order_dash = '-' if _order_dir == 'desc' else ''
 
     # filters = {}
 
@@ -202,31 +204,80 @@ def inventory_load(request):
     #     Q(delivered_date__icontains=_search)
     # ).order_by(_order_dash + _order_col())
 
-    # stock_data = StocksItems.objects.raw(
-    #     """
-    #     SELECT
-    #                 si.item_id AS id,
-    #                 it.name AS item_type_name,
-    #                 CONCAT(g.name,' ',sg.name,' ',i.classification, ' ', i.description) AS item_details,
-    #                 si.pcs_quantity AS total_quantity,
-    #                 si.damaged AS total_damaged,
-    #                 si.unit_price
-    #     FROM stock_items AS si
-    #     JOIN stocks AS s ON s.id = si.stock_id
-    #     JOIN items AS i ON i.id = si.item_id
-    #     JOIN item_type AS it ON it.id = i.type_id
-    #     JOIN generic AS g ON g.id = i.generic_id
-    #     JOIN sub_generic AS sg ON sg.id = i.sub_generic_id
-    #     ORDER BY s.delivered_date ASC
-    #     """
-    # )
+    stock_data = StocksItems.objects.raw(
+        """
+        SELECT
+                    si.item_id AS id,
+                    it.name AS item_type_name,
+                    CONCAT(g.name,' ',sg.name,' ',i.classification, ' ', i.description) AS item_details,
+                    SUM(si.pcs_quantity - si.damaged) AS total_quantity,
+                    SUM(si.damaged) AS total_damaged,
+                    si.unit_price
+        FROM stock_items AS si
+        JOIN stocks AS s ON s.id = si.stock_id
+        JOIN items AS i ON i.id = si.item_id
+        JOIN item_type AS it ON it.id = i.type_id
+        JOIN generic AS g ON g.id = i.generic_id
+        JOIN sub_generic AS sg ON sg.id = i.sub_generic_id
+        GROUP BY si.item_id
+        ORDER BY """+_column_name+""" """+_order_dir+"""
+        """
+    )
 
-    # total = sum(1 for result in stock_data)
+    if _search:
+        for stock in stock_data:
+            if _search.lower() in stock.item_type_name.lower():
+                if stock.id not in _search_id:
+                    _search_id.append(stock.id)
 
-    stock_data = StocksItems.objects.select_related()
+            if _search.lower() in stock.item_details.lower():
+                if stock.id not in _search_id:
+                    _search_id.append(stock.id)
+
+            if _search in str(stock.total_quantity):
+                if stock.id not in _search_id:
+                    _search_id.append(stock.id)
+
+            if _search in str(stock.total_damaged):
+                if stock.id not in _search_id:
+                    _search_id.append(stock.id)
+
+            if _search in str(stock.unit_price):
+                if stock.id not in _search_id:
+                    _search_id.append(stock.id)
+
+        def where_in_search():
+            if len(_search_id) == 1:
+                return "("+str(_search_id[0])+")"
+            elif len(_search_id) > 0:
+                return str(tuple(_search_id))
+            else:
+                return "(0)"
+
+        stock_data = StocksItems.objects.raw(
+            """
+            SELECT
+                si.item_id AS id,
+                it.name AS item_type_name,
+                CONCAT(g.name,' ',sg.name,' ',i.classification, ' ', i.description) AS item_details,
+                SUM(si.pcs_quantity - si.damaged) AS total_quantity,
+                SUM(si.damaged) AS total_damaged,
+                si.unit_price
+            FROM stock_items AS si
+            JOIN stocks AS s ON s.id = si.stock_id
+            JOIN items AS i ON i.id = si.item_id
+            JOIN item_type AS it ON it.id = i.type_id
+            JOIN generic AS g ON g.id = i.generic_id
+            JOIN sub_generic AS sg ON sg.id = i.sub_generic_id
+            WHERE si.item_id IN """+where_in_search()+"""
+            GROUP BY si.item_id
+            ORDER BY """+_column_name+""" """+_order_dir+"""
+            """
+        )
+
     out_items_data = OutItems.objects.select_related()
 
-    total = stock_data.count()
+    total = sum(1 for result in stock_data)
 
     if _start and _length:
         start = int(_start)
@@ -238,25 +289,12 @@ def inventory_load(request):
 
     data = []
 
-    shapes = [
-        {
-            'shape': 'square',
-            'width': 40,
-            'height': 40
-        },
-        {
-            'shape': 'rectangle',
-            'width': 30,
-            'height': 40
-
-        }
-    ]
-
     for stock in stock_data:
         out_items_data = OutItems.objects.select_related().filter(
-            stock_item_id=stock.item.id)
+            stock_item_id=stock.id)
 
-        # if out_items_data.count() > 0 :
+        if out_items_data.count() > 0:
+            stock.total_quantity -= out_items_data[0].quantity
 
         # userData = AuthUser.objects.filter(id=stock.user.id)
         # outItemsData = OutItems.objects.filter(stock_id=stock.id)
@@ -265,29 +303,14 @@ def inventory_load(request):
 
         # location_data = []
 
-        if len(data) == 0:
-            data.append({
-                'id': stock.item.id,
-                'item_type': stock.item.type.name,
-                'details': stock.item.generic.name + ' ' + stock.item.sub_generic.name + ' ' + stock.item.classification + ' ' + stock.item.description,
-                'pcs_quantity': stock.pcs_quantity,
-                'damage_stock': stock.damaged,
-                'unit_price': stock.unit_price,
-            })
-        else:
-            if not [item for item in data if item['id'] == stock.item.id]:
-
-                # for i, d in enumerate(data):
-                # if d['id'] != stock.item.id:
-                data.append({
-                    'id': stock.item.id,
-                    'item_type': stock.item.type.name,
-                    'details': stock.item.generic.name + ' ' + stock.item.sub_generic.name + ' ' + stock.item.classification + ' ' + stock.item.description,
-                    'pcs_quantity': stock.pcs_quantity,
-                    'damage_stock': stock.damaged,
-                    'unit_price': stock.unit_price,
-                })
-                # break
+        data.append({
+            'id': stock.id,
+            'item_type_name': stock.item_type_name,
+            'details': stock.item_details,
+            'pcs_quantity': stock.total_quantity,
+            'damaged': stock.total_damaged,
+            'unit_price': stock.unit_price,
+        })
 
         # for il in stockLocation:
         #     il_obj = {

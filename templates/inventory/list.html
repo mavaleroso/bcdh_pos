@@ -331,11 +331,11 @@
             },
             columns: [
                 { data: 'id' },
-                { data: 'item_type' },
+                { data: 'item_type_name' },
                 { data: 'details' },
                 { data: 'pcs_quantity' },
                 { data: 'unit_price' },
-                { data: 'damage_stock' },
+                { data: 'damaged' },
             ],
             columnDefs: [
                 {
@@ -357,23 +357,34 @@
                             <a href="list/edit/${id}" class="item-edit text-body"><i class="text-primary ti ti-pencil"></i></a>`
                     },
                 },
-                // {
-                //     targets: 1,
-                //     render: function (data) {
-                //         return '<span class="badge bg-primary">' + data + '</span>'
-                //     },
-                // },
-                // {
-                //     targets: 2,
-                //     render: function (data) {
-                //         return '<span class="badge bg-label-primary">' + data + '</span>'
-                //     },
-                // },
-                // {
-                //     targets: [4, 6, 18],
-                //     orderable: false,
-                //     searchable: false,
-                // },
+                {
+                    targets: 2,
+                    orderable: false,
+                    searchable: false,
+                },
+                {
+                    targets: 3,
+                    render: function (data) {
+                        return '<span class="badge bg-label-primary">' + data + '</span>'
+                    },
+                },
+                {
+                    targets: 4,
+                    render: function (data) {
+                        let elem = ''
+                        if (data) {
+                            elem = `<span class="badge bg-label-secondary">${currencyFormat(data)}</span>`
+                        }
+                        return elem
+                    },
+                },
+                {
+                    targets: 5,
+                    render: function (data) {
+                        return '<span class="badge bg-label-danger">' + data + '</span>'
+                    },
+                },
+
                 // {
                 //     targets: 7,
                 //     orderable: false,
@@ -467,7 +478,7 @@
                 //     },
                 // },
             ],
-            // order: [[15, 'asc']],
+            order: [[1, 'asc']],
             scrollX: true,
         })
 
