@@ -10,11 +10,12 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from main.models import ( ItemType, Company, Generic, SubGeneric, Brand, Unit, AuthUser, UserDetails, Clients, ClientType, RoleDetails )
+from main.models import ( ItemType, Generic, SubGeneric, Brand, Unit, AuthUser, UserDetails, Clients, ClientType, RoleDetails )
 import json 
-from django.core import serializers
+from django.core.serializers import serialize
 import datetime
 from django.contrib.auth.hashers import make_password
+import math
 
 
 
@@ -151,5 +152,88 @@ def updateclients(request):
 
         Clients.objects.filter(id=clients_id).update(first_name=first_name, middle_name = middle_name, last_name = last_name, birthdate = birthdate, sex = sex, address = address, occupation = occupation, client_type_id = client_type)
         return JsonResponse({'data': 'success'})
+    
+
+
+#start User function ---------------->
+
+@csrf_exempt
+def user_add(request):
+    user_ = request.POST.get('User')
+    code_ = request.POST.get('Code')
+    address_ = request.POST.get('Address')
+    remarks_ = request.POST.get('Remarks')
+    user_id = request.session.get('user_id', 0)
+    user_add = AuthUser(name=user_, code=code_, address=address_,remarks=remarks_)
+    try:
+        user_add.save()
+        return JsonResponse({'data': 'success'})
+    except Exception as e:
+        return JsonResponse({'data': 'error'})
+        
+@csrf_exempt
+def user_update(request):
+    id = request.POST.get('ItemID')
+    user_ = request.POST.get('User')
+    code_ = request.POST.get('Code')
+    address_ = request.POST.get('Address')
+    remarks_ = request.POST.get('Remarks')
+    status = request.POST.get('Status')
+
+    if AuthUser.objects.filter(name=user_).exclude(id=id):
+        return JsonResponse({'data': 'error', 'message': 'Duplicate User'})
+    else:
+        AuthUser.objects.filter(id=id).update(name=user_, code=code_, address=address_,remarks=remarks_,is_active=status)
+        return JsonResponse({'data': 'success'})
+        
+
+def user_edit(request):
+    id = request.GET.get('id')
+    items = AuthUser.objects.get(pk=id)
+    data = serialize("json", [items])
+    return HttpResponse(data, content_type="application/json")
+
+def user_load(request):
+    user_data = AuthUser.objects.select_related().order_by('-created_at').reverse()
+    total = user_data.count()
+
+    _start = request.GET.get('start')
+    _length = request.GET.get('length')
+    if _start and _length:
+        start = int(_start)
+        length = int(_length)
+        page = math.ceil(start / length) + 1
+        per_page = length
+
+        user_data = user_data[start:start + length]
+
+    data = []
+
+    for item in user_data:
+        item = {
+            
+            'username': item.username,
+            'fullname': item.fullname,
+            'role': item.role,
+            'email': item.email,
+            'birthdate': item.birthdate,
+            'sex': item.sex,
+            'address': item.address,
+            'position': item.position,
+            'is_active': item.is_active,
+            'id': item.id
+
+        }
+        data.append(item)
+
+    response = {
+        'data': data,
+        'page': page,
+        'per_page': per_page,
+        'recordsTotal': total,
+        'recordsFiltered': total,
+    }
+    return JsonResponse(response)
+#end ----------->
 
        
