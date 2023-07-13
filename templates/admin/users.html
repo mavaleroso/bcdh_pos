@@ -14,7 +14,8 @@
                         <tr>
                             
                             <th>Username</th>
-                            <th>Fullname</th>
+                            <th>Firstname</th>
+                            <th>Lastname</th>
                             <th>Role</th>
                             <th>Email</th>
                             <th>Birthdate</th>
@@ -43,69 +44,204 @@
         <form class="add-new-record pt-0 row g-2" id="item-form">
             <input type="hidden" id="item-id" name="ItemID" />
             <div class="col-sm-12">
-                <label class="form-label">Company</label>
-                
-                <input
-                  type="text"
-                  id="user"
-                  class="form-control dt-lib-user"
-                  name="Company"
-                  placeholder="Enter user"
-                  aria-describedby="company2"
-                />
-            </div>
-
-            <div class="col-sm-12">
-                <div class="form-group">
-                    <label class="form-label">Code</label>
-                    <input id="code" name="Code" class="form-control amount"type="text" placeholder="Enter code"/>
-                </div>
-            </div>
-
-            <div class="col-sm-12 user-status">
-                <label class="form-label">Status</label>
+                <label class="form-label" for="Firstname">First Name</label>
                 <div class="input-group input-group-merge">
-                  <span id="companystatus" class="input-group-text"><i class="ti ti-user"></i></span>
+                  <span id="username2" class="input-group-text"><i class="ti ti-user"></i></span>
+                  <input
+                    type="text"
+                    id="firstname"
+                    class="form-control dt-first-name"
+                    name="Firstname"
+                    placeholder="Enter firstname"
+                    aria-describedby="firstname2"
+                  />
+                </div>
+              </div>
       
-                    <select class="form-select select-status" id="select-status" name="Status">
-                      <option value="1">Active</option>
-                      <option value="0">Inactive</option>
-                    </select>
-          
+              <div class="col-sm-12">
+                <label class="form-label" for="Middlename">Middle Name</label>
+                <div class="input-group input-group-merge">
+                  <span id="middlename2" class="input-group-text"><i class="ti ti-user"></i></span>
+                  <input
+                    type="text"
+                    id="middlename"
+                    class="form-control dt-middle-name"
+                    name="Middlename"
+                    placeholder="Enter Middlename"
+                    aria-describedby="middlename2"
+                  />
+                </div>
+              </div>
+      
+              <div class="col-sm-12">
+                  <label class="form-label" for="Lastname">Last Name</label>
+                  <div class="input-group input-group-merge">
+                    <span id="lastname2" class="input-group-text"><i class="ti ti-user"></i></span>
+                    <input
+                      type="text"
+                      id="lastname"
+                      class="form-control dt-last-name"
+                      name="Lastname"
+                      placeholder="Enter Lastname"
+                      aria-describedby="lastname2"
+                    />
+                  </div>
+              </div>
+      
+              <div class="col-sm-12">
+                  <label class="form-label" for="Lastname">User Name</label>
+                  <div class="input-group input-group-merge">
+                    <span id="user2" class="input-group-text"><i class="ti ti-user"></i></span>
+                    <input
+                      type="text"
+                      id="username"
+                      class="form-control dt-user-name"
+                      name="Username"
+                      placeholder="Enter Username"
+                      aria-describedby="user2"
+                    />
+                  </div>
+              </div>
+      
+              <div class="col-sm-12 form-password-toggle">
+                  <label class="form-label" for="Password" name="title-password" id="title-password">Password</label>
+                  <div class="input-group input-group-merge">
+                    <span id="password2" class="input-group-text"><i class="ti ti-user"></i></span>
+                    
+                    <input
+                      type="password"
+                      id="password"
+                      class="form-control dt-password"
+                      name="Password"
+                      placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
+                      aria-describedby="password"
+                    />
+                      <span class="input-group-text cursor-pointer"><i class="ti ti-eye-off"></i></span>
+                  </div>
+              </div>
+      
+              <div class="col-sm-12 form-password-toggle">
+                <label class="form-label" for="Confirm_password">Confirm password</label>
+                <div class="input-group input-group-merge">
+                  <span id="confirm_password2" class="input-group-text"><i class="ti ti-user"></i></span>
+                  <input
+                    type="password"
+                    id="confirm_password"
+                    class="form-control dt-confirm-password"
+                    name="ConfirmPassword"
+                    placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;"
+                    aria-describedby="confirm_password2"
+                  />
+                  <span class="input-group-text cursor-pointer"><i class="ti ti-eye-off"></i></span>
                 </div>
             </div>
-
-            <div class="col-sm-12">
-              <div class="form-group">
-                  <label class="form-label" for="remarks">Address</label>
-                  <div class="input-group input-group-merge">
-                      <textarea class="form-control dt-lib-address" placeholder="Enter Address (optional)" rows="6" id="address" name="Address"></textarea>
-                      <span class="input-group-text">
-                        <i class="ti ti-microphone cursor-pointer text-to-speech-toggle"></i>
-                      </span>
-                    </div>
+      
+            <div class="col-sm-12 user-roles">
+              <label class="form-label" for="status">Roles</label>
+              <div class="input-group input-group-merge">
+                <div class="col-12 col-xxl-12 col-xl-12">
+                  <select class="select2 form-select dt-roles" name="Roles" id="roles">
+                    <option></option>
+                    {% for row in role_details %}
+                    <option value="{{ row.id }}">{{ row.role_name }}</option>
+                    {% endfor %}
+                  </select>
+                </div>
               </div>
             </div>
-
-            <div class="col-sm-12">
-                <div class="form-group">
-                    <label class="form-label" for="remarks">Remarks</label>
-                    <div class="input-group input-group-merge">
-                        <textarea class="form-control dt-lib-remarks" placeholder="Enter remarks (optional)" rows="6" id="remarks" name="Remarks"></textarea>
-                        <span class="input-group-text">
-                          <i class="ti ti-microphone cursor-pointer text-to-speech-toggle"></i>
-                        </span>
-                       
-                      </div>
-
-                   
+              
+              <div class="col-sm-12 user-status">
+                <label class="form-label" for="status">Status</label>
+                <div class="input-group input-group-merge">
+                    <div class="col-12 col-xxl-12 col-xl-12">
+                      <select class="select2 form-select select-status" id="select" name="Status">
+                        <option value="1">Active</option>
+                        <option value="0">Inactive</option>
+                      </select>
+                    </div>
                 </div>
-            </div>
-            
-            <div class="col-sm-12 mt-4">
+              </div>
+
+              <div class="col-sm-12 user-sex">
+                <label class="form-label" for="Sex">Sex</label>
+                <div class="input-group input-group-merge">
+                    <div class="col-12 col-xxl-12 col-xl-12">
+                      <select class="select2 form-select dt-sex" id="sex" name="Sex">
+                        <option></option>
+                        <option value="Male">Male</option>
+                        <option value="Female">Female</option>
+                      </select>
+                    </div>
+      
+                </div>
+              </div>
+      
+              <div class="col-sm-12">
+                <label class="form-label" for="Email">Email</label>
+                <div class="input-group input-group-merge">
+                  <span id="email2" class="input-group-text"><i class="ti ti-user"></i></span>
+                  <input
+                    type="text"
+                    id="email"
+                    class="form-control dt-email"
+                    name="Email"
+                    placeholder="Enter Email"
+                    aria-describedby="email2"
+                  />
+                </div>
+              </div>
+      
+              <div class="col-sm-12">
+                <label class="form-label" for="Birthdate">Birthdate</label>
+                <div class="input-group input-group-merge">
+                  <span id="birthdate2" class="input-group-text"><i class="ti ti-user"></i></span>
+                  <input
+                    type="date"
+                    id="birthdate"
+                    class="form-control dt-birthdate"
+                    name="Birthdate"
+                    placeholder="Enter Birthdate"
+                    aria-describedby="birthdate2"
+                  />
+                </div>
+              </div>
+    
+              <div class="col-sm-12">
+                <label class="form-label" for="Address">Address</label>
+                <div class="input-group input-group-merge">
+                  <span id="address2" class="input-group-text"><i class="ti ti-user"></i></span>
+                  <input
+                    type="text"
+                    id="address"
+                    class="form-control dt-address"
+                    name="Address"
+                    placeholder="Enter Address"
+                    aria-describedby="address2"
+                  />
+                </div>
+              </div>
+      
+              <div class="col-sm-12">
+                <label class="form-label" for="Position">Position</label>
+                <div class="input-group input-group-merge">
+                  <span id="position2" class="input-group-text"><i class="ti ti-user"></i></span>
+                  <input
+                    type="text"
+                    id="position"
+                    class="form-control dt-position"
+                    name="Position"
+                    placeholder="Enter Position"
+                    aria-describedby="position2"
+                  />
+                </div>
+              </div>
+      
+      
+              <div class="col-sm-12 update-div-user">
+                <br>
                 <button name="submitButton" class="btn btn-primary data-submit me-sm-3 me-1 additional-record">Submit</button>
                 <button type="reset" class="btn btn-outline-secondary" data-bs-dismiss="offcanvas">Cancel</button>
-            </div>
+              </div>
         </form>
     </div>
 </div>
@@ -116,11 +252,19 @@
     $(document).ready(function () {
         const table = $('#tbl-items')
         const ItemFormValidation = document.getElementById('item-form'),
-            Company = jQuery(document.querySelector('[name="Company"]')),
-            Code = jQuery(document.querySelector('[name="Code"]')),
-            Status = jQuery(document.querySelector('[name="Status"]')),
+            Firstname = jQuery(document.querySelector('[name="Firstname"]')),
+            Middlename = jQuery(document.querySelector('[name="Middlename"]')),
+            Lastname = jQuery(document.querySelector('[name="Lastname"]')),
+            Username = jQuery(document.querySelector('[name="Username"]')),
+            Password = jQuery(document.querySelector('[name="Password"]')),
+            ConfirmPassword = jQuery(document.querySelector('[name="ConfirmPassword"]')),
+            Roles = jQuery(document.querySelector('[name="Roles"]')),
+            Email = jQuery(document.querySelector('[name="Email"]')),
+            Birthdate = jQuery(document.querySelector('[name="Birthdate"]')),
+            Sex = jQuery(document.querySelector('[name="Sex"]')),
             Address = jQuery(document.querySelector('[name="Address"]')),
-            Remarks = jQuery(document.querySelector('[name="Remarks"]')),
+            Position = jQuery(document.querySelector('[name="Position"]')),
+            Status = jQuery(document.querySelector('[name="Status"]')),
             offCanvasElement = document.querySelector('#add-new-record');
         const offCanvasEl = new bootstrap.Offcanvas(offCanvasElement);
         const toast_options = (toastr.options = {
@@ -140,8 +284,9 @@
             ajax: "{% url 'user-load' %}",
             columns: [
                 { data: 'username' },
-                { data: 'fullname' },
-                { data: 'role' },
+                { data: 'first_name'},
+                { data: 'last_name' },
+                { data: 'role_name' },
                 { data: 'email' },
                 { data: 'birthdate' },
                 { data: 'sex' },
@@ -149,6 +294,8 @@
                 { data: 'position' },
                 { data: 'is_active' },
                 { data: 'id' },
+                
+                // Additional columns
             ],
             columnDefs: [
                 {
@@ -164,7 +311,7 @@
                   },
                 },
                 {
-                    targets: -5,
+                    targets: -6,
                     render: function (data) {
                         return moment(data).format('LLL')
                     },
@@ -203,7 +350,11 @@
                 $('.item-edit').on('click', function () {
                     let id = $(this).data('id');
                     $('.user-status').show();
-                    $('.title-name').text('Update TEV Record');
+                    $('.title-name').text('Update User');
+                    $('#title-password').text('New Password');
+                    Password.val("");
+                    ConfirmPassword.val("");
+
                     $.ajax({
                         type: 'GET',
                         url: "{% url 'user-edit' %}?id=" + id,
@@ -211,18 +362,23 @@
                     }).done(function (data) {
                         if (data.length > 0) {
                             let fields = data[0].fields
+
+                            console.log(fields);
                             let pk = data[0].pk
                             let user = $('#user')
         
-
-                            Company.val(fields.name);
-                            Code.val(fields.code);
+                            Firstname.val(fields.first_name);
+                            Middlename.val(fields.middle_name);
+                            Lastname.val(fields.last_name);
+                            Username.val(fields.username);
+                            Roles.val(fields.role).trigger('change');
                             Status.val(fields.is_active === true ? 1 : 0).trigger('change');
+                            Sex.val(fields.sex).trigger('change');
+                            Email.val(fields.email);
+                            Birthdate.val(fields.birthdate);
                             Address.val(fields.address);
-                            Remarks.val(fields.remarks);
-                            
+                            Position.val(fields.position);
                             ItemID.val(pk)
-
                             offCanvasEl.show()
                         }
                     })
@@ -236,7 +392,7 @@
 
             },
         })
-        $('div.head-label').html('<h5 class="card-title mb-0">Company</h5>')
+        $('div.head-label').html('<h5 class="card-title mb-0">User</h5>')
 
         const newRecord = document.querySelector('.create-new')
 
@@ -245,10 +401,10 @@
                 newRecord.addEventListener('click', function () {
                     ItemID.val(0);
                     $('.user-status').hide();
-                    $('.title-name').text('Add Company');
-                    Company.val('').trigger('change');
+                    $('.title-name').text('Add User');
+                    $('#title-password').text('Password');
+                    Firstname.val('').trigger('change');
                     $('.form-control').val('');
-         
                     offCanvasEl.show();
                 })
             }
@@ -257,21 +413,63 @@
         // Form validation for Add new record
         const fv = FormValidation.formValidation(ItemFormValidation, {
             fields: {
-                Company: {
+                Firstname: {
                     validators: {
                         notEmpty: {
-                            message: 'Please Enter Company',
+                            message: 'Please Enter Firstname',
                         },
                     },
                 },
-                Code: {
+                Middlename: {
                     validators: {
                         notEmpty: {
-                            message: 'Please Enter Code',
+                            message: 'Please Enter Middlename',
                         },
                     },
                 },
-  
+                Lastname: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Please Enter Lastname',
+                        },
+                    },
+                },
+                Username: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Please Enter Username',
+                        },
+                    },
+                },
+                Password: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Please Enter Password',
+                        },
+                    },
+                },
+                ConfirmPassword: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Enter Confirm Password',
+                        },
+                    },
+                },
+                Roles: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Enter Roles',
+                        },
+                    },
+                },
+                Sex: {
+                    validators: {
+                        notEmpty: {
+                            message: 'Enter Sex',
+                        },
+                    },
+                },
+
             },
             plugins: {
                 trigger: new FormValidation.plugins.Trigger(),
@@ -287,51 +485,59 @@
                 })
             },
         }).on('core.form.valid', function () {
-            Swal.fire({
-                title: 'Are you sure?',
-                text: "You won't be able to revert this!",
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Yes, save it!',
-                customClass: {
-                    confirmButton: 'btn btn-primary me-3',
-                    cancelButton: 'btn btn-label-secondary',
-                },
-                buttonsStyling: false,
-            }).then(function (result) {
-                if (result.value) {
-                    var form_data = $('#item-form').serialize()
-                    let post_url = ItemID.val() != '0' ? "{% url 'user-update' %}" : "{% url 'user-add' %}"
-                    $.ajax({
-                        type: 'POST',
-                        url: post_url,
-                        data: form_data,
-                    }).done(function (data) {
-                        if (data.data == 'success') {
-                            Swal.fire({
-                                icon: 'success',
-                                title: 'Successfully save!',
-                                text: 'Item has been save.',
-                                customClass: {
-                                    confirmButton: 'btn btn-success',
-                                },
-                            })
-                            offCanvasEl.hide()
-                            dataTable.ajax.reload()
-                        } else {
-                            Swal.fire({
-                                icon: 'error',
-                                title: 'Error saving!',
-                                text: data.message,
-                                customClass: {
-                                    confirmButton: 'btn btn-success',
-                                },
-                            })
-                        }
-                    })
-                }
-            })
-        })
+            
+            let password = Password.val();
+            let confirmpassword = ConfirmPassword.val();
+            if (password ==confirmpassword){
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes, save it!',
+                    customClass: {
+                        confirmButton: 'btn btn-primary me-3',
+                        cancelButton: 'btn btn-label-secondary',
+                    },
+                    buttonsStyling: false,
+                }).then(function (result) {
+                    if (result.value) {
+                        var form_data = $('#item-form').serialize()
+                        let post_url = ItemID.val() != '0' ? "{% url 'user-update' %}" : "{% url 'user-add' %}"
+                        $.ajax({
+                            type: 'POST',
+                            url: post_url,
+                            data: form_data,
+                        }).done(function (data) {
+                            if (data.data == 'success') {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Successfully save!',
+                                    text: 'Item has been save.',
+                                    customClass: {
+                                        confirmButton: 'btn btn-success',
+                                    },
+                                })
+                                offCanvasEl.hide()
+                                dataTable.ajax.reload()
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Error saving!',
+                                    text: data.message,
+                                    customClass: {
+                                        confirmButton: 'btn btn-success',
+                                    },
+                                })
+                            }
+                        })
+                    }
+                });
+            }
+            else{
+                toastr.error('Invalid', 'Password not match', toast_options);
+            }
+        });
 
         $('#approved').click(function() {
             let final_amount = $("#final_amount").val().trim();
