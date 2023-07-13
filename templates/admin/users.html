@@ -16,12 +16,12 @@
                             <th>Username</th>
                             <th>Firstname</th>
                             <th>Lastname</th>
-                            <th>Role</th>
+                            <th>Position</th>
                             <th>Email</th>
                             <th>Birthdate</th>
                             <th>Sex</th>
                             <th>Address</th>
-                            <th>Position</th>
+                            <th>Role</th>
                             <th>Status</th>
                             <th>Action</th>
                           
@@ -286,12 +286,12 @@
                 { data: 'username' },
                 { data: 'first_name'},
                 { data: 'last_name' },
-                { data: 'role_name' },
+                { data: 'position' },
                 { data: 'email' },
                 { data: 'birthdate' },
                 { data: 'sex' },
                 { data: 'address' },
-                { data: 'position' },
+                { data: 'role_name' },
                 { data: 'is_active' },
                 { data: 'id' },
                 
@@ -314,6 +314,23 @@
                     targets: -6,
                     render: function (data) {
                         return moment(data).format('LLL')
+                    },
+                },
+                {
+                    targets: -3,
+                    render: function (data) {
+                        if (data =="Management") {
+                            return '<span class="badge bg-label-warning">'+data+'</span>'
+                        }
+                        else if(data =="Inventory Staff"){
+                            return '<span class="badge bg-label-primary">'+data+'</span>'
+                        }
+                        else if(data =="Sales Staff"){
+                            return '<span class="badge bg-label-info">'+data+'</span>'
+                        }
+                        else{
+                            return '<span class="badge bg-label-success">'+data+'</span>'
+                        }
                     },
                 },
                 {
