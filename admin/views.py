@@ -10,10 +10,14 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from main.models import ( ItemType, Company, Generic, SubGeneric, Brand, Unit, AuthUser, UserDetails, Clients, ClientType, RoleDetails )
+from main.models import ( ItemType, Generic, SubGeneric, Brand, Unit, AuthUser, UserDetails, Clients, ClientType, RoleDetails )
 import json 
-from django.core import serializers
+from django.core.serializers import serialize
 import datetime
+from django.contrib.auth.hashers import make_password
+import math
+from django.db.models import Max
+from django.utils import timezone
 from django.contrib.auth.hashers import make_password
 
 
@@ -151,5 +155,124 @@ def updateclients(request):
 
         Clients.objects.filter(id=clients_id).update(first_name=first_name, middle_name = middle_name, last_name = last_name, birthdate = birthdate, sex = sex, address = address, occupation = occupation, client_type_id = client_type)
         return JsonResponse({'data': 'success'})
+    
+
+
+#start User function ---------------->
+
+@csrf_exempt
+def user_add(request):
+    try:
+        user_name = request.POST.get('Username')
+        firstname = request.POST.get('Firstname')
+        middlename = request.POST.get('Middlename')
+        lastname = request.POST.get('Lastname')
+        password = request.POST.get('Password')
+        email = request.POST.get('Email')
+        role_id = request.POST.get('Roles')
+        birth_date = request.POST.get('Birthdate')
+        sex = request.POST.get('Sex')
+        address = request.POST.get('Address')
+        position = request.POST.get('Position')
+        password = make_password(password)
+        user_id = request.session.get('user_id', 0)
+        user_add = AuthUser(password = password,is_superuser=role_id,username=user_name,first_name=firstname,last_name=lastname,email=email,date_joined=timezone.now())
+        user_add.save()
+        max_id = AuthUser.objects.aggregate(max_id=Max('id'))['max_id']
+        user_details_add = UserDetails(middle_name=middlename, birthdate=birth_date, sex=sex,address=address,position=position,role_id = role_id,user_id = max_id, added_by_user_id = user_id)
+        user_details_add.save()
+
+        return JsonResponse({'data': 'success'})
+    except Exception as e:
+        return JsonResponse({'data': 'error'})
+    
+#End User function ---------------->
+
+@csrf_exempt
+def user_update(request):
+    try:
+        id = request.POST.get('ItemID')
+        user_name = request.POST.get('Username')
+        firstname = request.POST.get('Firstname')
+        middlename = request.POST.get('Middlename')
+        lastname = request.POST.get('Lastname')
+        password = request.POST.get('Password')
+        email = request.POST.get('Email')
+        role_id = request.POST.get('Roles')
+        birth_date = request.POST.get('Birthdate')
+        sex = request.POST.get('Sex')
+        address = request.POST.get('Address')
+        position = request.POST.get('Position')
+        password = make_password(password)
+        user_id = request.session.get('user_id', 0)
+        status = request.POST.get('Status')
+        
+        AuthUser.objects.filter(id=id).update(password = password,is_superuser=role_id,username=user_name,first_name=firstname,last_name=lastname,email=email,is_active = status)
+        UserDetails.objects.filter(user_id=id).update(middle_name=middlename, birthdate=birth_date, sex=sex,address=address,position=position,role_id = role_id)
+        return JsonResponse({'data': 'success'})
+    except Exception as e:
+        return JsonResponse({'data': 'error'})
+
+def user_edit(request):
+    id = request.GET.get('id')
+    items = AuthUser.objects.get(pk=id)
+    userdetail = UserDetails.objects.get(user_id=id)
+    data = serialize("json", [items])
+    data = json.loads(data)
+    userdetail_data = serialize("json", [userdetail])
+    userdetail_data = json.loads(userdetail_data)
+    data[0]['fields'].update(userdetail_data[0]['fields'])
+    data = json.dumps(data)
+    return HttpResponse(data, content_type="application/json")
+
+def user_load(request):    
+    user_data = AuthUser.objects.select_related('userdetails').order_by('-date_joined')
+    id_list = [item.id for item in user_data]
+    total = user_data.count()
+    data = []
+    user_details = UserDetails.objects.filter(user_id__in=id_list)
+
+    _start = request.GET.get('start')
+    _length = request.GET.get('length')
+    if _start and _length:
+        start = int(_start)
+        length = int(_length)
+        page = math.ceil(start / length) + 1
+        per_page = length
+
+        user_data = user_data[start:start + length]
+        
+        
+    for item in user_data:
+        user_details_item = next((detail for detail in user_details if detail.user_id == item.id), None)
+        if user_details_item:
+            role_name = user_details_item.role.role_name if user_details_item.role else None
+            user_data_item = {
+                'user_details_id': user_details_item.id,
+                'middle_name': user_details_item.middle_name,
+                'birthdate': user_details_item.birthdate,
+                'sex': user_details_item.sex,
+                'address': user_details_item.address,
+                'position': user_details_item.position,
+                'role_name': role_name,
+                'id': item.id,
+                'username': item.username,
+                'first_name': item.first_name,
+                'last_name': item.last_name,
+                'email': item.email,
+                'is_active': item.is_active,
+            }
+            data.append(user_data_item)
+
+    response = {
+        'data_user': data,
+        'data': data,
+        'page': page,
+        'per_page': per_page,
+        'recordsTotal': total,
+        'recordsFiltered': total,
+    }
+    return JsonResponse(response)
+#end ----------->
 
        

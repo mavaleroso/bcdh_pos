@@ -191,6 +191,7 @@ class UserDetails(models.Model):
     address = models.CharField(max_length=128, blank=True, null=True)
     position = models.CharField(max_length=128, blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
+    added_by_user_id = models.IntegerField(max_length=128, blank=True, null=True)
 
     class Meta:
         managed = True
