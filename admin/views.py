@@ -194,8 +194,18 @@ def user_edit(request):
     return HttpResponse(data, content_type="application/json")
 
 def user_load(request):
-    user_data = AuthUser.objects.select_related().order_by('-created_at').reverse()
+    print("Testttttaaa")
+    user_data = AuthUser.objects.select_related().order_by('-date_joined').reverse()
     total = user_data.count()
+    
+    id_list = [user.id for user in user_data]
+
+   
+    
+    user_details = UserDetails.objects.filter(user_id__in=id_list).select_related()
+    
+    
+    
 
     _start = request.GET.get('start')
     _length = request.GET.get('length')
@@ -206,25 +216,63 @@ def user_load(request):
         per_page = length
 
         user_data = user_data[start:start + length]
-
+        
+        
     data = []
 
-    for item in user_data:
-        item = {
-            
-            'username': item.username,
-            'fullname': item.fullname,
-            'role': item.role,
-            'email': item.email,
+    for item in user_details:
+        user_details_item = {
+            'user_details_id': item.id,
+            'middle_name': item.middle_name,
             'birthdate': item.birthdate,
             'sex': item.sex,
             'address': item.address,
             'position': item.position,
-            'is_active': item.is_active,
-            'id': item.id
-
         }
-        data.append(item)
+        data.append(user_details_item)
+
+    for item in user_data:
+        user_data_item = {
+            'id': item.id,
+            'username': item.username,
+            'first_name': item.first_name,
+            'last_name': item.last_name,
+            'email': item.email,
+            'is_active': item.is_active,
+        }
+        data.append(user_data_item)
+    
+
+    # data = []
+    
+    # for item in user_details:
+    #     item = {
+            
+    #         'user_details_id': item.id,
+    #         'middle_name': item.middle_name,
+    #         'birthdate': item.birthdate,
+    #         'sex': item.sex,
+    #         'address': item.address,
+    #         'position': item.position,
+    #     }
+    #     data.append(item)
+
+    # for item in user_data:
+    #     item = {
+            
+    #         'id': item.id,
+    #         'username': item.username,
+    #         'first_name': item.first_name,
+    #         'last_name': item.last_name,
+    #         'email': item.email,
+    #         'is_active': item.is_active,
+
+
+    #     }
+    #     data.append(item)
+    
+    
+    
 
     response = {
         'data': data,
