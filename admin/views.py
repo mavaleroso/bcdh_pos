@@ -176,13 +176,19 @@ def user_add(request):
         position = request.POST.get('Position')
         password = make_password(password)
         user_id = request.session.get('user_id', 0)
-        user_add = AuthUser(password = password,is_superuser=role_id,username=user_name,first_name=firstname,last_name=lastname,email=email,date_joined=timezone.now())
-        user_add.save()
-        max_id = AuthUser.objects.aggregate(max_id=Max('id'))['max_id']
-        user_details_add = UserDetails(middle_name=middlename, birthdate=birth_date, sex=sex,address=address,position=position,role_id = role_id,user_id = max_id, added_by_user_id = user_id)
-        user_details_add.save()
 
-        return JsonResponse({'data': 'success'})
+        if AuthUser.objects.filter(username=user_name):
+            return JsonResponse({'data': 'error', 'message': 'Username Taken'})
+        
+        else:
+            user_add = AuthUser(password = password,is_superuser=role_id,username=user_name,first_name=firstname,last_name=lastname,email=email,date_joined=timezone.now())
+            user_add.save()
+
+            max_id = AuthUser.objects.aggregate(max_id=Max('id'))['max_id']
+            user_details_add = UserDetails(middle_name=middlename, birthdate=birth_date, sex=sex,address=address,position=position,role_id = role_id,user_id = max_id, added_by_user_id = user_id)
+            user_details_add.save()
+
+            return JsonResponse({'data': 'success'})
     except Exception as e:
         return JsonResponse({'data': 'error'})
     
@@ -206,12 +212,17 @@ def user_update(request):
         password = make_password(password)
         user_id = request.session.get('user_id', 0)
         status = request.POST.get('Status')
+
+        if AuthUser.objects.filter(username=user_name).exclude(id=id):
+            return JsonResponse({'data': 'error', 'message': 'Username Taken'})
         
-        AuthUser.objects.filter(id=id).update(password = password,is_superuser=role_id,username=user_name,first_name=firstname,last_name=lastname,email=email,is_active = status)
-        UserDetails.objects.filter(user_id=id).update(middle_name=middlename, birthdate=birth_date, sex=sex,address=address,position=position,role_id = role_id)
-        return JsonResponse({'data': 'success'})
+        else:
+            AuthUser.objects.filter(id=id).update(password = password,is_superuser=role_id,username=user_name,first_name=firstname,last_name=lastname,email=email,is_active = status)
+            UserDetails.objects.filter(user_id=id).update(middle_name=middlename, birthdate=birth_date, sex=sex,address=address,position=position,role_id = role_id)
+            return JsonResponse({'data': 'success'})
     except Exception as e:
         return JsonResponse({'data': 'error'})
+
 
 def user_edit(request):
     id = request.GET.get('id')
