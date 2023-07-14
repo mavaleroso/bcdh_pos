@@ -46,7 +46,6 @@
             <div class="col-sm-12">
                 <label class="form-label" for="Firstname">First Name</label>
                 <div class="input-group input-group-merge">
-                  <span id="username2" class="input-group-text"><i class="ti ti-user"></i></span>
                   <input
                     type="text"
                     id="firstname"
@@ -61,7 +60,6 @@
               <div class="col-sm-12">
                 <label class="form-label" for="Middlename">Middle Name</label>
                 <div class="input-group input-group-merge">
-                  <span id="middlename2" class="input-group-text"><i class="ti ti-user"></i></span>
                   <input
                     type="text"
                     id="middlename"
@@ -76,7 +74,6 @@
               <div class="col-sm-12">
                   <label class="form-label" for="Lastname">Last Name</label>
                   <div class="input-group input-group-merge">
-                    <span id="lastname2" class="input-group-text"><i class="ti ti-user"></i></span>
                     <input
                       type="text"
                       id="lastname"
@@ -91,7 +88,6 @@
               <div class="col-sm-12">
                   <label class="form-label" for="Lastname">User Name</label>
                   <div class="input-group input-group-merge">
-                    <span id="user2" class="input-group-text"><i class="ti ti-user"></i></span>
                     <input
                       type="text"
                       id="username"
@@ -106,8 +102,6 @@
               <div class="col-sm-12 form-password-toggle">
                   <label class="form-label" for="Password" name="title-password" id="title-password">Password</label>
                   <div class="input-group input-group-merge">
-                    <span id="password2" class="input-group-text"><i class="ti ti-user"></i></span>
-                    
                     <input
                       type="password"
                       id="password"
@@ -123,7 +117,6 @@
               <div class="col-sm-12 form-password-toggle">
                 <label class="form-label" for="Confirm_password">Confirm password</label>
                 <div class="input-group input-group-merge">
-                  <span id="confirm_password2" class="input-group-text"><i class="ti ti-user"></i></span>
                   <input
                     type="password"
                     id="confirm_password"
@@ -179,7 +172,6 @@
               <div class="col-sm-12">
                 <label class="form-label" for="Email">Email</label>
                 <div class="input-group input-group-merge">
-                  <span id="email2" class="input-group-text"><i class="ti ti-user"></i></span>
                   <input
                     type="text"
                     id="email"
@@ -194,7 +186,6 @@
               <div class="col-sm-12">
                 <label class="form-label" for="Birthdate">Birthdate</label>
                 <div class="input-group input-group-merge">
-                  <span id="birthdate2" class="input-group-text"><i class="ti ti-user"></i></span>
                   <input
                     type="date"
                     id="birthdate"
@@ -209,7 +200,6 @@
               <div class="col-sm-12">
                 <label class="form-label" for="Address">Address</label>
                 <div class="input-group input-group-merge">
-                  <span id="address2" class="input-group-text"><i class="ti ti-user"></i></span>
                   <input
                     type="text"
                     id="address"
@@ -224,7 +214,6 @@
               <div class="col-sm-12">
                 <label class="form-label" for="Position">Position</label>
                 <div class="input-group input-group-merge">
-                  <span id="position2" class="input-group-text"><i class="ti ti-user"></i></span>
                   <input
                     type="text"
                     id="position"
@@ -420,6 +409,8 @@
                     $('.user-status').hide();
                     $('.title-name').text('Add User');
                     $('#title-password').text('Password');
+                    $('#roles').val("").trigger('change');
+                    $('#sex').val("").trigger('change');
                     Firstname.val('').trigger('change');
                     $('.form-control').val('');
                     offCanvasEl.show();
@@ -535,8 +526,10 @@
                                         confirmButton: 'btn btn-success',
                                     },
                                 })
-                                offCanvasEl.hide()
+                                offCanvasEl.hide();
                                 dataTable.ajax.reload()
+                                
+                             
                             } else {
                                 Swal.fire({
                                     icon: 'error',
