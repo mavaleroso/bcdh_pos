@@ -4,6 +4,7 @@
 *.pyc
 **/__pycache__/
 **/migrations/
+**/migrations/0001_initial.py
 db.sqlite3
 media
 .idea
