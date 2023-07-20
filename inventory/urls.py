@@ -16,4 +16,7 @@ urlpatterns = [
     path('po/list/export_excel', views.po_export_excel, name='po-export-excel'),
     path('po/view/<int:stock_id>', views.po_view, name='po-view'),
     path('po/delete', views.po_delete, name='po-delete'),
+    path('stock/locations', views.stock_locations, name='get-stock-locations'),
+    path('stock/locations/update', views.update_stock_locations,
+         name='update-stock-locations'),
 ]
