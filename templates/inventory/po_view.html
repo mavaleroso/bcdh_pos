@@ -281,6 +281,7 @@
     })
 
     $(document).ready(function () {
+        const delivered_date = $('#delivered-date')
         const item_quantity_pcs = $('#item-quantity-pcs')
         const item_count_field = $('#item-count')
         const quick_search = $('#quick-search')
@@ -684,8 +685,9 @@
 
         update_btn.on('click', function () {
             Company.removeAttr('disabled')
-            $('[disabled]').removeAttr('disabled')
-            $('.d-none').removeClass('d-none')
+            delivered_date.removeAttr('disabled')
+            $('input[disabled]').removeAttr('disabled')
+            $('#po-frm .d-none').removeClass('d-none')
             delete_btn.addClass('d-none')
             update_btn.addClass('d-none')
 

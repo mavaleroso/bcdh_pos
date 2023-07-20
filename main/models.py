@@ -191,6 +191,7 @@ class UserDetails(models.Model):
     address = models.CharField(max_length=128, blank=True, null=True)
     position = models.CharField(max_length=128, blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
+    added_by_user_id = models.IntegerField(max_length=128, blank=True, null=True)
 
     class Meta:
         managed = True
@@ -251,8 +252,6 @@ class StocksItems(models.Model):
     pcs_quantity = models.IntegerField(max_length=128, blank=True, null=True)
     unit_price = models.DecimalField(
         max_digits=30, decimal_places=10, blank=True, null=True)
-    is_damaged = models.IntegerField(
-        max_length=50, default=0, blank=False, null=False)
     expiration_date = models.DateField(blank=True, null=True)
 
     class Meta:
@@ -311,7 +310,7 @@ class Location(models.Model):
 
 
 class StockLocation(models.Model):
-    stock = models.ForeignKey(Stocks, models.DO_NOTHING)
+    stock_item = models.ForeignKey(StocksItems, models.DO_NOTHING)
     location = models.ForeignKey(Location, models.DO_NOTHING)
     quantity = models.IntegerField(max_length=128, blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
@@ -369,8 +368,9 @@ class Payment(models.Model):
 
 class OutItems(models.Model):
     sales = models.ForeignKey(Sales, models.DO_NOTHING)
-    stock = models.ForeignKey(Stocks, models.DO_NOTHING)
+    stock_item = models.ForeignKey(StocksItems, models.DO_NOTHING)
     quantity = models.IntegerField(max_length=128, blank=True, null=True)
+    location = models.ForeignKey(Location, models.DO_NOTHING)
     discounted_amount = models.DecimalField(
         max_digits=30, decimal_places=10, blank=True, null=True)
     created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
