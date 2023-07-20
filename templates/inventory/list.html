@@ -1,240 +1,11 @@
 {% extends 'index.html' %} {% block content %} {% load staticfiles %}
 
-<!-- Content wrapper -->
 <div class="content-wrapper">
-    <!-- Content -->
     <div class="container-xxl flex-grow-1 container-p-y">
         <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Inventory /</span> List</h4>
 
         <div class="card">
             <div class="card-body">
-                <div class="row">
-                    <!-- <div class="col-md-8">
-                        <div class="form-group">
-                            <label class="form-label" for="column_name">Toggle Columns</label>
-                            <select
-                                name="column_name"
-                                id="column_name"
-                                class="form-control"
-                                data-style="btn-default"
-                                data-icon-base="ti"
-                                data-tick-icon="ti-check text-white"
-                                multiple
-                            >
-                                <option value="1">Inv-code</option>
-                                <option value="2">Barcode</option>
-                                <option value="3">Item Type</option>
-                                <option value="4">Item Description</option>
-                                <option value="5">Brand</option>
-                                <option value="6">Company</option>
-                                <option value="7">Location</option>
-                                <option value="8">Quantity</option>
-                                <option value="9">Damage Stock</option>
-                                <option value="10">Available Stock</option>
-                                <option value="11">Unit Price</option>
-                                <option value="12">Retail Price</option>
-                                <option value="13">Expiration Date</option>
-                                <option value="14">Aging</option>
-                                <option value="15">Delivery Date</option>
-                                <option value="16">created_at</option>
-                                <option value="17">updated_at</option>
-                                <option value="18">created_by</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="p-1 fit-content ms-auto d-block">
-                            <label class="switch switch-lg mt-4 fit-content">
-                                <input id="advance-filter-switch" type="checkbox" class="switch-input" />
-                                <span class="switch-toggle-slider">
-                                    <span class="switch-on">
-                                        <i class="ti ti-check"></i>
-                                    </span>
-                                    <span class="switch-off">
-                                        <i class="ti ti-x"></i>
-                                    </span>
-                                </span>
-                                <span class="switch-label">Filter</span>
-                            </label>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="py-4">
-                            <a href="{% url 'export-excel' %}" class="btn btn-primary waves-effect waves-light ms-auto d-block">
-                                <span class="ti-xs ti ti-file-export me-1"></span>Export Excel
-                            </a>
-                        </div>
-                    </div> -->
-                </div>
-
-                <!-- <div id="advance-filter-card" class="card my-3 shadow-sm">
-                    <div class="card-header">
-                        <div class="card-title h6">Advance Filter</div>
-                    </div>
-                    <div class="card-body">
-                        <form id="advance-filter-form">
-                            <div class="row">
-                                <div class="col-12">
-                                    <div class="row g-3">
-                                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                                            <label class="form-label">Inventory Code</label>
-                                            <select
-                                                id="inventory-code-filter"
-                                                name="inventory_code_filter"
-                                                class="select2-filter form-select"
-                                                multiple
-                                            >
-                                                <option></option>
-                                                {% for row in inventory_code %}
-                                                <option value="{{ row.code }}">{{ row.code }}</option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-                                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                                            <label class="form-label">Barcode</label>
-                                            <select id="barcode-filter" name="barcode_filter" class="select2-filter form-select" multiple>
-                                                <option></option>
-                                                {% for row in barcode %}
-                                                <option value="{{ row.barcode }}">{{ row.barcode }}</option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-                                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                                            <label class="form-label">Item Type</label>
-                                            <select id="item-type-filter" name="item_type_filter" class="select2-filter form-select" multiple>
-                                                <option></option>
-                                                {% for row in item_type %}
-                                                <option value="{{ row.id }}">{{ row.name }}</option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-                                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                                            <label class="form-label">Generic</label>
-                                            <select id="generic-filter" name="generic_filter" class="select2-filter form-select" multiple>
-                                                <option></option>
-                                                {% for row in generic %}
-                                                <option value="{{ row.id }}">{{ row.name }}</option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-                                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                                            <label class="form-label">Sub-generic</label>
-                                            <select id="subgeneric-filter" name="subgeneric_filter" class="select2-filter form-select" multiple>
-                                                <option></option>
-                                                {% for row in sub_generic %}
-                                                <option value="{{ row.id }}">{{ row.name }}</option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-                                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                                            <label class="form-label">Classification</label>
-                                            <input type="text" id="classification-filter" name="classification_filter" class="form-control" />
-                                        </div>
-                                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                                            <label class="form-label">Description</label>
-                                            <input type="text" id="description-filter" name="description_filter" class="form-control" />
-                                        </div>
-                                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                                            <label class="form-label">Brand</label>
-                                            <select id="brand-filter" name="brand_filter" class="select2-filter form-select" multiple>
-                                                <option></option>
-                                                {% for row in brand %}
-                                                <option value="{{ row.id }}">{{ row.name }}</option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-                                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                                            <label class="form-label">Company</label>
-                                            <select id="company-filter" name="company_filter" class="select2-filter form-select" multiple>
-                                                <option></option>
-                                                {% for row in company %}
-                                                <option value="{{ row.id }}">{{ row.name }}</option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-                                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                                            <label class="form-label">Location</label>
-                                            <select id="location-filter" name="location_filter" class="select2-filter form-select" multiple>
-                                                <option></option>
-                                                {% for row in location %}
-                                                <option value="{{ row.id }}">{{ row.name }}</option>
-                                                {% endfor %}
-                                            </select>
-                                        </div>
-                                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                                            <label class="form-label">Is damaged</label>
-                                            <select
-                                                name="is_damage_filter"
-                                                id="is-damage-filter"
-                                                class="form-control"
-                                                data-style="btn-default"
-                                                data-icon-base="ti"
-                                                data-tick-icon="ti-check text-white"
-                                            >
-                                                <option value=""></option>
-                                                <option value="yes">Yes</option>
-                                                <option value="no">No</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                                            <label class="form-label">Is available</label>
-                                            <select
-                                                name="is_available_filter"
-                                                id="is-available-filter"
-                                                class="form-control"
-                                                data-style="btn-default"
-                                                data-icon-base="ti"
-                                                data-tick-icon="ti-check text-white"
-                                            >
-                                                <option value=""></option>
-                                                <option value="yes">Yes</option>
-                                                <option value="no">No</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                                            <label class="form-label">Is expired</label>
-                                            <select
-                                                name="is_expired_filter"
-                                                id="is-expired-filter"
-                                                class="form-control"
-                                                data-style="btn-default"
-                                                data-icon-base="ti"
-                                                data-tick-icon="ti-check text-white"
-                                            >
-                                                <option value=""></option>
-                                                <option value="yes">Yes</option>
-                                                <option value="no">No</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                                            <label class="form-label">Expiration Date</label>
-                                            <input type="date" id="expiration-date-filter" name="expiration_date_filter" class="form-control" />
-                                        </div>
-                                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                                            <label class="form-label">Delivered Date</label>
-                                            <input type="date" id="delivered-date-filter" name="delivered_date_filter" class="form-control" />
-                                        </div>
-                                        <div class="col-12 col-sm-6 col-md-4 col-lg-3">
-                                            <div class="mt-4 fit-content d-flex ms-auto d-block">
-                                                <button
-                                                    id="reset-advance-filter"
-                                                    type="button"
-                                                    class="btn btn-light-secondary waves-effect waves-light me-1"
-                                                >
-                                                    Reset
-                                                </button>
-                                                <button id="search-advance-filter" type="button" class="btn btn-primary waves-effect waves-light">
-                                                    <span class="ti-xs ti ti-search me-1"></span>Search
-                                                </button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div> -->
-
                 <div class="card-datatable text-nowrap">
                     <table id="tbl-items" class="table display compact">
                         <thead>
@@ -242,9 +13,11 @@
                                 <th></th>
                                 <th>Item Type</th>
                                 <th>Item Description</th>
-                                <th>Quantity</th>
+                                <th>Total Quantity</th>
+                                {% for row in location %}
+                                <th class="text-center">{{ row.name }}</th>
+                                {% endfor %}
                                 <th>Unit Price</th>
-                                <th>Damage</th>
                             </tr>
                         </thead>
                     </table>
@@ -252,109 +25,145 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="modalLocation" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+            <form id="frm-location">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="modalLocationTitle">Update Stock Location</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Item Name: <span id="modal-stock-details" class="fw-bold"></span></p>
+                        <div class="row my-4">
+                            <div id="modal-error-message" style="display: none" class="col-md-12">
+                                <div class="alert alert-danger d-flex align-items-center" role="alert">
+                                    <span class="alert-icon text-danger me-2">
+                                        <i class="ti ti-ban ti-xs"></i>
+                                    </span>
+                                    <span id="modal-error-message-text"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <label class="form-label" for="modal-po">PO Number</label>
+                                <select id="modal-po" name="po" class="form-select" data-allow-clear="true">
+                                    <option></option>
+                                    {% comment %} {% for row in po %}
+                                    <option value="{{ row.id }}">{{ row.code }}</option>
+                                    {% endfor %} {% endcomment %}
+                                </select>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <label class="form-label" for="modal-from-location">From Location</label>
+                                <select id="modal-from-location" name="from_location" class="form-select" data-allow-clear="true">
+                                    <option></option>
+                                    {% for row in location %}
+                                    <option value="{{ row.id }}">{{ row.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <label class="form-label" for="modal-to-location">To Location</label>
+                                <select id="modal-to-location" name="to_location" class="form-select" data-allow-clear="true">
+                                    <option></option>
+                                    {% for row in location %}
+                                    <option value="{{ row.id }}">{{ row.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3 col-sm-6">
+                                <label for="modal-qty-location" class="form-label">Quantity</label>
+                                <input type="number" class="form-control" name="transfer_quantity" id="modal-qty-location" />
+                            </div>
+                        </div>
+                        <table id="modal-tbl-locations" class="table display compact">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">Purchase Order</th>
+                                    <th class="text-center">Quantity</th>
+                                    {% for row in location %}
+                                    <th class="text-center">{{ row.name }}</th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tfoot>
+                                <tr>
+                                    <td class="fw-bold">Total</td>
+                                    <td><span id="modal-stock-total-qty" class="badge bg-secondary"></span></td>
+                                    {% for row in location %}
+                                    <td>
+                                        <span id="modal-stock-location-qty-{{ row.name }}" class="badge bg-secondary"></span>
+                                    </td>
+                                    {% endfor %}
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Close</button>
+                        <button name="submitButton" class="btn btn-primary">Save changes</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
 </div>
 {% endblock %} {% block footer_scripts %}
 <script>
+    var csrftoken = getCookie('csrftoken');
+
+    const toast_options = (toastr.options = {
+        maxOpened: 1,
+        autoDismiss: true,
+        closeButton: true,
+        newestOnTop: true,
+        progressBar: true,
+        positionClass: 'toast-top-right',
+        rtl: isRtl,
+    })
     $(document).ready(function () {
-        const table = $('#tbl-items')
-        const columns_name = $('select[name=column_name]')
-        const advance_filter_switch = $('#advance-filter-switch')
-        const advance_filter_card = $('#advance-filter-card')
-        const datepicker_field = document.querySelectorAll('.dob-picker')
-        const select2_filter = $('.select2-filter')
-        const advance_filter_form = $('#advance-filter-form')
-        const search_advance_filter = $('#search-advance-filter')
-        const reset_advance_filter = $('#reset-advance-filter')
+        const table_items = $('#tbl-items')
+        const modal_stock_details = $('#modal-stock-details')
+        const modal_tbl_locations = $('#modal-tbl-locations')
+        const modal_stock_total_qty = $('#modal-stock-total-qty')
+        const modal_stock_location_qty = $('#modal-stock-location-qty')
+        const frm_location = document.getElementById('frm-location')
+        const po = jQuery(document.querySelector('[name="po"]'))
+        const from_location = jQuery(document.querySelector('[name="from_location"]'))
+        const to_location = jQuery(document.querySelector('[name="to_location"]'))
+        const transfer_quantity = jQuery(document.querySelector('[name="transfer_quantity"]'))
+        const modal_error_message = $('#modal-error-message')
+        const modal_error_message_text = $('#modal-error-message-text')
 
-        const inventory_code_filter = $('#inventory-code-filter')
-        const barcode_filter = $('#barcode-filter')
-        const item_type_filter = $('#item-type-filter')
-        const generic_filter = $('#generic-filter')
-        const subgeneric_filter = $('#subgeneric-filter')
-        const classification_filter = $('#classification-filter')
-        const description_filter = $('#description-filter')
-        const brand_filter = $('#brand-filter')
-        const company_filter = $('#company-filter')
-        const location_filter = $('#location-filter')
-        const is_damage_filter = $('select[name=is_damage_filter]')
-        const is_available_filter = $('select[name=is_available_filter]')
-        const is_expired_filter = $('select[name=is_expired_filter]')
-        const expiration_date_filter = $('#expiration-date-filter')
-        const delivered_date_filter = $('#delivered-date-filter')
+        let columns_data_1 = [{ data: 'id' }, { data: 'item_type_name' }, { data: 'details' }, { data: 'pcs_quantity' }]
 
-        advance_filter_switch.on('change', () => {
-            let val = advance_filter_switch.is(':checked')
-            val ? advance_filter_card.show('500') : advance_filter_card.hide('500')
+        {% for l in location %}
+            columns_data_1.push({
+                data: '{{ l.name }}',
+            })
+        {% endfor %}
+
+        columns_data_1.push({
+            data: 'unit_price',
         })
 
-        datepicker_field.forEach(function (datepicker) {
-            datepicker.flatpickr({
-                monthSelectorType: 'static',
-            })
-        })
-
-        is_damage_filter.selectpicker()
-        is_available_filter.selectpicker()
-        is_expired_filter.selectpicker()
-
-        if (select2_filter.length) {
-            select2_filter.select2({
-                allowClear: false,
-                placeholder: 'Select Filter',
-            })
-        }
-
-        advance_filter_card.hide()
-
-        var stocksTable = table.DataTable({
+        var stocksTable = table_items.DataTable({
             processing: true,
             serverSide: true,
             ajax: {
                 url: "{% url 'inventory-load' %}",
-                // data: function (d) {
-                //     d.inventory_code_filter = inventory_code_filter.val()
-                //     d.barcode_filter = barcode_filter.val()
-                //     d.item_type_filter = item_type_filter.val()
-                //     d.generic_filter = generic_filter.val()
-                //     d.subgeneric_filter = subgeneric_filter.val()
-                //     d.classification_filter = classification_filter.val()
-                //     d.description_filter = description_filter.val()
-                //     d.brand_filter = brand_filter.val()
-                //     d.company_filter = company_filter.val()
-                //     d.location_filter = location_filter.val()
-                //     d.is_damage_filter = is_damage_filter.val()
-                //     d.is_available_filter = is_available_filter.val()
-                //     d.is_expired_filter = is_expired_filter.val()
-                //     d.expiration_date_filter = expiration_date_filter.val()
-                //     d.delivered_date_filter = delivered_date_filter.val()
-                // },
             },
-            columns: [
-                { data: 'id' },
-                { data: 'item_type_name' },
-                { data: 'details' },
-                { data: 'pcs_quantity' },
-                { data: 'unit_price' },
-                { data: 'damaged' },
-            ],
+            columns: columns_data_1,
             columnDefs: [
                 {
                     targets: 0,
                     title: 'Actions',
                     orderable: false,
                     searchable: false,
-                    render: function (data) {
+                    render: function (data, type, row) {
                         let id = data.toString()
-                        return `<div class="d-inline-block">
-                            <a href="javascript:;" class="btn btn-sm btn-icon dropdown-toggle hide-arrow" data-bs-toggle="dropdown"><i class="text-primary ti ti-dots-vertical"></i></a>
-                            <div class="dropdown-menu dropdown-menu-end m-0">
-                            <a href="javascript:;" class="dropdown-item">Details</a>
-                            <a href="javascript:;" class="dropdown-item">Archive</a>
-                            <div class="dropdown-divider"></div>
-                            <a href="javascript:;" class="dropdown-item text-danger delete-record">Delete</a>
-                            </div>
-                            </div>
-                            <a href="list/edit/${id}" class="item-edit text-body"><i class="text-primary ti ti-pencil"></i></a>`
+                        return `<a href="javascript:;" class="stock-location text-body" data-item="${row['details']}" data-id="${row['id']}"><i class="text-secondary ti ti-map-pin"></i></a>
+                                <a href="javascript:;" class="text-body"><i class="text-primary ti ti-versions"></i></a>`
                     },
                 },
                 {
@@ -365,11 +174,21 @@
                 {
                     targets: 3,
                     render: function (data) {
-                        return '<span class="badge bg-label-primary">' + data + '</span>'
+                        return `<span class="badge bg-label-primary">${data}</span>`
                     },
                 },
+                {% for l in location %}
+                    {
+                        targets: ({{ forloop.counter }} + 3),
+                        orderable: false,
+                        searchable: false,
+                        render: function (data, type, row) {
+                            return `<span class="badge bg-label-warning">${data}</span>`;
+                        },
+                    },
+                {% endfor %}
                 {
-                    targets: 4,
+                    targets: -1,
                     render: function (data) {
                         let elem = ''
                         if (data) {
@@ -378,150 +197,269 @@
                         return elem
                     },
                 },
-                {
-                    targets: 5,
-                    render: function (data) {
-                        return '<span class="badge bg-label-danger">' + data + '</span>'
-                    },
-                },
-
-                // {
-                //     targets: 7,
-                //     orderable: false,
-                //     searchable: false,
-                //     render: function (data) {
-                //         let elem = ''
-                //         if (data.length > 0) {
-                //             data.forEach(function (e) {
-                //                 elem += `<button type="button" class="btn btn-sm btn-label-dark waves-effect me-2 mt-1">
-                //                               ${e.name}
-                //                               <span class="badge bg-white text-dark badge-center ms-1">${e.quantity}</span>
-                //                           </button>
-                //                           </br>`
-                //             })
-                //         }
-                //         return elem
-                //     },
-                // },
-                // {
-                //     targets: 8,
-                //     render: function (data) {
-                //         let elem = data ?? ''
-                //         if (elem) {
-                //             elem = `<span class="badge bg-info">${data} pcs</span>`
-                //         }
-                //         return elem
-                //     },
-                // },
-                // {
-                //     targets: 9,
-                //     orderable: false,
-                //     searchable: false,
-                //     render: function (data) {
-                //         let elem = ''
-                //         if (data) {
-                //             elem = `<span class="badge bg-danger">${data} pcs</span>`
-                //         }
-                //         return elem
-                //     },
-                // },
-                // {
-                //     targets: 10,
-                //     orderable: false,
-                //     searchable: false,
-                //     render: function (data) {
-                //         let elem = data ?? 0
-                //         elem = `<span class="badge bg-success">${data} pcs</span>`
-                //         return elem
-                //     },
-                // },
-                // {
-                //     targets: 11,
-                //     render: function (data) {
-                //         let elem = ''
-                //         if (data) {
-                //             elem = `<span class="badge bg-label-secondary">${currencyFormat(data)}</span>`
-                //         }
-                //         return elem
-                //     },
-                // },
-                // {
-                //     targets: 12,
-                //     render: function (data) {
-                //         let elem = ''
-                //         if (data) {
-                //             elem = `<span class="badge bg-label-dark">${currencyFormat(data)}</span>`
-                //         }
-                //         return elem
-                //     },
-                // },
-                // {
-                //     targets: 14,
-                //     orderable: false,
-                //     searchable: false,
-                //     render: function (data) {
-                //         let background_color = 'bg-secondary'
-                //         if (data > 30) {
-                //             background_color = 'bg-success'
-                //         } else if (data <= 30 && data > 0) {
-                //             background_color = 'bg-warning'
-                //         } else if (data <= 0) {
-                //             background_color = 'bg-danger'
-                //         }
-                //         return `<span class="badge ${background_color}">${data}</span>`
-                //     },
-                // },
-                // {
-                //     targets: [16, 17],
-                //     render: function (data) {
-                //         return moment(data).format('LLL')
-                //     },
-                // },
             ],
             order: [[1, 'asc']],
             scrollX: true,
-        })
+            drawCallback: function (settings) {
+                $('.stock-location').on('click', function () {
+                    const item_details = $(this).data('item')
+                    const item_id = $(this).data('id')
+                    let po_number = []
 
-        search_advance_filter.on('click', function () {
-            stocksTable.ajax.reload()
-        })
+                    modal_stock_details.text(item_details)
 
-        reset_advance_filter.on('click', function () {
-            select2_filter.val([]).trigger('change')
-            advance_filter_form.trigger('reset')
-            stocksTable.ajax.reload()
-        })
+                    $('#modalLocation').modal('show')
 
-        stocksTable.on('draw', function () {
-            let toggled_column = localStorage.getItem('toggled_column') ?? ''
-            if (toggled_column != '') {
-                columns_name.val(toggled_column.split(','))
-            } else {
-                columns_name.val([2, 5, 6, 7, 8, 9, 10, 11, 12, 15, 16, 17])
+                    let columns_data = [{ data: 'code' }, { data: 'stock_item__pcs_quantity' }]
+
+                    {% for l in location %}
+                        columns_data.push({
+                            data: '{{ l.name }}',
+                        })
+                    {% endfor %}
+
+                    const fv = FormValidation.formValidation(frm_location, {
+                        fields: {
+                            po: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'Please select po',
+                                    },
+                                },
+                            },
+                            from_location: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'Please select from location',
+                                    },
+                                },
+                            },
+                            to_location: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'Please select to location',
+                                    },
+                                },
+                            },
+                            transfer_quantity: {
+                                validators: {
+                                    notEmpty: {
+                                        message: 'Please enter quantity',
+                                    },
+                                },
+                            },
+                        },
+                        plugins: {
+                            trigger: new FormValidation.plugins.Trigger(),
+                            bootstrap5: new FormValidation.plugins.Bootstrap5(),
+                            submitButton: new FormValidation.plugins.SubmitButton(),
+                            autoFocus: new FormValidation.plugins.AutoFocus(),
+                        },
+                        init: (instance) => {
+                            instance.on('plugins.message.placed', function (e) {
+                                if (e.element.parentElement.classList.contains('form-group')) {
+                                    e.element.parentElement.insertAdjacentElement('afterend', e.messageElement)
+                                }
+                                if (e.element.parentElement.parentElement.classList.contains('custom-option')) {
+                                    e.element.closest('.row').insertAdjacentElement('afterend', e.messageElement)
+                                }
+                            })
+                        },
+                    }).on('core.form.valid', function () {
+                        let selected_from_location = po_number.filter(i => i.id == po.val())[0]
+                        let based_location = ''
+                        let selected_location_val = 0
+                        {% for l in location %}
+                            if (from_location.val() == {{ l.id }}) {
+                                selected_location_val = selected_from_location['{{ l.name }}']
+                                based_location = '{{ l.name }}'
+                            }
+                        {% endfor %}
+                        if (transfer_quantity.val() > selected_location_val) {
+                            modal_error_message_text.text(`The quantity exceeds the total quantity of based location ${based_location}!`)
+                            modal_error_message.show()
+                            return false
+                        }
+                        modal_error_message_text.text()
+                        modal_error_message.hide()
+                        Swal.fire({
+                            title: 'Are you sure?',
+                            text: "You won't be able to revert this!",
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonText: 'Yes, save it!',
+                            customClass: {
+                                confirmButton: 'btn btn-primary me-3',
+                                cancelButton: 'btn btn-label-secondary',
+                            },
+                            buttonsStyling: false,
+                        }).then(function (result) {
+                            if (result.value) {
+                                var form_data = $('#frm-location').serialize()
+                                $.ajax({
+                                    type: 'POST',
+                                    url: "{% url 'update-stock-locations' %}",
+                                    data: form_data,
+                                     headers: {
+                                        'X-CSRFToken': csrftoken,
+                                    },
+                                }).done(function (data) {
+                                    if (data.data == 'success') {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Successfully save!',
+                                            text: 'Location has been updated.',
+                                            customClass: {
+                                                confirmButton: 'btn btn-success',
+                                            },
+                                        })
+                                        transfer_quantity.val(0)
+                                        modal_tbl_locations.DataTable().ajax.reload();
+                                        table_items.DataTable().ajax.reload()
+                                        toastr.success('Item location updated', 'Success', toast_options)
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Error saving!',
+                                            text: 'Encountered error on saving location!',
+                                            customClass: {
+                                                confirmButton: 'btn btn-success',
+                                            },
+                                        })
+                                    }
+                                })
+                            }
+                        })
+                    })
+
+                    modal_tbl_locations.DataTable({
+                        processing: true,
+                        serverSide: true,
+                        searching: false,
+                        destroy: true,
+                        info: false,
+                        ordering: false,
+                        paging: false,
+                        ajax: {
+                            url: "{% url 'get-stock-locations' %}?id=" + item_id,
+                        },
+                        columns: columns_data,
+                        columnDefs: [
+                            {
+                                targets: 0,
+                                render: function (data, type, row) {
+                                    let po_data = {
+                                        id: row.stock_item__id,
+                                        text: data
+                                    }
+
+                                    {% for l in location %}
+                                        po_data['{{ l.name }}'] = row.{{ l.name }}
+                                    {% endfor %}
+
+                                    po_number.push(po_data)
+                                    return `<span class="badge bg-label-primary">${data}</span>`;
+                                },
+                            },
+                            {
+                                targets: 1,
+                                render: function (data) {
+                                    return `<span class="row-total-qty badge bg-label-secondary">${data}</span>`;
+                                },
+                            },
+
+                            {% for l in location %}
+                                {
+                                    targets: ({{ forloop.counter }} + 1),
+                                    render: function (data, type, row) {
+                                        return `<span class="row-total-qty-{{ l.name }} badge bg-label-success">${data}</span>`;
+                                    },
+                                },
+                            {% endfor %}
+                        ],
+                        drawCallback: function (settings) {
+                            const row_total_qty = $('.row-total-qty')
+                            let total_qty = 0
+
+                            // Select2 (po)
+                            if (po.length) {
+                                po.wrap('<div class="position-relative"></div>')
+                                po.select2({
+                                    placeholder: 'Select Purchase Order',
+                                    dropdownParent: po.parent(),
+                                    minimumResultsForSearch: -1,
+                                }).on('change.select2', function () {
+                                    // Revalidate the color field when an option is chosen
+                                    fv.revalidateField('po')
+                                })
+                            }
+
+
+                            po.empty();
+                            po_number.forEach(e => {
+                                var newOption = new Option(e.text, e.id, false, false);
+                                po.append(newOption).trigger('change');
+                            })
+
+
+                            row_total_qty.each(function() {
+                                total_qty += parseInt($(this).text());
+                            })
+
+                            modal_stock_total_qty.text(total_qty)
+
+                            {% for l in location %}
+                                const location_data_{{ l.name }} = $('.row-total-qty-{{ l.name }}')
+                                let total_qty_{{ l.name }} = 0
+
+                                location_data_{{ l.name }}.each(function() {
+                                    total_qty_{{ l.name }} += parseInt($(this).text());
+                                })
+
+                                $('#modal-stock-location-qty-{{ l.name }}').text(total_qty_{{ l.name }});
+                            {% endfor %}
+
+                        },
+                    })
+
+
+                    // Select2 (from_location)
+                    if (from_location.length) {
+                        from_location.wrap('<div class="position-relative"></div>')
+                        from_location.select2({
+                            placeholder: 'Select From Location',
+                            dropdownParent: from_location.parent(),
+                            minimumResultsForSearch: -1
+                        }).on('change.select2', function () {
+                            // Revalidate the color field when an option is chosen
+                            fv.revalidateField('from_location')
+                            var select_val = from_location.val();
+                            $.each(to_location.options, function (i, item) {
+                                if (item.selected) {
+                                    $(item).prop("disabled", true);
+                                }
+                            });
+                        })
+                    }
+
+                    // Select2 (to_location)
+                    if (to_location.length) {
+                        to_location.wrap('<div class="position-relative"></div>')
+                        to_location.select2({
+                            placeholder: 'Select To Location',
+                            dropdownParent: to_location.parent(),
+                            minimumResultsForSearch: -1
+                        }).on('change.select2', function () {
+                            // Revalidate the color field when an option is chosen
+                            fv.revalidateField('to_location')
+                        })
+                    }
+
+
+                })
             }
-            // toggle_columns()
-            columns_name.selectpicker()
         })
 
-        columns_name.change(function () {
-            toggle_columns()
-        })
-
-        function toggle_columns() {
-            var all_column = Array.from({ length: 18 }, (_, i) => (i + 1).toString())
-
-            var remove_column = columns_name.val()
-
-            localStorage.setItem('toggled_column', remove_column)
-
-            var remaining_column = all_column.filter(function (obj) {
-                return remove_column.indexOf(obj) == -1
-            })
-
-            stocksTable.columns(remove_column).visible(false)
-
-            stocksTable.columns(remaining_column).visible(true)
-        }
     })
 </script>
 {% endblock footer_scripts %}

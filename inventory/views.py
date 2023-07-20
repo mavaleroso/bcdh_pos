@@ -9,10 +9,7 @@ from main.models import (Stocks, StocksItems, Items, StockLocation, SystemConfig
 from datetime import date, datetime
 import math
 import xlwt
-from django.db.models import Q
-from django.db.models import Sum, Count
-import json
-import re
+from django.db.models import Q, Sum
 
 
 def inventory_in(request):
@@ -28,15 +25,8 @@ def inventory_in(request):
 
 def inventory_list(request):
     context = {
-        'item_type': ItemType.objects.filter().order_by('name'),
-        'company': Company.objects.filter().order_by('name'),
-        'generic': Generic.objects.filter().order_by('name'),
-        'sub_generic': SubGeneric.objects.filter().order_by('name'),
-        'brand': Brand.objects.filter().order_by('name'),
-        'company': Company.objects.filter().order_by('name'),
-        'inventory_code': Stocks.objects.filter().order_by('code'),
-        'barcode': Items.objects.filter().order_by('barcode'),
-        'location': Location.objects.filter().order_by('name'),
+        'location': Location.objects.filter().order_by('id'),
+        'po': Stocks.objects.filter().order_by('id'),
     }
     return render(request, 'inventory/list.html', context)
 
@@ -64,204 +54,23 @@ def get_stock_id_availability(stock_data=[], return_val='', availability=False):
 
 
 def inventory_load(request):
-    # _inventory_code_filter = request.GET.getlist(
-    #     'inventory_code_filter[]') if request.GET.getlist('inventory_code_filter[]') else []
-    # _barcode_filter = request.GET.getlist(
-    #     'barcode_filter[]') if request.GET.getlist('barcode_filter[]') else []
-    # _item_type_filter = request.GET.getlist(
-    #     'item_type_filter[]') if request.GET.getlist('item_type_filter[]') else []
-    # _generic_filter = request.GET.getlist(
-    #     'generic_filter[]') if request.GET.getlist('generic_filter[]') else []
-    # _subgeneric_filter = request.GET.getlist(
-    #     'subgeneric_filter[]') if request.GET.getlist('subgeneric_filter[]') else []
-    # _classification_filter = request.GET.get('classification_filter')
-    # _description_filter = request.GET.get('description_filter')
-    # _brand_filter = request.GET.getlist(
-    #     'brand_filter[]') if request.GET.getlist('brand_filter[]') else []
-    # _company_filter = request.GET.getlist(
-    #     'company_filter[]') if request.GET.getlist('company_filter[]') else []
-    # _location_filter = request.GET.getlist(
-    #     'location_filter[]') if request.GET.getlist('location_filter[]') else []
-    # _is_damage_filter = request.GET.get('is_damage_filter')
-    # _is_available_filter = request.GET.get('is_available_filter')
-    # _is_expired_filter = request.GET.get('is_expired_filter')
-    # _expiration_date_filter = request.GET.get('expiration_date_filter')
-    # _delivered_date_filter = request.GET.get('delivered_date_filter')
-
-    _search = request.GET.get('search[value]')
-    _start = request.GET.get('start')
-    _length = request.GET.get('length')
-    _order_col_num = request.GET.get('order[0][column]')
-    _order_dir = request.GET.get('order[0][dir]')
-    _column_name = request.GET.get('columns['+_order_col_num+'][data]')
-    _search_id = []
-
-    # def _order_col():
-    #     prefix_col = ''
-    #     column = request.GET.get('columns['+_order_col_num+'][data]')
-
-    #     if column == 'barcode':
-    #         prefix_col = 'item__' + column
-    #     elif column == 'brand':
-    #         prefix_col = 'item__' + column + '__name'
-    #     elif column == 'company':
-    #         prefix_col = column + '__name'
-    #     else:
-    #         prefix_col = column
-
-    #     return prefix_col
-
-    # _order_dash = '-' if _order_dir == 'desc' else ''
-
-    # filters = {}
-
-    # if len(_inventory_code_filter) > 0:
-    #     filters['code__in'] = _inventory_code_filter
-
-    # if len(_barcode_filter) > 0:
-    #     filters['item__barcode__in'] = _barcode_filter
-
-    # if len(_item_type_filter) > 0:
-    #     filters['item__type_id__in'] = _item_type_filter
-
-    # if len(_generic_filter) > 0:
-    #     filters['item__generic_id__in'] = _generic_filter
-
-    # if len(_subgeneric_filter) > 0:
-    #     filters['item__sub_generic_id__in'] = _subgeneric_filter
-
-    # if len(_brand_filter) > 0:
-    #     filters['item__brand_id__in'] = _brand_filter
-
-    # if len(_company_filter) > 0:
-    #     filters['company_id__in'] = _company_filter
-
-    # if len(_location_filter) > 0:
-    #     stock_id = StockLocation.objects.filter(
-    #         location_id__in=_location_filter)
-    #     filters['id__in'] = stock_id
-
-    # if _classification_filter:
-    #     filters['item__classification__icontains'] = _classification_filter
-
-    # if _description_filter:
-    #     filters['item__description__icontains'] = _description_filter
-
-    # if _is_damage_filter == 'yes':
-    #     filters['is_damaged__gt'] = 0
-    # elif _is_damage_filter == 'no':
-    #     filters['is_damaged__lt'] = 1
-
-    # if _is_available_filter == 'yes':
-    #     stock_data = Stocks.objects.select_related()
-    #     stock_id = get_stock_id_availability(stock_data, 'stock_id', True)
-
-    #     filters['id__in'] = stock_id
-    # elif _is_available_filter == 'no':
-    #     stock_data = Stocks.objects.select_related()
-    #     stock_id = get_stock_id_availability(stock_data, 'stock_id', False)
-
-    #     filters['id__in'] = stock_id
-
-    # if _is_expired_filter == 'yes':
-    #     stock_data = Stocks.objects.select_related()
-    #     stock_id = []
-    #     for stock in stock_data:
-    #         expiration_aging = stock.expiration_date - datetime.now().date()
-    #         if expiration_aging.days <= 0:
-    #             stock_id.append(stock.id)
-    #     filters['id__in'] = stock_id
-    # elif _is_expired_filter == 'no':
-    #     stock_data = Stocks.objects.select_related()
-    #     stock_id = []
-    #     for stock in stock_data:
-    #         expiration_aging = stock.expiration_date - datetime.now().date()
-    #         if expiration_aging.days > 0:
-    #             stock_id.append(stock.id)
-    #     filters['id__in'] = stock_id
-
-    # if _expiration_date_filter:
-    #     filters['expiration_date'] = _expiration_date_filter
-
-    # if _delivered_date_filter:
-    #     filters['delivered_date'] = _delivered_date_filter
-
-    # stock_data = Stocks.objects.select_related().filter(**filters).filter(
-    #     Q(code__icontains=_search) |
-    #     Q(item__barcode__icontains=_search) |
-    #     Q(item__type__name__icontains=_search) |
-    #     Q(item__brand__name__icontains=_search) |
-    #     Q(company__name__icontains=_search) |
-    #     Q(item__generic__name__icontains=_search) |
-    #     Q(item__sub_generic__name__icontains=_search) |
-    #     Q(item__classification__icontains=_search) |
-    #     Q(item__description__icontains=_search) |
-    #     Q(pcs_quantity__icontains=_search) |
-    #     Q(is_damaged__icontains=_search) |
-    #     Q(unit_price__icontains=_search) |
-    #     Q(retail_price__icontains=_search) |
-    #     Q(expiration_date__icontains=_search) |
-    #     Q(delivered_date__icontains=_search)
-    # ).order_by(_order_dash + _order_col())
-
-    stock_data = StocksItems.objects.raw(
-        """
-        SELECT
-                    si.item_id AS id,
-                    it.name AS item_type_name,
-                    CONCAT(g.name,' ',sg.name,' ',i.classification, ' ', i.description) AS item_details,
-                    SUM(si.pcs_quantity - si.damaged) AS total_quantity,
-                    SUM(si.damaged) AS total_damaged,
-                    si.unit_price
-        FROM stock_items AS si
-        JOIN stocks AS s ON s.id = si.stock_id
-        JOIN items AS i ON i.id = si.item_id
-        JOIN item_type AS it ON it.id = i.type_id
-        JOIN generic AS g ON g.id = i.generic_id
-        JOIN sub_generic AS sg ON sg.id = i.sub_generic_id
-        GROUP BY si.item_id
-        ORDER BY """+_column_name+""" """+_order_dir+"""
-        """
-    )
-
-    if _search:
-        for stock in stock_data:
-            if _search.lower() in stock.item_type_name.lower():
-                if stock.id not in _search_id:
-                    _search_id.append(stock.id)
-
-            if _search.lower() in stock.item_details.lower():
-                if stock.id not in _search_id:
-                    _search_id.append(stock.id)
-
-            if _search in str(stock.total_quantity):
-                if stock.id not in _search_id:
-                    _search_id.append(stock.id)
-
-            if _search in str(stock.total_damaged):
-                if stock.id not in _search_id:
-                    _search_id.append(stock.id)
-
-            if _search in str(stock.unit_price):
-                if stock.id not in _search_id:
-                    _search_id.append(stock.id)
-
-        def where_in_search():
-            if len(_search_id) == 1:
-                return "("+str(_search_id[0])+")"
-            elif len(_search_id) > 0:
-                return str(tuple(_search_id))
-            else:
-                return "(0)"
+    if request.method == 'GET':
+        _search = request.GET.get('search[value]')
+        _start = request.GET.get('start')
+        _length = request.GET.get('length')
+        _order_col_num = request.GET.get('order[0][column]')
+        _order_dir = request.GET.get('order[0][dir]')
+        _column_name = request.GET.get('columns['+_order_col_num+'][data]')
+        _search_id = []
 
         stock_data = StocksItems.objects.raw(
             """
             SELECT
                 si.item_id AS id,
+                GROUP_CONCAT(si.id SEPARATOR ',') as n_id,
                 it.name AS item_type_name,
                 CONCAT(g.name,' ',sg.name,' ',i.classification, ' ', i.description) AS item_details,
-                SUM(si.pcs_quantity - si.damaged) AS total_quantity,
-                SUM(si.damaged) AS total_damaged,
+                SUM(si.pcs_quantity) AS total_quantity,
                 si.unit_price
             FROM stock_items AS si
             JOIN stocks AS s ON s.id = si.stock_id
@@ -269,86 +78,198 @@ def inventory_load(request):
             JOIN item_type AS it ON it.id = i.type_id
             JOIN generic AS g ON g.id = i.generic_id
             JOIN sub_generic AS sg ON sg.id = i.sub_generic_id
-            WHERE si.item_id IN """+where_in_search()+"""
             GROUP BY si.item_id
             ORDER BY """+_column_name+""" """+_order_dir+"""
             """
         )
 
-    out_items_data = OutItems.objects.select_related()
+        if _search:
+            for stock in stock_data:
+                if _search.lower() in stock.item_type_name.lower():
+                    if stock.id not in _search_id:
+                        _search_id.append(stock.id)
 
-    total = sum(1 for result in stock_data)
+                if _search.lower() in stock.item_details.lower():
+                    if stock.id not in _search_id:
+                        _search_id.append(stock.id)
 
-    if _start and _length:
-        start = int(_start)
-        length = int(_length)
-        page = math.ceil(start / length) + 1
-        per_page = length
+                if _search in str(stock.total_quantity):
+                    if stock.id not in _search_id:
+                        _search_id.append(stock.id)
 
-        stock_data = stock_data[start:start + length]
+                if _search in str(stock.unit_price):
+                    if stock.id not in _search_id:
+                        _search_id.append(stock.id)
 
-    data = []
+            def where_in_search():
+                if len(_search_id) == 1:
+                    return "("+str(_search_id[0])+")"
+                elif len(_search_id) > 0:
+                    return str(tuple(_search_id))
+                else:
+                    return "(0)"
 
-    for stock in stock_data:
-        out_items_data = OutItems.objects.select_related().filter(
-            stock_item_id=stock.id)
+            stock_data = StocksItems.objects.raw(
+                """
+                SELECT
+                    si.item_id AS id,
+                    GROUP_CONCAT(si.id SEPARATOR ',') as n_id,
+                    it.name AS item_type_name,
+                    CONCAT(g.name,' ',sg.name,' ',i.classification, ' ', i.description) AS item_details,
+                    SUM(si.pcs_quantity) AS total_quantity,
+                    si.unit_price
+                FROM stock_items AS si
+                JOIN stocks AS s ON s.id = si.stock_id
+                JOIN items AS i ON i.id = si.item_id
+                JOIN item_type AS it ON it.id = i.type_id
+                JOIN generic AS g ON g.id = i.generic_id
+                JOIN sub_generic AS sg ON sg.id = i.sub_generic_id
+                WHERE si.item_id IN """+where_in_search()+"""
+                GROUP BY si.item_id
+                ORDER BY """+_column_name+""" """+_order_dir+"""
+                """
+            )
 
-        if out_items_data.count() > 0:
-            stock.total_quantity -= out_items_data[0].quantity
+        total = sum(1 for result in stock_data)
 
-        # userData = AuthUser.objects.filter(id=stock.user.id)
-        # outItemsData = OutItems.objects.filter(stock_id=stock.id)
-        # stockLocation = StockLocation.objects.select_related().filter(stock_id=stock.id)
-        # full_name = userData[0].first_name + ' ' + userData[0].last_name
+        if _start and _length:
+            start = int(_start)
+            length = int(_length)
+            page = math.ceil(start / length) + 1
+            per_page = length
 
-        # location_data = []
+            stock_data = stock_data[start:start + length]
 
-        data.append({
-            'id': stock.id,
-            'item_type_name': stock.item_type_name,
-            'details': stock.item_details,
-            'pcs_quantity': stock.total_quantity,
-            'damaged': stock.total_damaged,
-            'unit_price': stock.unit_price,
-        })
+        data = []
 
-        # for il in stockLocation:
-        #     il_obj = {
-        #         'name': il.location.name,
-        #         'quantity': il.quantity
-        #     }
-        #     location_data.append(il_obj)
+        for stock in stock_data:
 
-        # expended_stock = 0
-        # damage_stock = stock.is_damaged if stock.is_damaged else 0
+            stock_item_id = [int(num) for num in stock.n_id.split(',')]
 
-        # for outItem in outItemsData:
-        #     expended_stock = expended_stock + outItem.quantity
+            location_data = Location.objects.filter()
 
-        # available = stock.pcs_quantity - expended_stock - damage_stock
+            out_total_qty = OutItems.objects.filter(stock_item_id__in=stock_item_id).aggregate(
+                total_quantity=Sum('quantity'))['total_quantity']
 
-        # expiration_aging = stock.expiration_date - datetime.now().date()
+            out_total_qty = out_total_qty if out_total_qty != '' else 0
 
-        # stock_obj = {
-        #     'id': stock.item.id,
-        #     'item_type': stock.item.type.name,
-        #     'details': stock.item.generic.name + ' ' + stock.item.sub_generic.name + ' ' + stock.item.classification + ' ' + stock.item.description,
-        #     'pcs_quantity': stock.pcs_quantity,
-        #     'damage_stock': stock.damaged,
-        #     'unit_price': stock.unit_price,
-        # }
+            if out_total_qty is not None:
+                stock.total_quantity -= out_total_qty
 
-        # data.append(data)
+            stock_details_data = {
+                'id': stock.id,
+                'item_type_name': stock.item_type_name,
+                'details': stock.item_details,
+                'pcs_quantity': stock.total_quantity,
+                'unit_price': stock.unit_price,
+            }
 
-    response = {
-        'data': data,
-        'page': page,
-        'per_page': per_page,
-        'recordsTotal': total,
-        'recordsFiltered': total,
-    }
+            for l in location_data:
+                stock_location_data = StockLocation.objects.filter(
+                    stock_item_id__in=stock_item_id)
+                out_items_location_data = OutItems.objects.filter(
+                    stock_item_id__in=stock_item_id)
 
-    return JsonResponse(response)
+                stock_details_data[l.name] = 0
+                for sld in stock_location_data:
+                    if sld.location_id == l.id:
+                        stock_details_data[l.name] += sld.quantity
+
+                for oild in out_items_location_data:
+                    if oild.location_id == l.id:
+                        stock_details_data[l.name] -= oild.quantity
+
+            data.append(stock_details_data)
+
+        response = {
+            'data': data,
+            'page': page,
+            'per_page': per_page,
+            'recordsTotal': total,
+            'recordsFiltered': total,
+        }
+
+        return JsonResponse(response)
+
+
+def stock_locations(request):
+    if request.method == 'GET':
+        item_id = request.GET.get('id')
+
+        locations = Location.objects.filter().order_by('id')
+        stock_locations = StockLocation.objects.filter(stock_item__item_id=item_id).order_by('stock_item__stock__code').values(
+            'id',
+            'stock_item__id',
+            'stock_item__pcs_quantity',
+            'stock_item__stock__code',
+            'location__name',
+            'quantity'
+        )
+
+        data = []
+
+        for sl in stock_locations:
+            out_total_qty = OutItems.objects.filter(stock_item_id=sl['stock_item__id']).aggregate(
+                total_quantity=Sum('quantity'))['total_quantity']
+
+            out_total_qty = out_total_qty if out_total_qty != '' else 0
+
+            if out_total_qty is not None:
+                sl['stock_item__pcs_quantity'] -= out_total_qty
+
+            if len(data) == 0:
+                tmp_data = {
+                    'stock_item__id': sl['stock_item__id'],
+                    'code': sl['stock_item__stock__code'],
+                    'stock_item__pcs_quantity': sl['stock_item__pcs_quantity']
+                }
+                for l in locations:
+                    if sl['location__name'] == l.name:
+                        tmp_data[l.name] = sl['quantity']
+                    else:
+                        tmp_data[l.name] = 0
+
+                data.append(tmp_data)
+            else:
+                if not [item for item in data if item['stock_item__id'] == sl['stock_item__id']]:
+                    tmp_data = {
+                        'stock_item__id': sl['stock_item__id'],
+                        'code': sl['stock_item__stock__code'],
+                        'stock_item__pcs_quantity': sl['stock_item__pcs_quantity']
+                    }
+
+                    for l in locations:
+                        if sl['location__name'] == l.name:
+                            tmp_data[l.name] = sl['quantity']
+                        else:
+                            tmp_data[l.name] = 0
+
+                    data.append(tmp_data)
+
+            for d in data:
+                if d['stock_item__id'] == sl['stock_item__id']:
+                    for l in locations:
+                        if sl['location__name'] == l.name:
+                            d[l.name] = sl['quantity']
+
+        for d in data:
+            out_items_data = OutItems.objects.filter(stock_item_id=d['stock_item__id']).values(
+                'stock_item_id', 'location__name'
+            ).annotate(
+                total_quantity=Sum('quantity')
+            )
+
+            for oid in out_items_data:
+                if oid['stock_item_id'] == d['stock_item__id']:
+                    for l in locations:
+                        if oid['location__name'] == l.name:
+                            d[l.name] -= oid['total_quantity']
+
+        response = {
+            'data': data,
+        }
+
+        return JsonResponse(response)
 
 
 def generate_code():
@@ -402,6 +323,11 @@ def store_stock_data(request):
                                       unit_price=unit_price, expiration_date=expiration_date)
 
             stock_items.save()
+
+            stock_location = StockLocation(
+                quantity=quantity, location_id=1, stock_item_id=stock_items.id)
+
+            stock_location.save()
 
         return JsonResponse({'data': 'success'})
 
@@ -678,3 +604,36 @@ def po_delete(request):
     stock_data = Stocks.objects.get(pk=stock_id)
     stock_data.delete()
     return JsonResponse({'data': 'success'})
+
+
+def update_stock_locations(request):
+    if request.method == 'POST':
+        stock_item_id = request.POST.get('po')
+        from_location = request.POST.get('from_location')
+        to_location = request.POST.get('to_location')
+        transfer_quantity = request.POST.get('transfer_quantity')
+
+        stock_location_query = StockLocation.objects.filter(
+            stock_item_id=stock_item_id, location_id=to_location)
+
+        if stock_location_query:
+            response = stock_location_query.update(
+                quantity=stock_location_query[0].quantity +
+                int(transfer_quantity),
+            )
+        else:
+            response = stock_location_query.create(
+                quantity=int(transfer_quantity),
+                location_id=to_location,
+                stock_item_id=stock_item_id
+            )
+
+        if response:
+            stock_location_query_2 = StockLocation.objects.filter(
+                stock_item_id=stock_item_id, location_id=from_location)
+            stock_location_query_2.update(
+                quantity=stock_location_query_2[0].quantity -
+                int(transfer_quantity),
+            )
+
+        return JsonResponse({'data': 'success'})
