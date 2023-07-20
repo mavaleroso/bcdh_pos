@@ -6,7 +6,7 @@ from django.contrib.auth import authenticate, login as auth_login, logout as aut
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from main.models import (UserDetails, RoleDetails, AuthUser )
+from main.models import (UserDetails, RoleDetails, AuthUser)
 
 
 def get_user_details(request):
@@ -36,10 +36,10 @@ def login(request):
             request.session['username'] = user.username
             request.session['fullname'] = user.first_name + user.last_name
             return redirect("dashboard")
-        
+
         elif user is None:
             messages.error(request, 'Invalid Username or Password/blocked.')
-        
+
         else:
             messages.error(request, 'Your account is blocked')
 
@@ -49,16 +49,16 @@ def login(request):
 @login_required(login_url='login')
 def dashboard(request):
     user_details = get_user_details(request)
-    
+
     allowed_roles = ["Admin", "Management"]
-    
+
     role = RoleDetails.objects.filter(id=user_details.role_id).first()
     context = {
-        'user_role' : role.role_name,
+        'user_role': role.role_name,
         'role_permission': role.role_name,
     }
 
-    return render(request, 'dashboard.html',context)
+    return render(request, 'dashboard.html', context)
 
 
 @csrf_exempt

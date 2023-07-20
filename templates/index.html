@@ -120,15 +120,14 @@
                                 <div data-i18n="In">In</div>
                             </a>
                         </li>
-                        <li class="menu-item">
-                            <a href="app-email.html" class="menu-link">
+                        <li class="menu-item {% if url_name == 'inventory-out' %}active{% endif %}">
+                            <a href="{% url 'inventory-out' %}" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-stack-pop"></i>
                                 <div data-i18n="Out">Out</div>
                             </a>
                         </li>
 
                         {% endif %}
-                        
 
                         <li class="menu-item {% if url_name == 'inventory-list' or url_name == 'inventory-list-edit' %}active{% endif %}">
                             <a href="{% url 'inventory-list' %}" class="menu-link">
@@ -168,9 +167,7 @@
                                 <div data-i18n="List">List</div>
                             </a>
                         </li>
-                        {% endif %}
-
-                        {% if role_permission == 'Management' or role_permission == 'Admin' %}
+                        {% endif %} {% if role_permission == 'Management' or role_permission == 'Admin' %}
                         <!-- Management -->
                         <li class="menu-header small text-uppercase">
                             <span class="menu-header-text">Management</span>
@@ -227,7 +224,7 @@
                         </li>
 
                         {% if role_permission == 'Admin' %}
-                      
+
                         <!-- Admin -->
                         <li class="menu-header small text-uppercase">
                             <span class="menu-header-text">Admin</span>

@@ -14,15 +14,15 @@ from django.db.models import Q, Sum
 from django.contrib.auth.decorators import login_required
 
 
-
 def get_user_details(request):
     return UserDetails.objects.filter(user_id=request.user.id).first()
+
 
 @login_required(login_url='login')
 def inventory_in(request):
     user_details = get_user_details(request)
     role = RoleDetails.objects.filter(id=user_details.role_id).first()
-    allowed_roles = ["Inventory Staff", "Admin"] 
+    allowed_roles = ["Inventory Staff", "Admin"]
     if role.role_name in allowed_roles:
         context = {
             'item_type': ItemType.objects.filter().order_by('name'),
@@ -37,10 +37,29 @@ def inventory_in(request):
         return render(request, 'pages/unauthorized.html')
 
 
+@login_required(login_url='login')
+def inventory_out(request):
+    user_details = get_user_details(request)
+    role = RoleDetails.objects.filter(id=user_details.role_id).first()
+    allowed_roles = ["Inventory Staff", "Admin"]
+    if role.role_name in allowed_roles:
+        context = {
+            'item_type': ItemType.objects.filter().order_by('name'),
+            'company': Company.objects.filter().order_by('name'),
+            'generic': Generic.objects.filter().order_by('name'),
+            'sub_generic': SubGeneric.objects.filter().order_by('name'),
+            'brand': Brand.objects.filter().order_by('name'),
+            'role_permission': role.role_name,
+        }
+        return render(request, 'inventory/out.html', context)
+    else:
+        return render(request, 'pages/unauthorized.html')
+
+
 def inventory_list(request):
     user_details = get_user_details(request)
     role = RoleDetails.objects.filter(id=user_details.role_id).first()
-    allowed_roles = ["Inventory Staff","Sales Staff", "Admin"] 
+    allowed_roles = ["Inventory Staff", "Sales Staff", "Admin"]
     if role.role_name in allowed_roles:
         context = {
             'role_permission': role.role_name,
@@ -179,6 +198,7 @@ def inventory_load(request):
 
             stock_details_data = {
                 'id': stock.id,
+                'stock_item_id': stock_item_id[len(stock_item_id)-1],
                 'item_type_name': stock.item_type_name,
                 'details': stock.item_details,
                 'pcs_quantity': stock.total_quantity,
@@ -496,11 +516,10 @@ def export_excel(request):
     return response
 
 
-
 def inventory_po_list(request):
     user_details = get_user_details(request)
     role = RoleDetails.objects.filter(id=user_details.role_id).first()
-    allowed_roles = ["Inventory Staff","Sales Staff","Admin"] 
+    allowed_roles = ["Inventory Staff", "Sales Staff", "Admin"]
     if role.role_name in allowed_roles:
         context = {
             'role_permission': role.role_name
@@ -508,6 +527,7 @@ def inventory_po_list(request):
         return render(request, 'inventory/po_list.html', context)
     else:
         return render(request, 'pages/unauthorized.html')
+
 
 def inventory_po_load(request):
     _search = request.GET.get('search[value]')
