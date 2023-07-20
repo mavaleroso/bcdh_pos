@@ -3,6 +3,7 @@ from . import views
 
 urlpatterns = [
     path('in', views.inventory_in, name='inventory-in'),
+    path('out', views.inventory_out, name='inventory-out'),
     path('store_stock_data', views.store_stock_data, name='store-stock-data'),
     path('update_stock_data', views.update_stock_data, name='update-stock-data'),
     path('update_stock/<int:stock_id>', views.update_stock, name='update-stock'),

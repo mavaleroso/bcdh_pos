@@ -48,9 +48,6 @@
                                 <label class="form-label" for="modal-po">PO Number</label>
                                 <select id="modal-po" name="po" class="form-select" data-allow-clear="true">
                                     <option></option>
-                                    {% comment %} {% for row in po %}
-                                    <option value="{{ row.id }}">{{ row.code }}</option>
-                                    {% endfor %} {% endcomment %}
                                 </select>
                             </div>
                             <div class="col-md-3 col-sm-6">
@@ -431,7 +428,6 @@
                             dropdownParent: from_location.parent(),
                             minimumResultsForSearch: -1
                         }).on('change.select2', function () {
-                            // Revalidate the color field when an option is chosen
                             fv.revalidateField('from_location')
                             var select_val = from_location.val();
                             $.each(to_location.options, function (i, item) {
@@ -450,7 +446,6 @@
                             dropdownParent: to_location.parent(),
                             minimumResultsForSearch: -1
                         }).on('change.select2', function () {
-                            // Revalidate the color field when an option is chosen
                             fv.revalidateField('to_location')
                         })
                     }

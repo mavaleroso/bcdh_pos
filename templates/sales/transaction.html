@@ -1,479 +1,393 @@
-{% extends 'index.html' %} {% block content %} {% load staticfiles %}
-
-
-{% include "modal_main.html" with custom_variable="discount" %}
-
-
+{% extends 'index.html' %} {% block content %} {% load staticfiles %} {% include "modal_main.html" with custom_variable="discount" %}
 
 <div class="container-xxl flex-grow-1 container-p-y">
- 
+    <h4 class="fw-bold py-3 mb-4">
+        <span class="text-muted fw-light">Sales/</span>
+        Transaction
+    </h4>
 
-  <div class="row g-3 mb-3">
-    <div class="col-xl-2">
-      <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Sales /</span> Transaction</h4>
-    </div>
-    <div class="col-xl-2" style="margin-top: 35px;">
-
-      <label class="switch switch-danger">
-        <input type="checkbox" class="switch-input emergency-switch" id="emergency-switch"/>
-        <span class="switch-toggle-slider">
-          <span class="switch-on">
-            <i class="ti ti-check"></i>
-          </span>
-          <span class="switch-off">
-            <i class="ti ti-x"></i>
-          </span>
-        </span>
-        <span class="switch-label">Emergency</span>
-      </label>
-    
-    </div>
-    
-    <div class="col-xl-8" >
-
-      <div class="card-body">
-
-        <div class="alert alert-primary alert-dismissible" role="alert">
-          <!-- <h5 class="alert-heading mb-2">This is a primary alert — check it out!</h5> -->
-          <p class="mb-0">
-              <i class="ti ti-bookmark ti-sm"></i>
-            By pressing the emergency button, carefully follow any on-screen instructions provided by the payment system under Emergency level. 
-            This action will trigger the payment method and identifies as a partial or fully paid.
-            <!-- Sugar plum apple pie sesame snaps croissant marshmallow apple pie liquorice. Cheesecake bear
-            claw tiramisu shortbread cupcake. Sugar plum candy canes jujubes liquorice tiramisu gummi
-            bears muffin dragée gingerbread. -->
-          </p>
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-      </div>
-    </div>
-
-    <!-- <div class="col-lg-6 mb-4 mb-lg-0">
-     
-   
-        <div class="card-body">
-          <div class="alert alert-primary alert-dismissible" role="alert">
-            <h5 class="alert-heading mb-2">This is a primary alert — check it out!</h5>
-            <p class="mb-0">
-              Sugar plum apple pie sesame snaps croissant marshmallow apple pie liquorice. Cheesecake bear
-              claw tiramisu shortbread cupcake. Sugar plum candy canes jujubes liquorice tiramisu gummi
-              bears muffin dragée gingerbread.
-            </p>
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>
-        </div>
-     
-    </div> -->
-
-
-
-  </div>
-
-
- 
-
-  
-  <!-- <div class="timeline-event">
-    <div class="timeline-header mb-sm-0 mb-3">
-      <h6 class="mb-0">Design Review</h6>
-      <span class="text-muted">4th October</span>
-    </div>
-    <p>Weekly review of freshly prepared design for our new application.</p>
-    <div class="d-flex justify-content-between">
-      <h6>New Application</h6>
-      <div class="d-flex">
-        <div class="avatar avatar-xs me-2">
-          <img src="../../assets/img/avatars/4.png" alt="Avatar" class="rounded-circle" />
-        </div>
-        <div class="avatar avatar-xs">
-          <img src="../../assets/img/avatars/5.png" alt="Avatar" class="rounded-circle" />
-        </div>
-      </div>
-    </div>
-  </div> -->
-
- 
-
-
-
-  <!-- Checkout Wizard -->
-  <div id="wizard-checkout" class="bs-stepper wizard-icons wizard-icons-example mt-2">
-    <div class="bs-stepper-header m-auto border-0 py-0">
-      <div class="step" data-target="#checkout-cart">
-        
-        <button type="button" class="step-trigger">
-          <!-- <span class="bs-stepper-icon">
-            <svg viewBox="0 0 58 54">
-              <use xlink:href="../../assets/svg/icons/wizard-checkout-cart.svg#wizardCart"></use>
-            </svg>
-          </span> -->
-          <!-- <span class="bs-stepper-label">Cart</span> -->
-        </button>
-      </div>
-
-    </div>
-    <div class="bs-stepper-content">
-      <form id="wizard-checkout-form" onSubmit="return false">
-        <!-- Cart -->
-        <div id="checkout-cart" class="content">
-          <div class="row">
-            <!-- Cart left -->
-            <div class="col-xl-8 mb-3 mb-xl-0">
-              <!-- Shopping bag -->
-              <div class="flex-grow-1">
-                <div class="row">
-                  <div class="col-md-4">
-                    <p class="me-3">
-                      <a href="javascript:void(0)" class="text-body"><p id="count_items">0 item/s</p></a>
-                    </p>
-                  </div>
-                  <div class="col-md-5">
-                    <div class="text-md-end div-remove">
-                        <button
-                        type="button"
-                        class="btn btn-warning remove-all"
-                        id ="remove-all"
-                      >
-                    <i class="ti ti-trash me-1"></i>Remove all
-                    </button>
-                    </div>
-                  </div>
-                  <div class="col-md-3">
-                    <div class="text-md-right">
-                      <button
-                      type="button"
-                      class="btn btn-primary"
-                      data-bs-toggle="modal"
-                      data-bs-target="#exLargeModal"
-                    >
-                    <i class="fa-solid fa-cart-plus"></i>&nbsp;&nbsp;Add item
-                    </button>
-                    </div> 
-                  </div>
-                </div>
-              </div>
-
-              <ul class="list-group mb-3 row whole-div-class"></ul>
-            </div>
-
-            <!-- Cart right -->
-            <div class="col-xl-4">
-              <div class="border rounded p-4 mb-3 pb-3">
-                <!-- Offer -->
-                <div class="row g-3 mb-3">
-                  <div class="col-8 col-xxl-8 col-xl-3">
-                    <h6>Select Patient</h6>
-                  </div>
-                  <div class="col-4 col-xxl-4  col-xl-9">
-                    <div class="d-grid">
-                      <button
-                      type="button"
-                      class="btn btn-primary"
-                      data-bs-toggle="modal"
-                    data-bs-target="#clientomodal"
-                    >
-                    <i class="ti ti-user-check me-1"></i>Add
-                    </button>
-                    </div>
-                  </div>
-                </div>
-                <div class="row g-3 mb-3">
-                  <div class="col-8 col-xxl-8 col-xl-12">
-                    <select id="selected-patient" class="select2 form-select" data-allow-clear="true">
-                      <option></option>
-                      {% for row in clients %}
-                      <option value="{{ row.id }}">{{ row.first_name }} {{ row.middle_name }} {{ row.last_name }}</option>	
-                      {% endfor %}
-                    </select>
-                  </div>
-                  <div class="col-4 col-xxl-4 col-xl-12">
-                    <div class="d-grid">
-                      <button type="button" class="btn btn-label-primary add-patient">Apply</button>
-                    </div>
-                  </div>
-                </div>
-
-                <!-- Gift wrap -->
-                <div class="bg-lighter rounded p-3 patient-details-div">
-                  <p class="fw-semibold mb-2">Patient Details</p>
-                  <p class="mb-2" id="patient-name"></p>
-                  <p class="mb-2" id="patient-status"> <span class="badge bg-label-primary ms-1"></span></p>
-                  <!-- <p class="mb-2">Discount <span class="badge bg-label-success ms-1">20%</span></p> -->
-
-                  <button type="button" data-bs-toggle="modal"
-                  data-bs-target="#onboardModal" class="btn btn-warning add-discount">
-                      <i class="ti ti-user-check me-1"></i>Discount
-                  </button> 
-
-                  <span class="badge bg-label-warning ms-1 spn-discount">0.00 %</span>
-                  <span class="badge bg-label-success ms-1 spn-patient-status">Unidentified Patient</span>
-
-                </div><br>
-
-                <div class="bg-lighter rounded p-3 emergency-details-div">
-                  <p class="fw-semibold mb-2">Emergency Details</p>
-
-
-                  <div class="row g-3 mb-3">
-                    <div class="col-12 col-xxl-12 col-xl-12">
-                      <label for="nameBackdrop" class="form-label">Payment type</label>
-                      <select id="emergency-payment-type" class="select2 form-select emergency-payment-type" data-allow-clear="true">
-                        <option></option>
-                        <option value="Partial">Partial</option>	
-                        <option value="Fully paid">Full paid</option>	
-                      </select>
-                    </div>
-                    
-                  </div>
-                  <div class="row">
-                    <div class="col-12 col-xxl-12 col-xl-12 div-emergency-amount" >
-                      <label for="nameBackdrop" class="form-label">Amount paid</label>
-                      <input type="number" class="form-control form-control-md w-px-175 emergency-amount" id="emergency-amount"  min="0" />
-                    </div>
-                   
-                  </div>
-                  
-
-                </div>
-                
-                <hr class="mx-n4" />
-
-                <!-- Price Details -->
-                <h6>Price Details</h6>
-                <dl class="row mb-0">
-                  <dt class="col-6 fw-normal">Sub Total</dt>
-                  <dd class="col-6 text-end sub-total">₱ 0</dd>
-
-                  <dt class="col-sm-6 fw-normal">Patient Discount</dt>
-                  <dd class="col-sm-6 text-success text-end discount-value">-₱ 0</dd>
-
-                </dl>
-
-                <hr class="mx-n4" />
-                <dl class="row mb-0">
-                  <dt class="col-6">Total</dt>
-                  <dd class="col-6 fw-semibold text-end mb-0 total-place-order">₱ 0</dd>
-                </dl>
-              </div>
-              <div class="d-grid">
-                <button class="btn btn-primary btn-next place-order-items">Place Order</button>
-              </div>
-
-              <br>
-
-              <div class="col-sm-12">
-                <!-- <label class="form-label" for="Remarks">Remarks</label> -->
-                <div class="input-group input-group-merge">
-                  <div class="input-group input-group-merge speech-to-text">
-                    <textarea class="form-control dt-sales-remarks" placeholder="Enter remarks (optional)" rows="3"></textarea>
-                    <span class="input-group-text">
-                      <i class="ti ti-microphone cursor-pointer text-to-speech-toggle"></i>
-                    </span>
-                  </div>  
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </form>
-    </div>
-  </div>
-  <!--/ Checkout Wizard -->
-
-  <!--add new client modal-->
-
-  <div class="modal fade" id="clientomodal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel4">Add Client</h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
-        </div>
-      <form id="add-client-frm">  
-        <div class="modal-body">
-          
-          <div class="row">
-            
-              <div class="col mb-4">
-                <label for="nameBackdrop" class="form-label">FirstName</label>
-                <input
-                  type="text"
-                  id="ct-first-name"
-                  name="CtFirstName"
-                  class="form-control ct-first-name"
-                  placeholder="Enter name"
-                />
-              </div>
-
-              <div class="col mb-4">
-                <label for="nameBackdrop" class="form-label">Middlename</label>
-                <input
-                  type="text"
-                  id="ct-middle-name"
-                  name="CtMiddleName"
-                  class="form-control ct-middle-name"
-                  placeholder="Enter Middle name"
-                />
-              </div>
-              <div class="col mb-4">
-                <label for="nameBackdrop" class="form-label">Lastname</label>
-                <input
-                  type="text"
-                  id="ct-last-name"
-                  name="CtLastName"
-                  class="form-control ct-last-name"
-                  placeholder="Enter Last name"
-                />
-              </div>
-            </div>
-
+    <div class="card">
+        <div class="card-header bg-label-primary">
             <div class="row">
-              <div class="col mb-4">
-              <label for="nameBackdrop" class="form-label">Birthdate</label>
-              <input
-                type="date"
-                id="ct-birth-date"
-                name="CtBirthDate"
-                class="form-control ct-birth-date"
-                placeholder="Enter Birthdate"
-              />
+                <div class="col-lg-2 py-4">
+                    <label class="switch switch-danger ms-4">
+                        <input type="checkbox" class="switch-input emergency-switch" id="emergency-switch" />
+                        <span class="switch-toggle-slider">
+                            <span class="switch-on">
+                                <i class="ti ti-check"></i>
+                            </span>
+                            <span class="switch-off">
+                                <i class="ti ti-x"></i>
+                            </span>
+                        </span>
+                        <span class="switch-label">Emergency</span>
+                    </label>
+                </div>
+                <div class="col-lg-10">
+                    <div class="alert alert-dismissible" role="alert">
+                        <p class="mb-0">
+                            <i class="ti ti-bookmark ti-sm"></i>
+                            By pressing the emergency button, carefully follow any on-screen instructions provided by the payment system under
+                            Emergency level. This action will trigger the payment method and identifies as a partial or fully paid.
+                        </p>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                </div>
             </div>
+        </div>
+        <div class="card-body">
+            <div class="mt-2">
+                <form onSubmit="return false">
+                    <div class="content">
+                        <div class="row">
+                            <div class="col-xl-8 mb-3 mb-xl-0">
+                                <div class="flex-grow-1">
+                                    <div class="d-flex ms-auto mb-2 fit-content">
+                                        <button type="button" class="btn btn-primary" id="add-item-modal">
+                                            <i class="fa-solid fa-cart-plus me-1"></i>Add item
+                                        </button>
+                                    </div>
+                                </div>
 
-            <div class="col mb-4">
-              <label for="nameBackdrop" class="form-label">Sex</label>
+                                <table class="table display compact stripe">
+                                    <thead class="table-light">
+                                        <tr>
+                                            <th></th>
+                                            <th>Item</th>
+                                            <th style="width: 150px !important">Location</th>
+                                            <th>Stock</th>
+                                            <th>Price</th>
+                                            <th>Quantity</th>
+                                            <th>Subtotal</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tbl-carted-items">
+                                        <tr>
+                                            <td colspan="7">
+                                                <div class="alert alert-primary d-flex align-items-center" role="alert">
+                                                    <span class="alert-icon text-primary me-2">
+                                                        <i class="ti ti-shopping-cart ti-xs"></i>
+                                                    </span>
+                                                    Please choose an item to be carted!
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                    <tfoot class="table-light">
+                                        <tr>
+                                            <td colspan="6" class="text-center">TOTAL</td>
+                                            <td><span id="grand-total"></span></td>
+                                        </tr>
+                                    </tfoot>
+                                </table>
+                            </div>
 
-              <select id="ct-sex" class="select2 form-select" name="CtSex" data-allow-clear="true">
-                <option></option>
-                <option value="male">Male</option>	
-                <option value="female">Female</option>	
-              
-              </select>
-              
+                            <div class="col-xl-4">
+                                <div class="border rounded p-4 mb-3 pb-3">
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-8 col-xxl-8 col-xl-3">
+                                            <h6>Select Patient</h6>
+                                        </div>
+                                        <div class="col-4 col-xxl-4 col-xl-9">
+                                            <div class="d-grid">
+                                                <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#clientomodal">
+                                                    <i class="ti ti-user-check me-1"></i>Add
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-8 col-xxl-8 col-xl-12">
+                                            <select id="selected-patient" class="select2 form-select" data-allow-clear="true">
+                                                <option></option>
+                                                {% for row in clients %}
+                                                <option value="{{ row.id }}">{{ row.first_name }} {{ row.middle_name }} {{ row.last_name }}</option>
+                                                {% endfor %}
+                                            </select>
+                                        </div>
+                                        <div class="col-4 col-xxl-4 col-xl-12">
+                                            <div class="d-grid">
+                                                <button type="button" class="btn btn-label-primary add-patient">Apply</button>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="bg-lighter rounded p-3 patient-details-div" style="display: none">
+                                        <p class="fw-semibold mb-2">Patient Details</p>
+                                        <p class="mb-2" id="patient-name"></p>
+                                        <p class="mb-2" id="patient-status"><span class="badge bg-label-primary ms-1"></span></p>
+
+                                        <button
+                                            type="button"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#onboardModal"
+                                            class="btn btn-warning add-discount"
+                                        >
+                                            <i class="ti ti-user-check me-1"></i>Discount
+                                        </button>
+
+                                        <span class="badge bg-label-warning ms-1 spn-discount">0.00 %</span>
+                                        <span class="badge bg-label-success ms-1 spn-patient-status">Unidentified Patient</span>
+                                    </div>
+                                    <br />
+
+                                    <div class="bg-lighter rounded p-3 emergency-details-div" style="display: none">
+                                        <p class="fw-semibold mb-2">Emergency Details</p>
+
+                                        <div class="row g-3 mb-3">
+                                            <div class="col-12 col-xxl-12 col-xl-12">
+                                                <label for="nameBackdrop" class="form-label">Payment type</label>
+                                                <select
+                                                    id="emergency-payment-type"
+                                                    class="select2 form-select emergency-payment-type"
+                                                    data-allow-clear="true"
+                                                >
+                                                    <option></option>
+                                                    <option value="Partial">Partial</option>
+                                                    <option value="Fully paid">Full paid</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-12 col-xxl-12 col-xl-12 div-emergency-amount" style="display: none">
+                                                <label for="nameBackdrop" class="form-label">Amount paid</label>
+                                                <input
+                                                    type="number"
+                                                    class="form-control form-control-md w-px-175 emergency-amount"
+                                                    id="emergency-amount"
+                                                    min="0"
+                                                />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <hr class="mx-n4" />
+
+                                    <h6>Price Details</h6>
+                                    <dl class="row mb-0">
+                                        <dt class="col-6 fw-normal">Total</dt>
+                                        <dd class="col-6 text-end sub-total" id="total-cart-amount">₱ 0</dd>
+
+                                        <dt class="col-sm-6 fw-normal">Patient Discount</dt>
+                                        <dd class="col-sm-6 text-success text-end discount-value" id="total-discount-value">-₱ 0</dd>
+                                    </dl>
+
+                                    <hr class="mx-n4" />
+                                    <dl class="row mb-0">
+                                        <dt class="col-6">Grand Total</dt>
+                                        <dd class="col-6 fw-semibold text-end mb-0 total-place-order">₱ 0</dd>
+                                    </dl>
+                                </div>
+                                <div class="d-grid">
+                                    <button class="btn btn-primary btn-next place-order-items">Place Order</button>
+                                </div>
+
+                                <br />
+
+                                <div class="col-sm-12">
+                                    <div class="input-group input-group-merge">
+                                        <div class="input-group input-group-merge speech-to-text">
+                                            <textarea
+                                                class="form-control dt-sales-remarks"
+                                                placeholder="Enter remarks (optional)"
+                                                rows="3"
+                                            ></textarea>
+                                            <span class="input-group-text">
+                                                <i class="ti ti-microphone cursor-pointer text-to-speech-toggle"></i>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
             </div>
-            <div class="col mb-4">
-              <label for="nameBackdrop" class="form-label">Client type</label>
-
-              <select id="ct-client-type" name="CtClientType" class="select2 form-select ct-client-type" data-allow-clear="true">
-                  <option></option>
-                  {% for row in client_type %}
-                  <option value="{{ row.id }}">{{ row.name }}</option>
-                  {% endfor %}
-              </select>
-            </div>
-          </div>
-
-          <div class="row">
-            <div class="col mb-6">
-            <label for="nameBackdrop" class="form-label">Occupation (Optional)</label>
-            <textarea class="form-control ct-occupation" id="ct-occupation" name="CtOccupation" placeholder="Enter occupation" rows="3"></textarea>
-          </div>
-
-          
-          <div class="col mb-4"></div>
-          <div class="col mb-4"></div>
-        
-      </div>
-    
-
+        </div>
     </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
-            Close
-          </button>
-          <button name="submitButton" class="btn btn-primary add-client" id="add-client">Add Client</button>
-        </div>
-      </form>
-      </div>
-    
-    </div>
-  </div>
-  <!--end new client modal-->
-  <!-- Add new item modal -->
 
-  <div class="modal fade" id="exLargeModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-xl" role="document">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h5 class="modal-title" id="exampleModalLabel4">Item List</h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
-        </div>
-        <div class="modal-body">
+    <div class="modal fade" id="clientomodal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel4">Add Client</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="add-client-frm">
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col mb-4">
+                                <label for="nameBackdrop" class="form-label">FirstName</label>
+                                <input
+                                    type="text"
+                                    id="ct-first-name"
+                                    name="CtFirstName"
+                                    class="form-control ct-first-name"
+                                    placeholder="Enter name"
+                                />
+                            </div>
 
-  
-            <div class="card-datatable table-responsive pt-0">
-              <table class="datatables-basic table" id="Table1">
-                <thead>
-                  <tr>
-                    <th></th>
-                    <th>id</th>
-                    <th>Item</th>
-                    <th>Brand</th>
-                    <th>Quantity</th>
-                    <th>Retail Price</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for row in items %}
-                  <tr>
-                    <td id="checkbox_data" class="checkbox_data">{{row.id}}</td>
-                    <td></td>
-                    <!-- <td><b>{{row.item.generic.name}}</b> {{row.sub_generic.name}} {{row.description}}</td> -->
-                    <td><b>{{row.item.generic.name}}</b> {{row.item.sub_generic.name}} {{row.item.description}}</td>
-                    <td>{{row.item.brand.name}}</td>
-                    <td>{{row.pcs_quantity}}</td>
-                    <td>₱ {{row.unit_price|floatformat:2}}</td>
-                    
-                  </tr>
-                 {% endfor %}
-                 </tbody> 
-              </table>
+                            <div class="col mb-4">
+                                <label for="nameBackdrop" class="form-label">Middlename</label>
+                                <input
+                                    type="text"
+                                    id="ct-middle-name"
+                                    name="CtMiddleName"
+                                    class="form-control ct-middle-name"
+                                    placeholder="Enter Middle name"
+                                />
+                            </div>
+                            <div class="col mb-4">
+                                <label for="nameBackdrop" class="form-label">Lastname</label>
+                                <input
+                                    type="text"
+                                    id="ct-last-name"
+                                    name="CtLastName"
+                                    class="form-control ct-last-name"
+                                    placeholder="Enter Last name"
+                                />
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col mb-4">
+                                <label for="nameBackdrop" class="form-label">Birthdate</label>
+                                <input
+                                    type="date"
+                                    id="ct-birth-date"
+                                    name="CtBirthDate"
+                                    class="form-control ct-birth-date"
+                                    placeholder="Enter Birthdate"
+                                />
+                            </div>
+
+                            <div class="col mb-4">
+                                <label for="nameBackdrop" class="form-label">Sex</label>
+
+                                <select id="ct-sex" class="select2 form-select" name="CtSex" data-allow-clear="true">
+                                    <option></option>
+                                    <option value="male">Male</option>
+                                    <option value="female">Female</option>
+                                </select>
+                            </div>
+                            <div class="col mb-4">
+                                <label for="nameBackdrop" class="form-label">Client type</label>
+
+                                <select id="ct-client-type" name="CtClientType" class="select2 form-select ct-client-type" data-allow-clear="true">
+                                    <option></option>
+                                    {% for row in client_type %}
+                                    <option value="{{ row.id }}">{{ row.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col mb-6">
+                                <label for="nameBackdrop" class="form-label">Occupation (Optional)</label>
+                                <textarea
+                                    class="form-control ct-occupation"
+                                    id="ct-occupation"
+                                    name="CtOccupation"
+                                    placeholder="Enter occupation"
+                                    rows="3"
+                                ></textarea>
+                            </div>
+
+                            <div class="col mb-4"></div>
+                            <div class="col mb-4"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Close</button>
+                        <button name="submitButton" class="btn btn-primary add-client" id="add-client">Add Client</button>
+                    </div>
+                </form>
             </div>
-          
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">
-            Close
-          </button>
-          <button type="button" class="btn btn-primary" id="add_data">Add item</button>
-        </div>
-      </div>
     </div>
-  </div>
- <!-- End new item modal -->
 
+    <div class="modal fade" id="available-stocks-modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel4">Available Stock</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="card-datatable table-responsive pt-0">
+                        {% comment %}
+                        <table class="datatables-basic table" id="Table1">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>id</th>
+                                    <th>Item</th>
+                                    <th>Brand</th>
+                                    <th>Quantity</th>
+                                    <th>Retail Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in items %}
+                                <tr>
+                                    <td id="checkbox_data" class="checkbox_data">{{row.id}}</td>
+                                    <td></td>
+                                    <!-- <td><b>{{row.item.generic.name}}</b> {{row.sub_generic.name}} {{row.description}}</td> -->
+                                    <td><b>{{row.item.generic.name}}</b> {{row.item.sub_generic.name}} {{row.item.description}}</td>
+                                    <td>{{row.item.brand.name}}</td>
+                                    <td>{{row.pcs_quantity}}</td>
+                                    <td>₱ {{row.unit_price|floatformat:2}}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                        {% endcomment %}
+                        <table id="tbl-items" class="table display compact">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Item Type</th>
+                                    <th>Item Description</th>
+                                    <th>Total Quantity</th>
+                                    {% for row in location %}
+                                    <th class="text-center">{{ row.name }}</th>
+                                    {% endfor %}
+                                    <th>Unit Price</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="add-data">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-{% endblock %} 
-
-{% block footer_scripts %}
+{% endblock %} {% block footer_scripts %}
 <script>
-$('.div-remove').hide();
-$(document).ready(function(){
-    var discount_type;
-    var selected_items = [];
-    var unique_items = [];
-    var client_id = 0;
-    var discount_id = 0;
-    var actual_prc_discount = 0;
-    var percentage_value = 0;
-    var sub_total = 0;
-    var is_er = 0;
-    var pymt_tpe="Fully paid";
-    $(".patient-details-div").hide();
-    $(".emergency-details-div").hide();
-    $(".div-emergency-amount").hide();
-    
-    const toast_options = (toastr.options = {
+    $(document).ready(function () {
+        const table_items = $('#tbl-items')
+        const add_item_modal = $('#add-item-modal')
+        const available_stocks_modal = $('#available-stocks-modal')
+        const tbl_carted_items = $('#tbl-carted-items')
+        const grand_total = $('#grand-total')
+        const total_cart_amount = $('#total-cart-amount')
+        const total_discount_value = $('#total-discount-value')
+
+        const InFormValidation = document.getElementById('add-client-frm'),
+            CtFirstName = jQuery(InFormValidation.querySelector('[name="CtFirstName"]')),
+            CtMiddleName = jQuery(InFormValidation.querySelector('[name="CtMiddleName"]')),
+            CtLastName = jQuery(InFormValidation.querySelector('[name="CtLastName"]')),
+            CtBirthDate = jQuery(InFormValidation.querySelector('[name="CtBirthDate"]')),
+            CtSex = jQuery(InFormValidation.querySelector('[name="CtSex"]')),
+            CtClientType = jQuery(InFormValidation.querySelector('[name="CtClientType"]'))
+
+        const toast_options = (toastr.options = {
             maxOpened: 1,
             autoDismiss: true,
             closeButton: true,
@@ -481,18 +395,131 @@ $(document).ready(function(){
             progressBar: true,
             positionClass: 'toast-top-right',
             rtl: isRtl,
-    })
-    
+        })
 
-    const InFormValidation = document.getElementById('add-client-frm'),
-      CtFirstName = jQuery(InFormValidation.querySelector('[name="CtFirstName"]')),
-      CtMiddleName = jQuery(InFormValidation.querySelector('[name="CtMiddleName"]')),
-      CtLastName = jQuery(InFormValidation.querySelector('[name="CtLastName"]')),
-      CtBirthDate = jQuery(InFormValidation.querySelector('[name="CtBirthDate"]')),
-      CtSex = jQuery(InFormValidation.querySelector('[name="CtSex"]')),
-      CtClientType = jQuery(InFormValidation.querySelector('[name="CtClientType"]'))
+        let grand_total_value = 0
+        var discount_type
+        var selected_items = []
+        var unique_items = []
+        var client_id = 0
+        var discount_id = 0
+        var actual_prc_discount = 0
+        var percentage_value = 0
+        var sub_total = 0
+        var is_er = 0
+        var pymt_tpe = 'Fully paid'
 
-    const fv1 = FormValidation.formValidation(InFormValidation, {
+        add_item_modal.on('click', function() {
+            let columns_data_1 = [{ data: 'id' }, { data: 'item_type_name' }, { data: 'details' }, { data: 'pcs_quantity' }]
+
+            {% for l in location %}
+                columns_data_1.push({
+                    data: '{{ l.name }}',
+                })
+            {% endfor %}
+
+            columns_data_1.push({
+                data: 'unit_price',
+            })
+
+            available_stocks_modal.modal('show')
+
+            setTimeout(() => {
+                var stocksTable = table_items.DataTable({
+                    processing: true,
+                    serverSide: true,
+                    destroy: true,
+                    ajax: {
+                        url: "{% url 'inventory-load' %}",
+                    },
+                    columns: columns_data_1,
+                    columnDefs: [
+                        {
+                            targets: 0,
+                            orderable: false,
+                            searchable: false,
+                            render: function (data, type, row) {
+                                let id = data.toString()
+                                let selected_item_data = selected_items.filter(i => i.id == id)
+                                let status = selected_item_data.length > 0 ? true:false;
+                                let disable_status = row.pcs_quantity == 0 ? true:false
+
+                                return `<input class="form-check-input chkbox-stock" ${disable_status ? 'disabled' : ''} ${status ? 'checked':''} type="checkbox" value="${id}" data-stock-item-id="${row.stock_item_id}" data-details="${row.details}" data-quantity="${row.pcs_quantity}" data-price="${row.unit_price}" {% for l in location %} data-{{ l.name }}="${row.{{ l.name }}}" {% endfor %}>`
+                            },
+                        },
+                        {
+                            targets: 2,
+                            orderable: false,
+                            searchable: false,
+                        },
+                        {
+                            targets: 3,
+                            render: function (data) {
+                                return `<span class="badge bg-label-primary">${data}</span>`
+                            },
+                        },
+                        {% for l in location %}
+                            {
+                                targets: ({{ forloop.counter }} + 3),
+                                orderable: false,
+                                searchable: false,
+                                render: function (data, type, row) {
+                                    return `<span class="badge bg-label-warning">${data}</span>`;
+                                },
+                            },
+                        {% endfor %}
+                        {
+                            targets: -1,
+                            render: function (data) {
+                                let elem = ''
+                                if (data) {
+                                    elem = `<span class="badge bg-label-secondary">${currencyFormat(data)}</span>`
+                                }
+                                return elem
+                            },
+                        },
+                    ],
+                    order: [[1, 'asc']],
+                    scrollX: true,
+                    drawCallback: function (settings) {
+                        let chkbox_stock = $('.chkbox-stock')
+
+                        chkbox_stock.on('click', function() {
+                            let status = $(this).prop('checked')
+                            let id = $(this).val();
+
+                            if (status) {
+                                $(this).prop('checked', true)
+                                var array_id = {
+                                    id: id,
+                                    item: $(this).data('details'),
+                                    quantity: $(this).data('quantity'),
+                                    stock_item_id: $(this).data('stock-item-id'),
+                                    price: $(this).data('price'),
+                                }
+
+                                {% for l in location %}
+                                    array_id['{{ l.name }}'] = $(this).data(('{{ l.name }}').toLowerCase())
+                                {% endfor %}
+
+                                selected_items.push(array_id)
+                            } else {
+                                $(this).prop('checked', false)
+                                let id_index = selected_items.findIndex(i => i.id === id)
+                                selected_items.splice(id_index, 1)
+                            }
+
+                            console.log(selected_items)
+
+                        })
+                    }
+                })
+            }, 500)
+        })
+
+
+
+        const fv1 = FormValidation.formValidation(InFormValidation, {
             fields: {
                 CtFirstName: {
                     validators: {
@@ -554,822 +581,695 @@ $(document).ready(function(){
                 })
             },
         }).on('core.form.valid', function () {
-          patient_details();
-      let fname = $('#ct-first-name').val();
-      let mname = $('#ct-middle-name').val();
-      let lname = $('#ct-last-name').val();
-      let bdate = $('#ct-birth-date').val();
-      let sex_ = $('#ct-sex').val();
-      let cl_type = $('#ct-client-type').find(":selected").val();
-      let occpt = $('#ct-occupation').val();
+            patient_details()
+            let fname = $('#ct-first-name').val()
+            let mname = $('#ct-middle-name').val()
+            let lname = $('#ct-last-name').val()
+            let bdate = $('#ct-birth-date').val()
+            let sex_ = $('#ct-sex').val()
+            let cl_type = $('#ct-client-type').find(':selected').val()
+            let occpt = $('#ct-occupation').val()
 
-      Swal.fire({
-        title: 'Are you sure?',
-        text: "You won't be able to revert this!",
-        icon: 'warning',
-        showCancelButton: true,
-        confirmButtonText: 'Confirm',
-        customClass: {
-          confirmButton: 'btn btn-primary me-3',
-          cancelButton: 'btn btn-label-secondary'
-        },
-        buttonsStyling: false
-    }).then(function (result) {
-    
-      if (result.value) {
-          event.preventDefault();
-          $.ajax({
-              type: "POST",
-              url: "{% url 'add-client' %}",
-              data:{
-                firstname : fname, middlename : mname, lastname: lname, birthdate: bdate, sex : sex_, client_type: cl_type, occupation: occpt
-              }
-          }).done(function(data){
-            if(data.data == "success"){
-              
-              Swal.fire({
-                  icon: 'success',
-                  title: 'Successfully save!',
-                  text:' Client has been saved.',
-                  customClass: {
-                    confirmButton: 'btn btn-success'
-                  }
-                });
-                $('#clientomodal').modal('hide');
-                patient_details();
-                // window.location.reload();
-                
-            }
-            else{
-              Swal.fire({
-                  icon: 'error',
-                  title: 'Invalid Client details',
-                  text: fname + lname +' cannot added',
-                  customClass: {
-                    confirmButton: 'btn btn-success'
-                  }});
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Confirm',
+                customClass: {
+                    confirmButton: 'btn btn-primary me-3',
+                    cancelButton: 'btn btn-label-secondary',
+                },
+                buttonsStyling: false,
+            }).then(function (result) {
+                if (result.value) {
+                    event.preventDefault()
+                    $.ajax({
+                        type: 'POST',
+                        url: "{% url 'add-client' %}",
+                        data: {
+                            firstname: fname,
+                            middlename: mname,
+                            lastname: lname,
+                            birthdate: bdate,
+                            sex: sex_,
+                            client_type: cl_type,
+                            occupation: occpt,
+                        },
+                    }).done(function (data) {
+                        if (data.data == 'success') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Successfully save!',
+                                text: ' Client has been saved.',
+                                customClass: {
+                                    confirmButton: 'btn btn-success',
+                                },
+                            })
+                            $('#clientomodal').modal('hide')
+                            patient_details()
+                            // window.location.reload();
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Invalid Client details',
+                                text: fname + lname + ' cannot added',
+                                customClass: {
+                                    confirmButton: 'btn btn-success',
+                                },
+                            })
+                        }
+                    })
                 }
-              });
-            }});
+            })
+        })
 
-        });
-
-    
-
-
-    //discounts ------------------------------------------------------->
-    // $(".spn-discount").hide();
-    $('#select-discount').on('change', function() {
-      var value = $('.select-discount').find(":selected").text();
-      $('.special-percentage').val('');
-      if (value !="Special"){
-        $(".view-percentage").hide();        
-      }
-      else{
-        $(".view-percentage").show();
-      }
-    });
-
-    $('.save-discount').click(function(event){
-      var amount_value;
-      discount_type = $('.select-discount').find(":selected").text();
-      discount_id = $('.select-discount').find(":selected").val();
-      var sub_total = $(".sub-total").text().slice(1);
-      $.ajax({
-          type: "POST",
-          url: "{% url 'discount-details' %}",
-          data:{
-              dis_id: discount_id
-          }
-          }).done(function(data){
-            // client_id = data.data[0].id;
-            discount_id = data.data[0].id;
-            discount_type = data.data[0].name;
-            percentage_value = data.data[0].percentage;
-            toastr.success('Discount applied!', 'Success', toast_options);
-
-            var original_price = $(".sub-total").text().slice(1);
-            var discount_price = parseFloat(original_price * percentage_value/100);
-            if (discount_type =="Special"){
-              percentage_value = $('#special-percentage').val();
-              amount_value = (sub_total == 0) ? 0 : amount_value = parseFloat((percentage_value)/parseFloat(sub_total)*100); 
-              actual_prc_discount = amount_value;
-              convert_discount_value = amount_value.toFixed(2);
-              $('.discount-value').text("-₱ "+percentage_value);
-              $(".spn-discount").text(convert_discount_value +" %");
+        //discounts ------------------------------------------------------->
+        // $(".spn-discount").hide();
+        $('#select-discount').on('change', function () {
+            var value = $('.select-discount').find(':selected').text()
+            $('.special-percentage').val('')
+            if (value != 'Special') {
+                $('.view-percentage').hide()
+            } else {
+                $('.view-percentage').show()
             }
-            else{
-              actual_prc_discount = percentage_value;
-              $(".spn-discount").text(percentage_value +" %");
-            }
-            $('#onboardModal').modal('hide');
-            amount_value = (discount_type == "Special") ? $('.discount-value').text("-₱ "+percentage_value) : $('.discount-value').text("-₱ "+discount_price);
-            original_price = (discount_type == "Special")?original_price =parseFloat(original_price) -parseFloat(percentage_value) : original_price =parseFloat(original_price) -parseFloat(discount_price);
-            original_price = (sub_total == 0) ? original_price = 0 : original_price;
-            $('.total-place-order').text("₱ "+original_price);
-          
-      });
-    });
+        })
 
-    $('.add-discount').click(function(event){
-      $('.special-percentage').val('');
-      var discount_type = $('.select-discount').find(":selected").text();
-      if (discount_type !="Special"){
-        $(".view-percentage").hide();
-      }
-      else{
-        $(".view-percentage").show();
-      }  
-    });
+        $('.save-discount').click(function (event) {
+            var amount_value
+            discount_type = $('.select-discount').find(':selected').text()
+            discount_id = $('.select-discount').find(':selected').val()
+            var sub_total = grand_total_value
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'discount-details' %}",
+                data: {
+                    dis_id: discount_id,
+                },
+            }).done(function (data) {
+                // client_id = data.data[0].id;
+                discount_id = data.data[0].id
+                discount_type = data.data[0].name
+                percentage_value = data.data[0].percentage
+                toastr.success('Discount applied!', 'Success', toast_options)
 
-    // $('.add-client').click(function(event){
-    //   patient_details();
-    //   let fname = $('#ct-first-name').val();
-    //   let mname = $('#ct-middle-name').val();
-    //   let lname = $('#ct-last-name').val();
-    //   let bdate = $('#ct-birth-date').val();
-    //   let sex_ = $('#ct-sex').val();
-    //   let cl_type = $('#ct-client-type').find(":selected").val();
-    //   let occpt = $('#ct-occupation').val();
-
-    //   Swal.fire({
-    //     title: 'Are you sure?',
-    //     text: "You won't be able to revert this!",
-    //     icon: 'warning',
-    //     showCancelButton: true,
-    //     confirmButtonText: 'Confirm',
-    //     customClass: {
-    //       confirmButton: 'btn btn-primary me-3',
-    //       cancelButton: 'btn btn-label-secondary'
-    //     },
-    //     buttonsStyling: false
-    // }).then(function (result) {
-    
-    //   if (result.value) {
-    //       event.preventDefault();
-    //       $.ajax({
-    //           type: "POST",
-    //           url: "{% url 'add-client' %}",
-    //           data:{
-    //             firstname : fname, middlename : mname, lastname: lname, birthdate: bdate, sex : sex_, client_type: cl_type, occupation: occpt
-    //           }
-    //       }).done(function(data){
-    //         if(data.data == "success"){
-              
-    //           Swal.fire({
-    //               icon: 'success',
-    //               title: 'Successfully save!',
-    //               text:' Client has been saved.',
-    //               customClass: {
-    //                 confirmButton: 'btn btn-success'
-    //               }
-    //             });
-    //             $('#clientomodal').modal('hide');
-    //             patient_details();
-    //             // window.location.reload();
-                
-    //         }
-    //         else{
-    //           Swal.fire({
-    //               icon: 'error',
-    //               title: 'Invalid Client details',
-    //               text: fname + lname +' cannot added',
-    //               customClass: {
-    //                 confirmButton: 'btn btn-success'
-    //               }});
-    //             }
-    //           });
-    //         }});
-    // });
-
-    function remove_all(){
-      var $checkbox = $(`input[type=checkbox][name=checkboxtype]`);
-      $(".li").remove();
-      $checkbox.prop('checked', false);
-      $('#count_items').text("0 item/s");
-      $('.dt-sales-remarks').val("");
-      $(".li").remove();
-      $(".patient-details-div").hide();
-      $(".sub-total").html("₱ 0");
-      $(".total-place-order").html("₱ 0");
-      $(".discount-value").html("₱ 0");
-      $("#selected-patient").find('option:selected').prop("selected",false);
-      sub_total = 0;
-      cart_count = 0;
-      $("#selected-patient").val(null).trigger("change");
-      unique_items.splice(0, unique_items.length);
-      selected_items.splice(0, selected_items.length);
-    }
-
-    function patient_details(){
-      console.log("testt");
-      $.ajax({
-        type: "POST",
-        url: "{% url 'patient-all-details' %}"
-      }).done(function(data){
-        $('#selected-patient').empty();
-        for (let i = 0; i < data.data.length; i++) {
-          let patient_id = data.data[i].id;
-          let first_name = data.data[i].first_name;
-          let middle_name = data.data[i].middle_name;
-          let last_name = data.data[i].last_name;
-          let client_type_name = data.data[i].client_type__name;
-          let fullname = first_name + " " + middle_name + " " + last_name;
-
-          let option = $('<option>').val(patient_id).text(fullname);
-          $('#selected-patient').append(option);
-          $("#selected-patient").val(null).trigger("change");
-        }
-
-      // <select id="selected-patient" class="select2 form-select" data-allow-clear="true">
-      //    <option></option>
-      //  </select>
-
-
-        // var client_id = data.data[0].id;
-        // var first_name = data.data[0].first_name;
-        // var middle_name = data.data[0].middle_name;
-        // var last_name = data.data[0].last_name;
-        // var client_type_name = data.data[0].client_type__name;
-
-        // console.log("datanipatient");
-        // console.log(first_name);
-        // console.log(middle_name);
-        // console.log(last_name);
-
-      
-      });
-
-    }
-    
-    //end discounts ---------------------------------------------->
-    
-      $('.add-patient').click(function (event) {
-
-        if($('#selected-patient').val() ) { 
-          $(".patient-details-div").show();
-          var patient_id = $('#selected-patient').find(":selected").val();
-          $.ajax({
-            type: "POST",
-            url: "{% url 'patient-details' %}",
-            data:{
-                patient: patient_id
-            }
-            }).done(function(data){
-              toastr.success('Patient add successfully!', 'Success', toast_options)
-              client_id = data.data[0].id;
-              var first_name = data.data[0].first_name;
-              var middle_name = data.data[0].middle_name;
-              var last_name = data.data[0].last_name;
-              var client_type_name = data.data[0].client_type__name;
-              $('#patient-name').text(first_name + " " + middle_name + " " + last_name);
-              $('.spn-patient-status').text(client_type_name);
-            });
-        }
-        else {
-              toastr.error('Select Patient first!', 'Invalid', toast_options)
-        }
-      });
-
-
-      $('.emergency-payment-type').change(function() {
-        var selectedOption = $(this).val();
-        
-        if (selectedOption === 'Partial') {
-          $(".div-emergency-amount").show();
-          toastr.success('Partial has been choosen!', 'Success', toast_options)
-        }
-        else{
-          $(".div-emergency-amount").hide();
-          toastr.success('Fully paid has been choosen!', 'Success', toast_options)
-        }
-      });
-
-      $('.place-order-items').click(function (event) {
-        var total_amount = $(".total-place-order").text().slice(1);
-        var item_total = $("#count_items").text();
-        var sales_remarks = $(".dt-sales-remarks").val();
-        var emergency_exact_amt = $('#emergency-amount').val() || total_amount;
-        const selectedItemsQty = $('.quantity-input').map((i, el) => ({quantity: el.value})).get();
-        const selectedMainQuantity = $('.quantity-input').map((i, el) => ({quantity: el.value})).get();
-        const quantityStocks = $('.main-quantity').map((i, el) => ({qtystocks: el.innerHTML.slice(0,-10)})).get();
-        const amount = $('.price-value').map((i, el) => ({price: el.innerHTML.slice(2)})).get();;
-
-
-        // var percentage_value = parseFloat($(".spn-discount").text().slice(0,-1));
-        var percentage_value = parseFloat(actual_prc_discount);
-
-        percentage_value = (percentage_value == 0) ? 0 : percentage_value;
-        var item_selected = [];
-        if (unique_items.length < selectedItemsQty.length){
-          for(var i = 0; i < unique_items.length; i++){
-            let obj = {id: unique_items[i]['id'], quantity: selectedItemsQty[i]?.quantity, stocksquantity:quantityStocks[i]?.qtystocks, price: amount[i]?.price, discount:percentage_value};
-            item_selected.push(obj);
-          }
-
-        }
-        else{
-          for(var i = 0; i < selectedItemsQty.length; i++){
-            let obj = {id: unique_items[i]['id'], quantity: selectedItemsQty[i]?.quantity, stocksquantity:quantityStocks[i]?.qtystocks, price: amount[i]?.price, discount:percentage_value};
-            item_selected.push(obj);
-        }}
-
-        console.log("item selected");
-        console.log(pymt_tpe);
- 
-
-        if (item_total !="0 item/s" && client_id!=0){
-          Swal.fire({
-              title: 'Are you sure?',
-              text: "You won't be able to revert this!",
-              icon: 'warning',
-              showCancelButton: true,
-              confirmButtonText: 'Confirm',
-              customClass: {
-                confirmButton: 'btn btn-primary me-3',
-                cancelButton: 'btn btn-label-secondary'
-              },
-              buttonsStyling: false
-        }).then(function (result) {
-          if (result.value) {
-              event.preventDefault();
-              $.ajax({
-                  type: "POST",
-                  url: "{% url 'sales-item' %}",
-                  data:{
-                    cl_id : client_id, dis_id : discount_id, amt_paid: total_amount, remarks:sales_remarks, out_stocks : JSON.stringify(item_selected), is_emergency : is_er, payment_type : pymt_tpe,emergency_amt : emergency_exact_amt
-                  }
-              }).done(function(data){
-                if(data.data == "success"){
-                  Swal.fire({
-                      icon: 'success',
-                      title: 'Successfully save!',
-                      text:' Transaction has been saved.',
-                      customClass: {
-                        confirmButton: 'btn btn-success'
-                      }
-                    });
-                    remove_all();
-                    window.location.reload();
+                var original_price = grand_total_value
+                var discount_price = parseFloat((original_price * percentage_value) / 100)
+                if (discount_type == 'Special') {
+                    percentage_value = $('#special-percentage').val()
+                    amount_value = sub_total == 0 ? 0 : (amount_value = parseFloat((percentage_value / parseFloat(sub_total)) * 100))
+                    actual_prc_discount = amount_value
+                    convert_discount_value = amount_value.toFixed(2)
+                    $('.discount-value').text('-₱ ' + percentage_value)
+                    $('.spn-discount').text(convert_discount_value + ' %')
+                } else {
+                    actual_prc_discount = percentage_value
+                    $('.spn-discount').text(percentage_value + ' %')
                 }
-                else{
-                  Swal.fire({
-                      icon: 'error',
-                      title: 'Invalid company Name',
-                      text: $companyname +' already exist',
-                      customClass: {
-                        confirmButton: 'btn btn-success'
-                      }});
+                $('#onboardModal').modal('hide')
+                amount_value =
+                    discount_type == 'Special'
+                        ? $('.discount-value').text('-₱ ' + percentage_value)
+                        : $('.discount-value').text('-₱ ' + discount_price)
+                original_price =
+                    discount_type == 'Special'
+                        ? (original_price = parseFloat(original_price) - parseFloat(percentage_value))
+                        : (original_price = parseFloat(original_price) - parseFloat(discount_price))
+                original_price = sub_total == 0 ? (original_price = 0) : original_price
+                $('.total-place-order').text('₱ ' + original_price)
+            })
+        })
+
+        $('.add-discount').click(function (event) {
+            $('.special-percentage').val('')
+            var discount_type = $('.select-discount').find(':selected').text()
+            if (discount_type != 'Special') {
+                $('.view-percentage').hide()
+            } else {
+                $('.view-percentage').show()
+            }
+        })
+
+        function patient_details() {
+            console.log('testt')
+            $.ajax({
+                type: 'POST',
+                url: "{% url 'patient-all-details' %}",
+            }).done(function (data) {
+                $('#selected-patient').empty()
+                for (let i = 0; i < data.data.length; i++) {
+                    let patient_id = data.data[i].id
+                    let first_name = data.data[i].first_name
+                    let middle_name = data.data[i].middle_name
+                    let last_name = data.data[i].last_name
+                    let client_type_name = data.data[i].client_type__name
+                    let fullname = first_name + ' ' + middle_name + ' ' + last_name
+
+                    let option = $('<option>').val(patient_id).text(fullname)
+                    $('#selected-patient').append(option)
+                    $('#selected-patient').val(null).trigger('change')
+                }
+
+                // <select id="selected-patient" class="select2 form-select" data-allow-clear="true">
+                //    <option></option>
+                //  </select>
+
+                // var client_id = data.data[0].id;
+                // var first_name = data.data[0].first_name;
+                // var middle_name = data.data[0].middle_name;
+                // var last_name = data.data[0].last_name;
+                // var client_type_name = data.data[0].client_type__name;
+
+                // console.log("datanipatient");
+                // console.log(first_name);
+                // console.log(middle_name);
+                // console.log(last_name);
+            })
+        }
+
+        //end discounts ---------------------------------------------->
+
+        $('.add-patient').click(function (event) {
+            if ($('#selected-patient').val()) {
+                $('.patient-details-div').show()
+                var patient_id = $('#selected-patient').find(':selected').val()
+                $.ajax({
+                    type: 'POST',
+                    url: "{% url 'patient-details' %}",
+                    data: {
+                        patient: patient_id,
+                    },
+                }).done(function (data) {
+                    toastr.success('Patient add successfully!', 'Success', toast_options)
+                    client_id = data.data[0].id
+                    var first_name = data.data[0].first_name
+                    var middle_name = data.data[0].middle_name
+                    var last_name = data.data[0].last_name
+                    var client_type_name = data.data[0].client_type__name
+                    $('#patient-name').text(first_name + ' ' + middle_name + ' ' + last_name)
+                    $('.spn-patient-status').text(client_type_name)
+                })
+            } else {
+                toastr.error('Select Patient first!', 'Invalid', toast_options)
+            }
+        })
+
+        $('.emergency-payment-type').change(function () {
+            var selectedOption = $(this).val()
+
+            if (selectedOption === 'Partial') {
+                $('.div-emergency-amount').show()
+                toastr.success('Partial has been choosen!', 'Success', toast_options)
+            } else {
+                $('.div-emergency-amount').hide()
+                toastr.success('Fully paid has been choosen!', 'Success', toast_options)
+            }
+        })
+
+        $('.place-order-items').click(function (event) {
+            var total_amount = $('.total-place-order').text().slice(1)
+            var sales_remarks = $('.dt-sales-remarks').val()
+            var emergency_exact_amt = $('#emergency-amount').val() || total_amount
+
+
+            if (selected_items.length > 0 && client_id != 0) {
+                Swal.fire({
+                    title: 'Are you sure?',
+                    text: "You won't be able to revert this!",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonText: 'Confirm',
+                    customClass: {
+                        confirmButton: 'btn btn-primary me-3',
+                        cancelButton: 'btn btn-label-secondary',
+                    },
+                    buttonsStyling: false,
+                }).then(function (result) {
+                    if (result.value) {
+                        event.preventDefault()
+                        $.ajax({
+                            type: 'POST',
+                            url: "{% url 'sales-item' %}",
+                            data: {
+                                cl_id: client_id,
+                                dis_id: discount_id,
+                                amt_paid: total_amount,
+                                remarks: sales_remarks,
+                                out_stocks: JSON.stringify(selected_items),
+                                is_emergency: is_er,
+                                emergency_amt: emergency_exact_amt,
+                                payment_type: pymt_tpe,
+
+                            },
+                        }).done(function (data) {
+                            if (data.data == 'success') {
+                                Swal.fire({
+                                    icon: 'success',
+                                    title: 'Successfully save!',
+                                    text: ' Transaction has been saved.',
+                                    customClass: {
+                                        confirmButton: 'btn btn-success',
+                                    },
+                                }).then(() => {
+                                    window.location.reload()
+                                })
+                            } else {
+                                Swal.fire({
+                                    icon: 'error',
+                                    title: 'Invalid company Name',
+                                    text: $companyname + ' already exist',
+                                    customClass: {
+                                        confirmButton: 'btn btn-success',
+                                    },
+                                })
+                            }
+                        })
                     }
-                  });
-                }});
-        }
-        else if(client_id ==0){
-          toastr.error('Apply client first!', 'Invalid', toast_options)
-        }
-        else{
-          toastr.error('Select item first!', 'Invalid', toast_options)}
-      });
-
-      /**
-   * DataTables Basic
-   */
-
-  'use strict';
-
-  let fv, offCanvasEl;
-  var cart_count =0;
-  document.addEventListener('DOMContentLoaded', function (e) {
-    (function () {
-      const formAddNewRecord = document.getElementById('form-add-new-record');
-
-      setTimeout(() => {
-        const newRecord = document.querySelector('.create-new'),
-          offCanvasElement = document.querySelector('#add-new-record');
-
-        // To open offCanvas, to add new record
-        if (newRecord) {
-          newRecord.addEventListener('click', function () {
-            offCanvasEl = new bootstrap.Offcanvas(offCanvasElement);
-            // Empty fields on offCanvas open
-            (offCanvasElement.querySelector('.dt-full-name').value = ''),
-              (offCanvasElement.querySelector('.dt-post').value = ''),
-              (offCanvasElement.querySelector('.dt-email').value = ''),
-              (offCanvasElement.querySelector('.dt-date').value = ''),
-              (offCanvasElement.querySelector('.dt-salary').value = '');
-            // Open offCanvas with form
-            offCanvasEl.show();
-          });
-        }
-      }, 200);
-
-      // Form validation for Add new record
-      fv = FormValidation.formValidation(formAddNewRecord, {
-        fields: {
-          basicFullname: {
-            validators: {
-              notEmpty: {
-                message: 'The name is required'
-              }
+                })
+            } else if (client_id == 0) {
+                toastr.error('Apply client first!', 'Invalid', toast_options)
+            } else {
+                toastr.error('Select item first!', 'Invalid', toast_options)
             }
-          },
-          basicPost: {
-            validators: {
-              notEmpty: {
-                message: 'Post field is required'
-              }
-            }
-          },
-          basicEmail: {
-            validators: {
-              notEmpty: {
-                message: 'The Email is required'
-              },
-              emailAddress: {
-                message: 'The value is not a valid email address'
-              }
-            }
-          },
-          basicDate: {
-            validators: {
-              notEmpty: {
-                message: 'Joining Date is required'
-              },
-              date: {
-                format: 'MM/DD/YYYY',
-                message: 'The value is not a valid date'
-              }
-            }
-          },
-          basicSalary: {
-            validators: {
-              notEmpty: {
-                message: 'Basic Salary is required'
-              }
-            }
-          }
-        },
-        plugins: {
-          trigger: new FormValidation.plugins.Trigger(),
-          bootstrap5: new FormValidation.plugins.Bootstrap5({
-            // Use this for enabling/changing valid/invalid class
-            // eleInvalidClass: '',
-            eleValidClass: '',
-            rowSelector: '.col-sm-12'
-          }),
-          submitButton: new FormValidation.plugins.SubmitButton(),
-          // defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
-          autoFocus: new FormValidation.plugins.AutoFocus()
-        },
-        init: instance => {
-          instance.on('plugins.message.placed', function (e) {
-            if (e.element.parentElement.classList.contains('input-group')) {
-              e.element.parentElement.insertAdjacentElement('afterend', e.messageElement);
-            }
-          });
-        }
-      });
+        })
 
-      // FlatPickr Initialization & Validation
-      flatpickr(formAddNewRecord.querySelector('[name="basicDate"]'), {
-        enableTime: false,
-        // See https://flatpickr.js.org/formatting/
-        dateFormat: 'm/d/Y',
-        // After selecting a date, we need to revalidate the field
-        onChange: function () {
-          fv.revalidateField('basicDate');
-        }
-      });
-    })();
-  });
+        /**
+         * DataTables Basic
+         */
+        ;('use strict')
 
-  // datatable (jquery)
-  $(function () {
-    var dt_basic_table = $('.datatables-basic'),
-      dt_complex_header_table = $('.dt-complex-header'),
-      dt_row_grouping_table = $('.dt-row-grouping'),
-      dt_multilingual_table = $('.dt-multilingual'),
-      dt_basic;
+        let fv, offCanvasEl
+        var cart_count = 0
+        document.addEventListener('DOMContentLoaded', function (e) {
+            ;(function () {
+                const formAddNewRecord = document.getElementById('form-add-new-record')
 
-    // DataTable with buttons
-    // --------------------------------------------------------------------
+                setTimeout(() => {
+                    const newRecord = document.querySelector('.create-new'),
+                        offCanvasElement = document.querySelector('#add-new-record')
 
-    if (dt_basic_table.length) {
-      dt_basic = dt_basic_table.DataTable({
-        columnDefs: [
+                    // To open offCanvas, to add new record
+                    if (newRecord) {
+                        newRecord.addEventListener('click', function () {
+                            offCanvasEl = new bootstrap.Offcanvas(offCanvasElement)
+                            // Empty fields on offCanvas open
+                            ;(offCanvasElement.querySelector('.dt-full-name').value = ''),
+                                (offCanvasElement.querySelector('.dt-post').value = ''),
+                                (offCanvasElement.querySelector('.dt-email').value = ''),
+                                (offCanvasElement.querySelector('.dt-date').value = ''),
+                                (offCanvasElement.querySelector('.dt-salary').value = '')
+                            // Open offCanvas with form
+                            offCanvasEl.show()
+                        })
+                    }
+                }, 200)
 
-          {
-            // For Checkboxes
-            targets: 0,
-            orderable: false,
-            searchable: false,
-            responsivePriority: 3,
-            checkboxes: true,
-            render: function (data) {
-              return '<input type="checkbox" class="dt-checkboxes form-check-input checkboxtype" id="cb'+data+'" name="checkboxtype">';
-            },
-            checkboxes: {
-              selectAllRender: '<input type="checkbox" class="form-check-input" id="allcb" name="allcb" disabled>'
-            }
-          },
-          {
-            targets: 1,
-            searchable: false,
-            visible: false
-          },
-          {
-            responsivePriority: 1,
-            targets: 3
-          }
-        ],
-        order: [[2, 'desc']],
-        
-        displayLength: 7,
-        lengthMenu: [7, 10, 25, 50, 75, 100],
-        responsive: {
-          details: {
-            display: $.fn.dataTable.Responsive.display.modal({
-              header: function (row) {
-                var data = row.data();
-                return 'Details of ' + data['full_name'];
-              }
-            }),
-            type: 'column',
-            renderer: function (api, rowIdx, columns) {
-              var data = $.map(columns, function (col, i) {
-                return col.title !== '' // ? Do not show row in modal popup if title is blank (for check box)
-                  ? '<tr data-dt-row="' +
-                      colIndex +
-                      '" data-dt-column="' +
-                      col.columnIndex +
-                      '">' +
-                      '<td>' +
-                      col.title +
-                      ':' +
-                      '</td> ' +
-                      '<td>' +
-                      col.data +
-                      '</td>' +
-                      '</tr>'
-                  : '';
-              }).join('');
+                // Form validation for Add new record
+                fv = FormValidation.formValidation(formAddNewRecord, {
+                    fields: {
+                        basicFullname: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'The name is required',
+                                },
+                            },
+                        },
+                        basicPost: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'Post field is required',
+                                },
+                            },
+                        },
+                        basicEmail: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'The Email is required',
+                                },
+                                emailAddress: {
+                                    message: 'The value is not a valid email address',
+                                },
+                            },
+                        },
+                        basicDate: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'Joining Date is required',
+                                },
+                                date: {
+                                    format: 'MM/DD/YYYY',
+                                    message: 'The value is not a valid date',
+                                },
+                            },
+                        },
+                        basicSalary: {
+                            validators: {
+                                notEmpty: {
+                                    message: 'Basic Salary is required',
+                                },
+                            },
+                        },
+                    },
+                    plugins: {
+                        trigger: new FormValidation.plugins.Trigger(),
+                        bootstrap5: new FormValidation.plugins.Bootstrap5({
+                            // Use this for enabling/changing valid/invalid class
+                            // eleInvalidClass: '',
+                            eleValidClass: '',
+                            rowSelector: '.col-sm-12',
+                        }),
+                        submitButton: new FormValidation.plugins.SubmitButton(),
+                        // defaultSubmit: new FormValidation.plugins.DefaultSubmit(),
+                        autoFocus: new FormValidation.plugins.AutoFocus(),
+                    },
+                    init: (instance) => {
+                        instance.on('plugins.message.placed', function (e) {
+                            if (e.element.parentElement.classList.contains('input-group')) {
+                                e.element.parentElement.insertAdjacentElement('afterend', e.messageElement)
+                            }
+                        })
+                    },
+                })
 
-              return data ? $('<table class="table"/><tbody />').append(data) : false;
-            }
-          }
-        }
-      });
-      $('div.head-label').html('<h5 class="card-title mb-0">DataTable with Buttons</h5>');
-    }
+                // FlatPickr Initialization & Validation
+                flatpickr(formAddNewRecord.querySelector('[name="basicDate"]'), {
+                    enableTime: false,
+                    // See https://flatpickr.js.org/formatting/
+                    dateFormat: 'm/d/Y',
+                    // After selecting a date, we need to revalidate the field
+                    onChange: function () {
+                        fv.revalidateField('basicDate')
+                    },
+                })
+            })()
+        })
 
+        // datatable (jquery)
+        $(function () {
+            var dt_basic_table = $('.datatables-basic'),
+                dt_complex_header_table = $('.dt-complex-header'),
+                dt_row_grouping_table = $('.dt-row-grouping'),
+                dt_multilingual_table = $('.dt-multilingual'),
+                dt_basic
 
-    // Filter form control to default size
-    // ? setTimeout used for multilingual table initialization
-    setTimeout(() => {
-      $('.dataTables_filter .form-control').removeClass('form-control-sm');
-      $('.dataTables_length .form-select').removeClass('form-select-sm');
-    }, 300);
-  });
-$(document).on("input", ".quantity-input", function() {
-  var $row = $(this).closest('.row');
-  var value_input = parseInt($(this).val());
+            // DataTable with buttons
+            // --------------------------------------------------------------------
 
-  // Update the max attribute based on row.quantity
-  var quantity_limit = parseInt($row.find('.main-quantity').text());
+            if (dt_basic_table.length) {
+                dt_basic = dt_basic_table.DataTable({
+                    columnDefs: [
+                        {
+                            // For Checkboxes
+                            targets: 0,
+                            orderable: false,
+                            searchable: false,
+                            responsivePriority: 3,
+                            checkboxes: true,
+                            render: function (data) {
+                                return (
+                                    '<input type="checkbox" class="dt-checkboxes form-check-input checkboxtype" id="cb' +
+                                    data +
+                                    '" name="checkboxtype">'
+                                )
+                            },
+                            checkboxes: {
+                                selectAllRender: '<input type="checkbox" class="form-check-input" id="allcb" name="allcb" disabled>',
+                            },
+                        },
+                        {
+                            targets: 1,
+                            searchable: false,
+                            visible: false,
+                        },
+                        {
+                            responsivePriority: 1,
+                            targets: 3,
+                        },
+                    ],
+                    order: [[2, 'desc']],
 
-  if (value_input > quantity_limit) {
-    $(this).val(quantity_limit); // Set the input value to the maximum allowed quantity
-  }
-});
+                    displayLength: 7,
+                    lengthMenu: [7, 10, 25, 50, 75, 100],
+                    responsive: {
+                        details: {
+                            display: $.fn.dataTable.Responsive.display.modal({
+                                header: function (row) {
+                                    var data = row.data()
+                                    return 'Details of ' + data['full_name']
+                                },
+                            }),
+                            type: 'column',
+                            renderer: function (api, rowIdx, columns) {
+                                var data = $.map(columns, function (col, i) {
+                                    return col.title !== '' // ? Do not show row in modal popup if title is blank (for check box)
+                                        ? '<tr data-dt-row="' +
+                                              colIndex +
+                                              '" data-dt-column="' +
+                                              col.columnIndex +
+                                              '">' +
+                                              '<td>' +
+                                              col.title +
+                                              ':' +
+                                              '</td> ' +
+                                              '<td>' +
+                                              col.data +
+                                              '</td>' +
+                                              '</tr>'
+                                        : ''
+                                }).join('')
 
-  $(document).on( "change",  ".quantity-input",function() {
-
-    var $row = $(this).closest('.row');
-    var value_input = $(".quantity-input", $row).val();
-    var row_sub_total_old = $(".total-value", $row).text().slice(1);
-    var discount;    
-    let price = $(".price-value", $row).html().slice(1); 
-    var total_value = parseFloat(value_input) * parseFloat(price);
-    var tl_value = parseFloat(total_value) - parseFloat(price);
-    t1_value = parseFloat(tl_value) + parseFloat(sub_total);
-
-    if(value_input.length!=0){$(".total-value", $row).text("₱ "+total_value);}
-    else{$(".total-value", $row).text("₱ 0");}
-    var sub_total_spn_value = $(".sub-total").text().slice(1);
-    var onchangetotalvalue = parseFloat(total_value - row_sub_total_old);
-    var ot_total = parseFloat(sub_total_spn_value) + parseFloat(onchangetotalvalue);
-    $(".sub-total").html("₱ "+ot_total);
-    var percentage_value = $(".spn-discount").text().slice(0,-1);
-    if(discount_type!="Special"){
-      discount = parseFloat(ot_total * percentage_value/100);
-      $('.discount-value').text("-₱ "+discount);
-    }
-    else {
-      discount = $(".discount-value").text().slice(2);
-    }
-    ot_total =parseFloat(ot_total) -parseFloat(discount);
-    $('.total-place-order').text("₱ "+ot_total);
-  });
-
-  $('.remove-all').click(function(event){
-    remove_all();
-    toastr.success('Data remove successfully!', 'Success', toast_options);
-  });
-
-  $(document).on("click", ".remove_data", function() {
-    cart_count--;
-    $('#count_items').text(cart_count + " item/s");
-    var $row = $(this).closest('.li');
-    var checkboxName = $row.data('for');
-    
-    var $checkbox = $(`input[type="checkbox"][name="${checkboxName}"]`);
-    $row.remove();
-    $checkbox.prop('checked', false);
-    // $checkbox.get(0).hasCovered = false;
-
-    var $row_li = $(this).closest('.li');
-    var row_sub_total_old = $(".total-value", $row_li).text().slice(1);
-    var original_price = $(".sub-total").text().slice(1);
-    original_price = parseFloat(original_price - row_sub_total_old);
-    $('.sub-total').text("₱ " + original_price);
-    var percentage_value = $(".spn-discount").text().slice(0,-1);
-    var patient_discount  = parseFloat(original_price * percentage_value/100);
-
-    var total = parseFloat(original_price - patient_discount );
-    $('.total-place-order').text("₱ "+total);
-    $('.discount-value').text("-₱ "+patient_discount);
-    toastr.success('Item remove successfully!', 'Success', toast_options)
-
-  });
-
-  $('.remove-discount').click(function(event){
-    var original_price = $(".sub-total").text().slice(1);
-    $("#select-discount").val(null).trigger("change");
-    $('.spn-discount').text("0.00 %");
-    $('.discount-value').text("-₱ 0");
-    convert_discount_value = 0;
-    actual_prc_discount = 0;
-    percentage_value = 0;
-    var discount_price = parseFloat(original_price * percentage_value/100);
-    original_price = (discount_type == "Special")?original_price =parseFloat(original_price) -parseFloat(percentage_value) : original_price =parseFloat(original_price) -parseFloat(discount_price);
-    original_price = (sub_total == 0) ? original_price = 0 : original_price;
-    $('.total-place-order').text("₱ "+original_price);
-    $('#onboardModal').modal('hide');
-    toastr.success('Discount remove successfully!', 'Success', toast_options)
-  });
-
-  
-
- $('.checkbox_data').click(function(event){
-  var grid = document.getElementById("Table1");
-  var addedCheckboxes = $(".whole-div-class .row");
-  var checkBoxes = $(`input[name=checkboxtype]`);
-  var str = '';
-  var clickedCheckbox = $(event.target);
-  addedCheckboxes.map((i, addedCheckbox) => {
-          checkBoxes = checkBoxes.filter((j, checkbox) => {
-              return $(addedCheckbox).data('for') != $(checkbox).prop("name");
-          });
-  });
-  if (clickedCheckbox.prop('checked')) {
-      for (var i = 0; i < checkBoxes.length; i++) {
-        if (checkBoxes[i].checked) {
-              var row = checkBoxes[i].parentNode.parentNode;
-              cart_count++;
-              var stck_id = checkBoxes[i].id.slice(2);
-
-              var array_id = {
-                id: stck_id,
-                item: row.cells[1].innerHTML,
-                brand: row.cells[2].innerHTML,
-                quantity: row.cells[3].innerHTML,
-                price: row.cells[4].innerHTML
-              }
-              selected_items.push(array_id);
+                                return data ? $('<table class="table"/><tbody />').append(data) : false
+                            },
+                        },
+                    },
+                })
+                $('div.head-label').html('<h5 class="card-title mb-0">DataTable with Buttons</h5>')
             }
 
+            // Filter form control to default size
+            // ? setTimeout used for multilingual table initialization
+            setTimeout(() => {
+                $('.dataTables_filter .form-control').removeClass('form-control-sm')
+                $('.dataTables_length .form-select').removeClass('form-select-sm')
+            }, 300)
+        })
+        $(document).on('input', '.quantity-input', function () {
+            var $row = $(this).closest('.row')
+            var value_input = parseInt($(this).val())
+
+            // Update the max attribute based on row.quantity
+            var quantity_limit = parseInt($row.find('.main-quantity').text())
+
+            if (value_input > quantity_limit) {
+                $(this).val(quantity_limit) // Set the input value to the maximum allowed quantity
+            }
+        })
+
+        $(document).on('change', '.quantity-input', function () {
+            var $row = $(this).closest('.row')
+            var value_input = $('.quantity-input', $row).val()
+            var row_sub_total_old = $('.total-value', $row).text().slice(1)
+            var discount
+            let price = $('.price-value', $row).html().slice(1)
+            var total_value = parseFloat(value_input) * parseFloat(price)
+            var tl_value = parseFloat(total_value) - parseFloat(price)
+            t1_value = parseFloat(tl_value) + parseFloat(sub_total)
+
+            if (value_input.length != 0) {
+                $('.total-value', $row).text('₱ ' + total_value)
+            } else {
+                $('.total-value', $row).text('₱ 0')
+            }
+            var sub_total_spn_value = grand_total_value
+            var onchangetotalvalue = parseFloat(total_value - row_sub_total_old)
+            var ot_total = parseFloat(sub_total_spn_value) + parseFloat(onchangetotalvalue)
+            $('.sub-total').html('₱ ' + ot_total)
+            var percentage_value = $('.spn-discount').text().slice(0, -1)
+            if (discount_type != 'Special') {
+                discount = parseFloat((ot_total * percentage_value) / 100)
+                $('.discount-value').text('-₱ ' + discount)
+            } else {
+                discount = $('.discount-value').text().slice(2)
+            }
+            ot_total = parseFloat(ot_total) - parseFloat(discount)
+            $('.total-place-order').text('₱ ' + ot_total)
+        })
+
+        $(document).on('click', '.remove_data', function () {
+            cart_count--
+            $('#count_items').text(cart_count + ' item/s')
+            var $row = $(this).closest('.li')
+            var checkboxName = $row.data('for')
+
+            var $checkbox = $(`input[type="checkbox"][name="${checkboxName}"]`)
+            $row.remove()
+            $checkbox.prop('checked', false)
+            // $checkbox.get(0).hasCovered = false;
+
+            var $row_li = $(this).closest('.li')
+            var row_sub_total_old = $('.total-value', $row_li).text().slice(1)
+            var original_price = grand_total_value
+            original_price = parseFloat(original_price - row_sub_total_old)
+            $('.sub-total').text('₱ ' + original_price)
+            var percentage_value = $('.spn-discount').text().slice(0, -1)
+            var patient_discount = parseFloat((original_price * percentage_value) / 100)
+
+            var total = parseFloat(original_price - patient_discount)
+            $('.total-place-order').text('₱ ' + total)
+            $('.discount-value').text('-₱ ' + patient_discount)
+            toastr.success('Item remove successfully!', 'Success', toast_options)
+        })
+
+        $('.remove-discount').click(function (event) {
+            var original_price = grand_total_value
+            $('#select-discount').val(null).trigger('change')
+            $('.spn-discount').text('0.00 %')
+            $('.discount-value').text('-₱ 0')
+            convert_discount_value = 0
+            actual_prc_discount = 0
+            percentage_value = 0
+            var discount_price = parseFloat((original_price * percentage_value) / 100)
+            original_price =
+                discount_type == 'Special'
+                    ? (original_price = parseFloat(original_price) - parseFloat(percentage_value))
+                    : (original_price = parseFloat(original_price) - parseFloat(discount_price))
+            original_price = sub_total == 0 ? (original_price = 0) : original_price
+            $('.total-place-order').text('₱ ' + original_price)
+            $('#onboardModal').modal('hide')
+            toastr.success('Discount remove successfully!', 'Success', toast_options)
+        })
+
+
+        $('#emergency-switch').click(function () {
+            var isChecked = $(this).prop('checked')
+            if (isChecked) {
+                is_er = 1
+                pymt_tpe = 'Partial'
+                $('.emergency-details-div').show()
+                toastr.warning('Emergency applied!', 'Success', toast_options)
+            } else {
+                is_er = 0
+                pymt_tpe = 'Fully paid'
+                $('.emergency-details-div').hide()
+                toastr.success('Emergency has removed!', 'Success', toast_options)
+            }
+        })
+
+        $('#add-data').click(function () {
+            let data_element = ''
+            let true_items = []
+
+            if(selected_items.length > 0) {
+                toastr.success('Cart updated successfully!', 'Success', toast_options)
+                true_items = selected_items
+                available_stocks_modal.modal('hide')
+            } else {
+                toastr.info('No Item added!', 'Info', toast_options)
+            }
+
+            tbl_carted_items.empty()
+
+            if(true_items.length == 0) {
+                data_element = `<tr>
+                    <td colspan="7">
+                        <div class="alert alert-primary d-flex align-items-center" role="alert">
+                            <span class="alert-icon text-primary me-2">
+                                <i class="ti ti-shopping-cart ti-xs"></i>
+                            </span>
+                            Please choose an item to be carted!
+                        </div>
+                    </td>
+                </tr>`
+            } else {
+                true_items.forEach(e => {
+                    data_element += `<tr>
+                        <td>
+                            <button type="button" class="btn-cancel-cart-item btn rounded-pill btn-icon btn-label-secondary waves-effect" data-id="${e.id}">
+                                <span class="ti ti-x"></span>
+                            </button>
+                        </td>
+                        <td>${e.item}</td>
+                        <td>
+                            <select class="selected-location form-select" data-id="${e.id}">
+                                {% for l in location %}
+                                <option data-id="{{ l.id }}" value="{{ l.name }}">{{l.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td><span class="stock-data badge bg-label-primary">0</span></td>
+                        <td class="text-right">${currencyFormat(e.price)}</td>
+                        <td><input data-id="${e.id}" data-price=${e.price} type="number" class="pre-quantity form-control" /></td>
+                        <td class="text-right"><span class="subtotal-data"></span></td>
+                    </tr>`
+                })
+            }
+
+            tbl_carted_items.append(data_element)
+
+            $('.btn-cancel-cart-item').on('click', function() {
+                let id = $(this).data('id')
+                let id_index = selected_items.findIndex(i => i.id == id)
+                selected_items.splice(id_index, 1)
+                $('#add-data').click()
+            })
+
+            $('.selected-location').on('change', function() {
+                let id = $(this).data('id')
+                let val = $(this).val();
+                let cart_item = selected_items.filter(i => i.id == id)
+                let location_id = $(this).find(':selected').data('id')
+
+                cart_item[0]['location_id'] = location_id
+                $(this).parent().siblings().children('.stock-data').text(cart_item[0][`${val}`])
+            })
+
+            $('.selected-location').each(function() {
+                $(this).change()
+            })
+
+            $('.pre-quantity').on('keyup', function(){
+                let id = $(this).data('id')
+                let cart_data = selected_items.filter(i => i.id == id)
+                let stock_data = $(this).parent().siblings().children('.stock-data').text()
+                let val = parseInt($(this).val() ?? 0)
+                let price = $(this).data('price')
+                let sub_total = val * price
+                let grand_total_tmp = 0;
+
+                cart_data[0]['qty'] = val
+                $(this).parent().siblings().children('.subtotal-data').text(currencyFormat(sub_total))
+
+                $('.pre-quantity').each(function() {
+                    let val = parseInt($(this).val() ?? 0)
+                    let price = $(this).data('price')
+                    let sub_total = val * price
+                    grand_total_tmp+=sub_total
+                });
+
+                let isNan_grand_total = isNaN(grand_total_tmp) ? 0 : grand_total_tmp;
+
+
+                grand_total.text(currencyFormat(isNan_grand_total))
+                total_cart_amount.text(currencyFormat(isNan_grand_total))
+
+                grand_total_value = grand_total_tmp
+
+                console.log(selected_items)
+            })
+
+        })
+
+        var select2 = $('.select2')
+        if (select2.length) {
+            select2.each(function () {
+                var $this = $(this)
+                $this.wrap('<div class="position-relative"></div>').select2({
+                    placeholder: 'Select value',
+                    dropdownParent: $this.parent(),
+                })
+            })
         }
-    }
-    else{
-      var uncheckedId = clickedCheckbox.attr('id').slice(2);
-        selected_items = selected_items.filter(function(item) {
-          return item.id !== uncheckedId;
-      });
-  }
-
-  unique_items = selected_items.filter(function(item, index, self) {
-      return index === self.findIndex(function(i) {
-        return i.id === item.id;
-      });
-  });
-});
-
-
-
-$('#emergency-switch').click(function() {
-  var isChecked = $(this).prop('checked');
-  if (isChecked) {
-    is_er = 1;
-    pymt_tpe = "Partial"
-    $(".emergency-details-div").show();
-    toastr.warning('Emergency applied!', 'Success', toast_options);
-  } else {
-    is_er = 0;
-    pymt_tpe = "Fully paid"
-    $(".emergency-details-div").hide();
-    toastr.success('Emergency has removed!', 'Success', toast_options);
-  }
-});
-
-
-  $("#add_data").click(function() {
-      var str = '';
-      for (var i = 0; i < unique_items.length; i++) {
-        var row = unique_items[i];
-        var existingItem = $('.list-group-item[data-for="' + row.id + '"]');
-        if (existingItem.length > 0) {
-          continue; // Skip adding the item if it already exists
-        }
-          str +=
-            '<li class="list-group-item p-4 li" data-for="' + row.id + '">'+
-              '<div class="d-flex gap-3">'+
-                '<div class="flex-grow-1 append-item">'+
-                  '<div class="row" class="row" data-for="' + row.id + '">'+
-                    '<div class="col-md-6">'+
-                      '<p class="me-3">'+
-                        '<a href="javascript:void(0)" class="text-body">'+
-                          row.item +'</a>'+
-                      '</p>'+
-                      '<div class="text-muted mb-2 d-flex flex-wrap">'+
-                        '<span class="me-1">Brand Name:</span>'+
-                        '<a href="javascript:void(0)" class="me-3">'+ row.brand +'</a>'+
-                        // '<span class="badge bg-label-success">In Stocks</span>'+
-                        '<span class="badge bg-label-primary cordoba main-quantity" id="stocks_quantity" name="stocks_quantity">'+row.quantity+' Available</span>'+
-                      '</div>' +
-                    '</div>'+
-
-                    '<div class="col-md-2">'+
-                      '<span class="text-primary sub-total-row price-value" name="price-value">'+ row.price+'</span><br><br>'+
-                    '</div>'+
-                    '<div class="col-md-2">'+
-                    '<input type="number" class="form-control form-control-sm w-px-75 quantity-input" value="1" min="1" />' +
-                    '</div>'+
-
-                    '<div class="col-md-2">'+
-                      '<div class="text-md-end">'+
-                        '<button type="button" class="btn-close btn-pinned remove_data" aria-label="Close"></button>'+
-                        '<div class="my-2 my-md-4 mb-md-5">'+
-                          '<span class="text-success sub-total-row total-value">'+row.price +'</span>'+
-                        '</div>'+
-                      '</div>'+
-                    '</div>'+
-                  '</div>'+
-                '</div>'+
-              '</div>'+
-            '</li>';
-            var sb_total = parseFloat(row.price.slice(1));
-            sub_total = parseFloat(sub_total + sb_total);
-          // checkBoxes[i].hasCovered = true;
-        
-      }
-        cart_count = unique_items.length;
-        $('.div-remove').show();
-        $(".whole-div-class").append(str);
-        $('#exLargeModal').modal('hide');
-        $('#count_items').text(unique_items.length + " item/s");
-        // original_price = (discount_type == "Special")?original_price =parseFloat(original_price) -parseFloat(percentage_value) : original_price =parseFloat(original_price) -parseFloat(discount_price);
-        $('.sub-total').text("₱ " + sub_total);
-
-        if (discount_type=="Special"){
-            var discount_val = $(".discount-value").text().slice(2);
-            var total = parseFloat(sub_total - discount_val);
-            $('.total-place-order').text("₱ "+total);
-
-            var discount_amount = $(".discount-value").text().slice(2);
-            actual_prc_discount = parseFloat(discount_amount/sub_total*100);
-            convert_discount_value = actual_prc_discount.toFixed(2);
-            $(".spn-discount").text(convert_discount_value +" %");
-        }else{
-          
-          var percentage_value = $(".spn-discount").text().slice(0,-1);
-          var patient_discount  = parseFloat(sub_total * percentage_value/100);
-          $('.discount-value').text("-₱ "+patient_discount);
-          var total = parseFloat(sub_total - patient_discount);
-          $('.total-place-order').text("₱ "+total);
-        }
-        toastr.success('Item add successfully!', 'Success', toast_options);
-    });
-
-    var select2 = $('.select2');
-      if (select2.length) {
-        select2.each(function () {
-          var $this = $(this);
-          $this.wrap('<div class="position-relative"></div>').select2({
-            placeholder: 'Select value',
-            dropdownParent: $this.parent()
-          });
-        });
-      }
-});
+    })
 </script>
 {% endblock footer_scripts %}
