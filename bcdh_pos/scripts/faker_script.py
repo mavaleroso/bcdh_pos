@@ -1,5 +1,5 @@
 from faker import Faker
-from main.models import Location, Generic, SubGeneric, Unit,Company,ClientType,Brand, ItemType, Discounts, SystemConfiguration, Clients
+from main.models import Location, Generic, SubGeneric, Unit,Company,ClientType,Brand, ItemType, Discounts, SystemConfiguration, Clients, UserDetails, RoleDetails
 import numpy as np
 import random
 import datetime
@@ -9,7 +9,7 @@ Faker.seed(313)
 
 generic_name = ['Oxytocin','Co-amoxiclav','Clindamycin','Docusate Sodium','Paracetamol/Orphenadrine Tablet','BUDESONIDE',
                 'CEFUROXIME','FEBUXOSTAT','Aluminum/magnesium/Semiticone','AMLODIPINE','Amoxicillin','CEFIXIME','CITIRIZINE',
-                'MEtronidazole','Multivitamins/Buclizine']
+                'MEtronidazole','Multivitamins/Buclizine','Multivitamins/Zinc','Hexaminine']
 
 sub_generic_name = ['GYNE-TOCIN/AMBTOCYN','EUROCLAV/XOVAX','INDIMAX','IRWAX','NEOTIC','ORPHEN PLUS',
                 'MEDCORT','JAZCEF','FEBUNAZ','Alsium','AMLO-10','Altomox','CEFTRI',
@@ -33,6 +33,9 @@ last_name = ['Valdehueza','Docdoc','Valeroso','Villanueva']
 
 
 client_type_id = ['1','2','3','1']
+sub_generic_id = ['1','2','3','4','5','6','7','8','9','10','11','12','13','14','15','16','17']
+
+role_details = ['Admin','Inventory Staff','Management','Sales Staff']
 
 
 
@@ -43,8 +46,12 @@ for gen in generic_name:
     gen_val = Generic(name=gen,is_active = active)
     gen_val.save()
 
-for sub_gen in sub_generic_name: 
-    sub_gen_val = SubGeneric(name=sub_gen,is_active = active)
+# for sub_gen in sub_generic_name: 
+#     sub_gen_val = SubGeneric(name=sub_gen,is_active = active)
+#     sub_gen_val.save()
+
+for i in range(len(sub_generic_name)):
+    sub_gen_val = SubGeneric(name=sub_generic_name[i],is_active = active,generic_id = sub_generic_id[i])
     sub_gen_val.save()
 
 for unit in unit_name:
@@ -83,9 +90,17 @@ for i in range(20):
 for i in range(len(clients_name)):
     db_cl = Clients(first_name=clients_name[i],middle_name = middle_name[i],last_name =last_name[i],birthdate =datetime.date.today(),sex="Male",address=fake.unique.address(),occupation=fake.address(),client_type_id =client_type_id[i] )
     db_cl.save()
+    
+for roles in role_details:
+    role = RoleDetails(role_name=roles)
+    role.save()
+
 
 system_configuration_db = SystemConfiguration(name='Bayugan City Doctors Hospital', inventory_code='23-05-00000', transaction_code = '23-05-00000', year='2023')
 system_configuration_db.save()
+
+userdb = UserDetails(middle_name='Vilanueva', sex = 'Male', address='J.P. Rizal', position ='CMT II', role_id = '1', user_id = '1')
+userdb.save()
 
 
 

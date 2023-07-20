@@ -113,6 +113,7 @@
                             <span class="menu-header-text">Inventory</span>
                         </li>
 
+                        {% if role_permission == 'Inventory Staff' or role_permission == 'Admin' %}
                         <li class="menu-item {% if url_name == 'inventory-in' %}active{% endif %}">
                             <a href="{% url 'inventory-in' %}" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-stack-push"></i>
@@ -125,6 +126,10 @@
                                 <div data-i18n="Out">Out</div>
                             </a>
                         </li>
+
+                        {% endif %}
+                        
+
                         <li class="menu-item {% if url_name == 'inventory-list' or url_name == 'inventory-list-edit' %}active{% endif %}">
                             <a href="{% url 'inventory-list' %}" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-brand-stackoverflow"></i>
@@ -144,6 +149,8 @@
                             </a>
                         </li>
 
+                        {% if role_permission == 'Sales Staff' or role_permission == 'Admin' %}
+
                         <!-- Sales -->
                         <li class="menu-header small text-uppercase">
                             <span class="menu-header-text">Sales</span>
@@ -161,17 +168,21 @@
                                 <div data-i18n="List">List</div>
                             </a>
                         </li>
+                        {% endif %}
 
+                        {% if role_permission == 'Management' or role_permission == 'Admin' %}
                         <!-- Management -->
                         <li class="menu-header small text-uppercase">
                             <span class="menu-header-text">Management</span>
                         </li>
                         <li class="menu-item">
-                            <a href="app-email.html" class="menu-link">
+                            <a href="#" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-text-wrap-disabled"></i>
                                 <div data-i18n="Editing Approval">Editing Approval</div>
                             </a>
                         </li>
+
+                        {% endif %}
 
                         <!-- Libraries -->
                         <li class="menu-header small text-uppercase">
@@ -181,29 +192,6 @@
                             <a href="{% url 'item-list' %}" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-color-swatch"></i>
                                 <div data-i18n="Items">Items</div>
-                            </a>
-                        </li>
-
-                        <!-- Admin -->
-                        <li class="menu-header small text-uppercase">
-                            <span class="menu-header-text">Admin</span>
-                        </li>
-                        <li class="menu-item {% if url_name == 'user-list' %}active{% endif %}">
-                            <a href="{% url 'user-list' %}" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-users"></i>
-                                <div data-i18n="Users">Users</div>
-                            </a>
-                        </li>
-                        <li class="menu-item">
-                            <a href="app-email.html" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-settings"></i>
-                                <div data-i18n="Roles">Roles</div>
-                            </a>
-                        </li>
-                        <li class="menu-item">
-                            <a href="app-email.html" class="menu-link">
-                                <i class="menu-icon tf-icons ti ti-lock"></i>
-                                <div data-i18n="Permissions">Permissions</div>
                             </a>
                         </li>
 
@@ -237,12 +225,26 @@
                                 <div data-i18n="Units">Units</div>
                             </a>
                         </li>
+
+                        {% if role_permission == 'Admin' %}
+                      
+                        <!-- Admin -->
+                        <li class="menu-header small text-uppercase">
+                            <span class="menu-header-text">Admin</span>
+                        </li>
+                        <li class="menu-item {% if url_name == 'user-list' %}active{% endif %}">
+                            <a href="{% url 'user-list' %}" class="menu-link">
+                                <i class="menu-icon tf-icons ti ti-users"></i>
+                                <div data-i18n="Users">Users</div>
+                            </a>
+                        </li>
                         <li class="menu-item {% if url_name == 'clients-list' %}active{% endif %}">
                             <a href="{% url 'clients-list' %}" class="menu-link">
                                 <i class="menu-icon tf-icons ti ti-color-swatch"></i>
                                 <div data-i18n="Clients">Clients</div>
                             </a>
                         </li>
+                        {% endif %}
                     </ul>
                     {% endwith %}
                 </aside>

@@ -1,5 +1,5 @@
 from django.db import models
-
+from django.contrib.auth.models import AbstractUser
 from datetime import datetime
 
 
@@ -141,6 +141,7 @@ class Generic(models.Model):
 
 class SubGeneric(models.Model):
     name = models.CharField(max_length=128, blank=True, null=True)
+    generic = models.ForeignKey(Generic, models.DO_NOTHING)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(blank=True, null=True, auto_now_add=True)
     updated_at = models.DateTimeField(blank=True, null=True, auto_now=True)
@@ -171,20 +172,31 @@ class Unit(models.Model):
         managed = True
         db_table = 'unit'
 
+class RoleDetails(models.Model):
+    role_name =  models.CharField(max_length=128, blank=True, null=True)
+    created_at = models.DateTimeField(default=datetime.now,blank=True, null=True)
+    updated_at = models.DateTimeField(blank=True, null=True, auto_now=True)
+
+    class Meta:
+        managed = True
+        db_table = 'role_details'
+
 
 class UserDetails(models.Model):
     user = models.OneToOneField(AuthUser, on_delete=models.CASCADE)
+    role = models.ForeignKey(RoleDetails, models.DO_NOTHING)
     middle_name = models.CharField(max_length=128, blank=True, null=True)
     birthdate = models.DateField(blank=True, null=True)
     sex = models.CharField(max_length=128, blank=True, null=True)
     address = models.CharField(max_length=128, blank=True, null=True)
     position = models.CharField(max_length=128, blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
+    added_by_user_id = models.IntegerField(max_length=128, blank=True, null=True)
 
     class Meta:
         managed = True
         db_table = 'user_details'
-
+        
 
 class ItemType(models.Model):
     name = models.CharField(max_length=128, blank=True, null=True)
