@@ -1,0 +1,418 @@
+{% extends 'index.html' %} {% block content %} {% load staticfiles %}
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="fw-bold py-3 mb-4">
+        <span class="text-muted fw-light">Inventory/Out/Damage/</span>
+        Create
+    </h4>
+    <div class="row">
+        <div class="col-12">
+            <form id="out-frm">
+                <div class="card">
+                    <div
+                        class="card-header sticky-element bg-label-secondary d-flex justify-content-sm-between align-items-sm-center flex-column flex-sm-row"
+                    >
+                        <h5 class="card-title mb-sm-0 me-2">Damage Form</h5>
+                        <div class="action-btns">
+                            <div class="btn-group" role="group">
+                                <a href="{% url 'out-damage' %}" class="btn btn-label-primary waves-effect"><i class="ti ti-list me-1"></i>List</a>
+                                <button id="btn-submit" type="button" class="btn btn-primary waves-effect">
+                                    <i class="ti ti-device-floppy me-1"></i>Submit
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div id="alert-warning" style="display: none" class="alert alert-warning align-items-center" role="alert">
+                            <span class="alert-icon text-warning me-2">
+                                <i class="ti ti-bell ti-xs"></i>
+                            </span>
+                            Please select client and items!
+                        </div>
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="form-group">
+                                    <label class="form-label" for="quick-search-item">Quick Search Item</label>
+                                    <input type="text" id="quick-search-item" class="form-control" />
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <button type="button" class="btn btn-primary mt-4 ms-auto d-block" id="add-item-modal">
+                                    <i class="fa-solid fa-cart-plus me-1"></i>Add item
+                                </button>
+                            </div>
+                            <div class="col-12 my-3">
+                                <label class="form-label">Remarks</label>
+                                <textarea id="remarks" class="form-control"></textarea>
+                            </div>
+                        </div>
+                        <table class="table display compact stripe mt-3">
+                            <thead class="table-light">
+                                <tr>
+                                    <th></th>
+                                    <th>Item</th>
+                                    <th>Location</th>
+                                    <th>Stock</th>
+                                    <th class="d-none">Price</th>
+                                    <th>Quantity</th>
+                                    <th class="d-none">Subtotal</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tbl-carted-items">
+                                <tr>
+                                    <td colspan="7">
+                                        <div class="alert alert-primary d-flex align-items-center" role="alert">
+                                            <span class="alert-icon text-primary me-2">
+                                                <i class="ti ti-shopping-cart ti-xs"></i>
+                                            </span>
+                                            Please choose an item to be carted!
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                            <tfoot class="table-light d-none">
+                                <tr>
+                                    <td colspan="6" class="text-center">TOTAL</td>
+                                    <td class="text-right d-none"><span id="grand-total"></span></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="available-stocks-modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-xl modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel4">Available Stock</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="card-datatable table-responsive pt-0">
+                        <table id="tbl-items" class="table display compact">
+                            <thead>
+                                <tr>
+                                    <th></th>
+                                    <th>Item Type</th>
+                                    <th>Item Description</th>
+                                    <th>Total Quantity</th>
+                                    {% for row in location %}
+                                    <th class="text-center">{{ row.name }}</th>
+                                    {% endfor %}
+                                    <th>Unit Price</th>
+                                </tr>
+                            </thead>
+                        </table>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="add-stock">Add</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %} {% block footer_scripts %}
+<script src="{% static 'assets/js/autofill.js' %}"></script>
+<script>
+    const toast_options = (toastr.options = {
+        maxOpened: 1,
+        autoDismiss: true,
+        closeButton: true,
+        newestOnTop: true,
+        progressBar: true,
+        positionClass: 'toast-top-right',
+        rtl: isRtl,
+    })
+
+    $(document).ready(function () {
+        const add_item_modal = $('#add-item-modal')
+        const available_stocks_modal = $('#available-stocks-modal')
+        const table_items = $('#tbl-items')
+        const add_stock = $('#add-stock')
+        const tbl_carted_items = $('#tbl-carted-items')
+        const grand_total = $('#grand-total')
+        const total_cart_amount = $('#total-cart-amount')
+        const btn_submit = $('#btn-submit')
+        const alert_warning = $('#alert-warning')
+        const remarks = $('#remarks')
+
+        let grand_total_value = 0
+        let selected_items = []
+        let client_id = 0
+
+        add_item_modal.on('click', function() {
+            let columns_data_1 = [{ data: 'id' }, { data: 'item_type_name' }, { data: 'details' }, { data: 'pcs_quantity' }]
+
+            {% for l in location %}
+                columns_data_1.push({
+                    data: '{{ l.name }}',
+                })
+            {% endfor %}
+
+            columns_data_1.push({
+                data: 'unit_price',
+            })
+
+            available_stocks_modal.modal('show')
+
+            setTimeout(() => {
+                var stocksTable = table_items.DataTable({
+                    processing: true,
+                    serverSide: true,
+                    destroy: true,
+                    ajax: {
+                        url: "{% url 'inventory-load' %}",
+                    },
+                    columns: columns_data_1,
+                    columnDefs: [
+                        {
+                            targets: 0,
+                            orderable: false,
+                            searchable: false,
+                            render: function (data, type, row) {
+                                let id = data.toString()
+                                let selected_item_data = selected_items.filter(i => i.id == id)
+                                let status = selected_item_data.length > 0 ? true:false;
+                                let disable_status = row.pcs_quantity == 0 ? true:false
+
+                                return `<input class="form-check-input chkbox-stock" ${disable_status ? 'disabled' : ''} ${status ? 'checked':''} type="checkbox" value="${id}" data-stock-item-id="${row.stock_item_id}" data-details="${row.details}" data-quantity="${row.pcs_quantity}" data-price="${row.unit_price}" {% for l in location %} data-{{ l.name }}="${row.{{ l.name }}}" {% endfor %}>`
+                            },
+                        },
+                        {
+                            targets: 2,
+                            orderable: false,
+                            searchable: false,
+                        },
+                        {
+                            targets: 3,
+                            render: function (data) {
+                                return `<span class="badge bg-label-primary">${data}</span>`
+                            },
+                        },
+                        {% for l in location %}
+                            {
+                                targets: ({{ forloop.counter }} + 3),
+                                orderable: false,
+                                searchable: false,
+                                render: function (data, type, row) {
+                                    return `<span class="badge bg-label-warning">${data}</span>`;
+                                },
+                            },
+                        {% endfor %}
+                        {
+                            targets: -1,
+                            render: function (data) {
+                                let elem = ''
+                                if (data) {
+                                    elem = `<span class="badge bg-label-secondary">${currencyFormat(data)}</span>`
+                                }
+                                return elem
+                            },
+                        },
+                    ],
+                    order: [[1, 'asc']],
+                    scrollX: true,
+                    drawCallback: function (settings) {
+                        let chkbox_stock = $('.chkbox-stock')
+
+                        chkbox_stock.on('click', function() {
+                            let status = $(this).prop('checked')
+                            let id = $(this).val();
+
+                            if (status) {
+                                $(this).prop('checked', true)
+                                var array_id = {
+                                    id: id,
+                                    item: $(this).data('details'),
+                                    quantity: $(this).data('quantity'),
+                                    stock_item_id: $(this).data('stock-item-id'),
+                                    price: $(this).data('price'),
+                                }
+
+                                {% for l in location %}
+                                    array_id['{{ l.name }}'] = $(this).data(('{{ l.name }}').toLowerCase())
+                                {% endfor %}
+
+                                selected_items.push(array_id)
+                            } else {
+                                $(this).prop('checked', false)
+                                let id_index = selected_items.findIndex(i => i.id === id)
+                                selected_items.splice(id_index, 1)
+                            }
+                        })
+                    }
+                })
+            }, 500)
+        })
+
+        add_stock.on('click', function() {
+            let data_element = ''
+            let true_items = []
+
+            if(selected_items.length > 0) {
+                toastr.success('Cart updated successfully!', 'Success', toast_options)
+                true_items = selected_items
+                available_stocks_modal.modal('hide')
+            } else {
+                toastr.info('No Item added!', 'Info', toast_options)
+            }
+
+            tbl_carted_items.empty()
+
+            if(true_items.length == 0) {
+                data_element = `<tr>
+                    <td colspan="7">
+                        <div class="alert alert-primary d-flex align-items-center" role="alert">
+                            <span class="alert-icon text-primary me-2">
+                                <i class="ti ti-shopping-cart ti-xs"></i>
+                            </span>
+                            Please choose an item to be carted!
+                        </div>
+                    </td>
+                </tr>`
+            } else {
+                true_items.forEach(e => {
+                    data_element += `<tr>
+                        <td>
+                            <button type="button" class="btn-cancel-cart-item btn rounded-pill btn-icon btn-label-secondary waves-effect" data-id="${e.id}">
+                                <span class="ti ti-x"></span>
+                            </button>
+                        </td>
+                        <td>${e.item}</td>
+                        <td>
+                            <select class="selected-location form-select" data-id="${e.id}">
+                                {% for l in location %}
+                                <option data-id="{{ l.id }}" value="{{ l.name }}">{{l.name}}</option>
+                                {% endfor %}
+                            </select>
+                        </td>
+                        <td><span class="stock-data badge bg-label-primary">0</span></td>
+                        <td class="text-right d-none">${currencyFormat(e.price)}</td>
+                        <td><input data-id="${e.id}" data-price=${e.price} type="number" class="pre-quantity form-control" /></td>
+                        <td class="text-right d-none"><span class="subtotal-data"></span></td>
+                    </tr>`
+                })
+            }
+
+            tbl_carted_items.append(data_element)
+
+            $('.btn-cancel-cart-item').on('click', function() {
+                let id = $(this).data('id')
+                let id_index = selected_items.findIndex(i => i.id == id)
+                selected_items.splice(id_index, 1)
+                add_stock.click()
+            })
+
+            $('.selected-location').on('change', function() {
+                let id = $(this).data('id')
+                let val = $(this).val();
+                let cart_item = selected_items.filter(i => i.id == id)
+                let location_id = $(this).find(':selected').data('id')
+
+                cart_item[0]['location_id'] = location_id
+                $(this).parent().siblings().children('.stock-data').text(cart_item[0][`${val}`])
+            })
+
+            $('.selected-location').each(function() {
+                $(this).change()
+            })
+
+            $('.pre-quantity').on('keyup', function(){
+                let id = $(this).data('id')
+                let cart_data = selected_items.filter(i => i.id == id)
+                let stock_data = $(this).parent().siblings().children('.stock-data').text()
+                let val = parseInt($(this).val() ?? 0)
+                let price = $(this).data('price')
+                let sub_total = val * price
+                let grand_total_tmp = 0;
+
+                cart_data[0]['qty'] = val
+                $(this).parent().siblings().children('.subtotal-data').text(currencyFormat(sub_total))
+
+                $('.pre-quantity').each(function() {
+                    let val = parseInt($(this).val() ?? 0)
+                    let price = $(this).data('price')
+                    let sub_total = val * price
+                    grand_total_tmp+=sub_total
+                });
+
+                let isNan_grand_total = isNaN(grand_total_tmp) ? 0 : grand_total_tmp;
+
+
+                grand_total.text(currencyFormat(isNan_grand_total))
+                total_cart_amount.text(currencyFormat(isNan_grand_total))
+
+                grand_total_value = grand_total_tmp
+
+            })
+        })
+
+        btn_submit.on('click', function() {
+            if(selected_items.length == 0) {
+                alert_warning.show()
+                return false;
+            }
+
+            alert_warning.hide()
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Confirm',
+                customClass: {
+                    confirmButton: 'btn btn-primary me-3',
+                    cancelButton: 'btn btn-label-secondary',
+                },
+                buttonsStyling: false,
+            }).then(function (result) {
+                if (result.value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: "{% url 'sales-item' %}",
+                        data: {
+                            cl_id: client_id,
+                            dis_id: 0,
+                            amt_paid: grand_total_value,
+                            remarks: remarks.val(),
+                            out_stocks: JSON.stringify(selected_items),
+                            is_emergency: 0,
+                            emergency_amt: grand_total_value,
+                            payment_type: 'Fully paid',
+                            category: 'damage'
+                        },
+                    }).done(function (data) {
+                        if (data.data == 'success') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Successfully save!',
+                                text: ' Transaction has been saved.',
+                                customClass: {
+                                    confirmButton: 'btn btn-success',
+                                },
+                            }).then(() => {
+                                window.location.reload()
+                            })
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Invalid company Name',
+                                text: $companyname + ' already exist',
+                                customClass: {
+                                    confirmButton: 'btn btn-success',
+                                },
+                            })
+                        }
+                    })
+                }
+            })
+
+        })
+    })
+</script>
+{% endblock footer_scripts %}

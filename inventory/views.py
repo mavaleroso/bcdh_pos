@@ -5,7 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 from main.models import (Stocks, StocksItems, Items, StockLocation, SystemConfiguration,
-                         ItemType, Company, Generic, SubGeneric, Brand, AuthUser, OutItems, Location, UserDetails, RoleDetails)
+                         ItemType, Company, Generic, SubGeneric, Brand, AuthUser, OutItems, Location, UserDetails, RoleDetails, Sales)
 from datetime import date, datetime
 import math
 import xlwt
@@ -38,20 +38,75 @@ def inventory_in(request):
 
 
 @login_required(login_url='login')
-def inventory_out(request):
+def out_sales(request):
     user_details = get_user_details(request)
     role = RoleDetails.objects.filter(id=user_details.role_id).first()
     allowed_roles = ["Inventory Staff", "Admin"]
     if role.role_name in allowed_roles:
         context = {
-            'item_type': ItemType.objects.filter().order_by('name'),
-            'company': Company.objects.filter().order_by('name'),
-            'generic': Generic.objects.filter().order_by('name'),
-            'sub_generic': SubGeneric.objects.filter().order_by('name'),
-            'brand': Brand.objects.filter().order_by('name'),
             'role_permission': role.role_name,
         }
-        return render(request, 'inventory/out.html', context)
+        return render(request, 'inventory/out_sales.html', context)
+    else:
+        return render(request, 'pages/unauthorized.html')
+
+
+@login_required(login_url='login')
+def out_inpatient(request):
+    user_details = get_user_details(request)
+    role = RoleDetails.objects.filter(id=user_details.role_id).first()
+    allowed_roles = ["Inventory Staff", "Admin"]
+    if role.role_name in allowed_roles:
+        context = {
+            'sales': Sales.objects.select_related().filter(category='inpatient'),
+            'role_permission': role.role_name,
+        }
+        return render(request, 'inventory/out_inpatient.html', context)
+    else:
+        return render(request, 'pages/unauthorized.html')
+
+
+@login_required(login_url='login')
+def out_inpatient_create(request):
+    user_details = get_user_details(request)
+    role = RoleDetails.objects.filter(id=user_details.role_id).first()
+    allowed_roles = ["Inventory Staff", "Admin"]
+    if role.role_name in allowed_roles:
+        context = {
+            'location': Location.objects.filter().order_by('id'),
+            'role_permission': role.role_name,
+        }
+        return render(request, 'inventory/out_inpatient_create.html', context)
+    else:
+        return render(request, 'pages/unauthorized.html')
+
+
+@login_required(login_url='login')
+def out_damage(request):
+    user_details = get_user_details(request)
+    role = RoleDetails.objects.filter(id=user_details.role_id).first()
+    allowed_roles = ["Inventory Staff", "Admin"]
+    if role.role_name in allowed_roles:
+        context = {
+            'sales': Sales.objects.select_related().filter(category='damage'),
+            'role_permission': role.role_name,
+        }
+        return render(request, 'inventory/out_damage.html', context)
+    else:
+        return render(request, 'pages/unauthorized.html')
+
+
+@login_required(login_url='login')
+def out_damage_create(request):
+    user_details = get_user_details(request)
+    role = RoleDetails.objects.filter(id=user_details.role_id).first()
+    allowed_roles = ["Inventory Staff", "Admin"]
+    if role.role_name in allowed_roles:
+        context = {
+            'location': Location.objects.filter().order_by('id'),
+            'role_permission': role.role_name,
+        }
+        return render(request, 'inventory/out_damage_create.html', context)
     else:
         return render(request, 'pages/unauthorized.html')
 
@@ -682,5 +737,17 @@ def update_stock_locations(request):
                 quantity=stock_location_query_2[0].quantity -
                 int(transfer_quantity),
             )
+
+        return JsonResponse({'data': 'success'})
+
+
+def update_inpatient_status(request):
+    if request.method == 'POST':
+        sales_id = request.POST.get('id')
+        status = request.POST.get('status')
+        remarks = request.POST.get('remarks')
+
+        Sales.objects.filter(id=sales_id).update(
+            status=status, remarks=remarks)
 
         return JsonResponse({'data': 'success'})

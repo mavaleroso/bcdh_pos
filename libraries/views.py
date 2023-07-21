@@ -3,7 +3,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.shortcuts import render
-from main.models import ( Items,ItemType, Company, Generic, SubGeneric, Brand, Unit, AuthUser, UserDetails, Clients, ClientType, RoleDetails )
+from main.models import (Items, ItemType, Company, Generic, SubGeneric,
+                         Brand, Unit, AuthUser, UserDetails, Clients, ClientType, RoleDetails)
 from django.contrib.auth.decorators import login_required, permission_required, user_passes_test
 from django.core.serializers import serialize
 from django.http import HttpResponse
@@ -26,7 +27,7 @@ def item(request):
         'generic': Generic.objects.filter().order_by('name'),
         'sub_generic': SubGeneric.objects.filter().order_by('name'),
         'brand': Brand.objects.filter().order_by('name'),
-        'role_permission' : role.role_name,
+        'role_permission': role.role_name,
     }
     return render(request, 'libraries/items.html', context)
 
@@ -139,11 +140,12 @@ def item_collections(request):
 
         item_desc = '['+item.barcode+'] ' + item.generic.name + ' ' + \
             item.sub_generic.name + ' ' + item.classification + ' ' + item.description
-        
+
         brand_name = item.brand.name if item.brand else ''
 
         if (filter in item_desc):
-            data.append({'item_id': item.id, 'barcode': item.barcode, 'item_type': item.type.name, 'brand': brand_name, 'item_desc': item_desc})
+            data.append({'item_id': item.id, 'barcode': item.barcode,
+                        'item_type': item.type.name, 'brand': brand_name, 'item_desc': item_desc})
 
     return JsonResponse(data, safe=False)
 
@@ -176,17 +178,18 @@ def fetch_item_by_barcode(request):
     return JsonResponse(response)
 
 
-#starts Company function ---------------->
+# starts Company function ---------------->
 
 @login_required(login_url='login')
 def company(request):
     user_details = get_user_details(request)
     role = RoleDetails.objects.filter(id=user_details.role_id).first()
     context = {
-        'company' : Company.objects.filter().order_by('name'),
-        'role_permission' : role.role_name,
+        'company': Company.objects.filter().order_by('name'),
+        'role_permission': role.role_name,
     }
     return render(request, 'libraries/company.html', context)
+
 
 @csrf_exempt
 def company_add(request):
@@ -195,13 +198,15 @@ def company_add(request):
     address_ = request.POST.get('Address')
     remarks_ = request.POST.get('Remarks')
     user_id = request.session.get('user_id', 0)
-    company_add = Company(name=company_, code=code_, address=address_,remarks=remarks_)
+    company_add = Company(name=company_, code=code_,
+                          address=address_, remarks=remarks_)
     try:
         company_add.save()
         return JsonResponse({'data': 'success'})
     except IntegrityError as e:
         return JsonResponse({'data': 'error'})
-        
+
+
 @csrf_exempt
 def company_update(request):
     id = request.POST.get('ItemID')
@@ -214,14 +219,17 @@ def company_update(request):
     if Company.objects.filter(name=company_).exclude(id=id):
         return JsonResponse({'data': 'error', 'message': 'Duplicate Company'})
     else:
-        Company.objects.filter(id=id).update(name=company_, code=code_, address=address_,remarks=remarks_,is_active=status)
+        Company.objects.filter(id=id).update(
+            name=company_, code=code_, address=address_, remarks=remarks_, is_active=status)
         return JsonResponse({'data': 'success'})
-        
+
+
 def company_edit(request):
     id = request.GET.get('id')
     items = Company.objects.get(pk=id)
     data = serialize("json", [items])
     return HttpResponse(data, content_type="application/json")
+
 
 def company_load(request):
     company_data = Company.objects.select_related().order_by('-created_at').reverse()
@@ -261,19 +269,21 @@ def company_load(request):
         'recordsFiltered': total,
     }
     return JsonResponse(response)
-#end ----------->
+# end ----------->
 
-#starts Brand function ---------------->
+# starts Brand function ---------------->
+
 
 @login_required(login_url='login')
 def brand(request):
     user_details = get_user_details(request)
     role = RoleDetails.objects.filter(id=user_details.role_id).first()
     context = {
-        'brand' : Brand.objects.filter().order_by('name'),
-        'role_permission' : role.role_name,
+        'brand': Brand.objects.filter().order_by('name'),
+        'role_permission': role.role_name,
     }
     return render(request, 'libraries/brand.html', context)
+
 
 @csrf_exempt
 def brand_add(request):
@@ -284,7 +294,8 @@ def brand_add(request):
         return JsonResponse({'data': 'success'})
     except IntegrityError as e:
         return JsonResponse({'data': 'error'})
-        
+
+
 @csrf_exempt
 def brand_update(request):
     id = request.POST.get('ItemID')
@@ -294,14 +305,16 @@ def brand_update(request):
     if Brand.objects.filter(name=brand_).exclude(id=id):
         return JsonResponse({'data': 'error', 'message': 'Duplicate Brand'})
     else:
-        Brand.objects.filter(id=id).update(name=brand_,is_active=status)
+        Brand.objects.filter(id=id).update(name=brand_, is_active=status)
         return JsonResponse({'data': 'success'})
-        
+
+
 def brand_edit(request):
     id = request.GET.get('id')
     items = Brand.objects.get(pk=id)
     data = serialize("json", [items])
     return HttpResponse(data, content_type="application/json")
+
 
 def brand_load(request):
     brand_data = Brand.objects.select_related().order_by('-created_at').reverse()
@@ -338,19 +351,21 @@ def brand_load(request):
         'recordsFiltered': total,
     }
     return JsonResponse(response)
-#end ----------->
+# end ----------->
 
-#starts Generic function ---------------->
+# starts Generic function ---------------->
+
 
 @login_required(login_url='login')
 def generic(request):
     user_details = get_user_details(request)
     role = RoleDetails.objects.filter(id=user_details.role_id).first()
     context = {
-        'generic' : Generic.objects.filter().order_by('name'),
-        'role_permission' : role.role_name,
+        'generic': Generic.objects.filter().order_by('name'),
+        'role_permission': role.role_name,
     }
     return render(request, 'libraries/generic.html', context)
+
 
 @csrf_exempt
 def generic_add(request):
@@ -361,7 +376,8 @@ def generic_add(request):
         return JsonResponse({'data': 'success'})
     except IntegrityError as e:
         return JsonResponse({'data': 'error'})
-        
+
+
 @csrf_exempt
 def generic_update(request):
     id = request.POST.get('ItemID')
@@ -371,14 +387,16 @@ def generic_update(request):
     if Generic.objects.filter(name=generic_).exclude(id=id):
         return JsonResponse({'data': 'error', 'message': 'Duplicate Generic'})
     else:
-        Generic.objects.filter(id=id).update(name=generic_,is_active=status)
+        Generic.objects.filter(id=id).update(name=generic_, is_active=status)
         return JsonResponse({'data': 'success'})
-        
+
+
 def generic_edit(request):
     id = request.GET.get('id')
     items = Generic.objects.get(pk=id)
     data = serialize("json", [items])
     return HttpResponse(data, content_type="application/json")
+
 
 def generic_load(request):
     generic_data = Generic.objects.select_related().order_by('-created_at').reverse()
@@ -415,19 +433,21 @@ def generic_load(request):
         'recordsFiltered': total,
     }
     return JsonResponse(response)
-#end ----------->      
+# end ----------->
+
 
 @login_required(login_url='login')
 def subgeneric(request):
     user_details = get_user_details(request)
     role = RoleDetails.objects.filter(id=user_details.role_id).first()
-    
+
     context = {
-		'sub_generic' : SubGeneric.objects.filter().order_by('name').select_related(),
-        'generic' : Generic.objects.filter(),
-        'role_permission' : role.role_name,
-	}
+        'sub_generic': SubGeneric.objects.filter().order_by('name').select_related(),
+        'generic': Generic.objects.filter(),
+        'role_permission': role.role_name,
+    }
     return render(request, 'libraries/sub_generic.html', context)
+
 
 @csrf_exempt
 def addsubgeneric(request):
@@ -438,12 +458,13 @@ def addsubgeneric(request):
         if SubGeneric.objects.filter(name=subgeneric_name):
             return JsonResponse({'data': 'error'})
         else:
-            check_subgeneric = True        
+            check_subgeneric = True
         if check_subgeneric:
             add = SubGeneric(
-                name= subgeneric_name, generic_id =generic_id )
+                name=subgeneric_name, generic_id=generic_id)
             add.save()
             return JsonResponse({'data': 'success'})
+
 
 @csrf_exempt
 def updatesubgeneric(request):
@@ -463,20 +484,23 @@ def updatesubgeneric(request):
         if SubGeneric.objects.filter(name=subgeneric_name).exclude(id=subgeneric_id):
             return JsonResponse({'data': 'error'})
         else:
-            check_subgeneric = True        
+            check_subgeneric = True
         if check_subgeneric:
-            SubGeneric.objects.filter(id=subgeneric_id).update(name=subgeneric_name, generic_id=gen_id,is_active=status)
-            return JsonResponse({'data': 'success'})  
+            SubGeneric.objects.filter(id=subgeneric_id).update(
+                name=subgeneric_name, generic_id=gen_id, is_active=status)
+            return JsonResponse({'data': 'success'})
+
 
 @login_required(login_url='login')
 def units(request):
     user_details = get_user_details(request)
     role = RoleDetails.objects.filter(id=user_details.role_id).first()
     context = {
-		'units' : Unit.objects.filter().order_by('name'),
-        'role_permission' : role.role_name,
-	}
+        'units': Unit.objects.filter().order_by('name'),
+        'role_permission': role.role_name,
+    }
     return render(request, 'libraries/units.html', context)
+
 
 @csrf_exempt
 def addunits(request):
@@ -486,12 +510,13 @@ def addunits(request):
         if Units.objects.filter(name=units_name):
             return JsonResponse({'data': 'error'})
         else:
-            check_units = True        
+            check_units = True
         if check_units:
             add = Units(
-                name= units_name)
+                name=units_name)
             add.save()
             return JsonResponse({'data': 'success'})
+
 
 @csrf_exempt
 def updateunits(request):
@@ -505,7 +530,32 @@ def updateunits(request):
         if Units.objects.filter(name=units_name).exclude(id=units_id):
             return JsonResponse({'data': 'error'})
         else:
-            check_units = True        
+            check_units = True
         if check_units:
-            Units.objects.filter(id=units_id).update(name=units_name, is_active=status)
+            Units.objects.filter(id=units_id).update(
+                name=units_name, is_active=status)
             return JsonResponse({'data': 'success'})
+
+
+def clients_collections(request):
+    filter = request.GET.get('q')
+    data = []
+    clients_data = Clients.objects.select_related().filter(client_type_id=3)
+
+    for cd in clients_data:
+
+        client_description = cd.first_name + ' ' + \
+            cd.middle_name + ' ' + cd.last_name
+
+        if (filter.lower() in client_description.lower()):
+            data.append(
+                {'item_id': cd.id, 'item_desc': client_description})
+
+    return JsonResponse(data, safe=False)
+
+
+def get_client(request):
+    client_id = request.GET.get('id')
+    client_data = Clients.objects.filter(id=client_id).values()
+
+    return JsonResponse(list(client_data), safe=False)

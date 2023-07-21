@@ -172,9 +172,11 @@ class Unit(models.Model):
         managed = True
         db_table = 'unit'
 
+
 class RoleDetails(models.Model):
-    role_name =  models.CharField(max_length=128, blank=True, null=True)
-    created_at = models.DateTimeField(default=datetime.now,blank=True, null=True)
+    role_name = models.CharField(max_length=128, blank=True, null=True)
+    created_at = models.DateTimeField(
+        default=datetime.now, blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True, auto_now=True)
 
     class Meta:
@@ -191,12 +193,13 @@ class UserDetails(models.Model):
     address = models.CharField(max_length=128, blank=True, null=True)
     position = models.CharField(max_length=128, blank=True, null=True)
     updated_at = models.DateTimeField(blank=True, null=True)
-    added_by_user_id = models.IntegerField(max_length=128, blank=True, null=True)
+    added_by_user_id = models.IntegerField(
+        max_length=128, blank=True, null=True)
 
     class Meta:
         managed = True
         db_table = 'user_details'
-        
+
 
 class ItemType(models.Model):
     name = models.CharField(max_length=128, blank=True, null=True)
@@ -336,14 +339,16 @@ class Discounts(models.Model):
 
 class Sales(models.Model):
     id = models.BigAutoField(primary_key=True)
-    client = models.ForeignKey(Clients, models.DO_NOTHING)
+    client = models.ForeignKey(
+        Clients, models.DO_NOTHING, blank=True, null=True)
     transaction_code = models.CharField(max_length=128, blank=True, null=True)
     discount = models.ForeignKey(
         Discounts, models.DO_NOTHING, blank=True, null=True)
     is_er = models.BooleanField(null=True, default=None)
     user = models.ForeignKey(AuthUser, models.DO_NOTHING)
-    status = models.CharField(max_length=128, blank=True, null=True)
+    status = models.IntegerField(max_length=40, blank=True, null=True)
     remarks = models.CharField(max_length=255, blank=True, null=True)
+    category = models.CharField(max_length=100, blank=True, null=True)
     payment_status = models.CharField(max_length=255, blank=True, null=True)
     exact_amount_paid = models.DecimalField(
         max_digits=30, decimal_places=10, blank=True, null=True)

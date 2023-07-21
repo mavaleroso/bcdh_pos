@@ -316,33 +316,6 @@
                 </div>
                 <div class="modal-body">
                     <div class="card-datatable table-responsive pt-0">
-                        {% comment %}
-                        <table class="datatables-basic table" id="Table1">
-                            <thead>
-                                <tr>
-                                    <th></th>
-                                    <th>id</th>
-                                    <th>Item</th>
-                                    <th>Brand</th>
-                                    <th>Quantity</th>
-                                    <th>Retail Price</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for row in items %}
-                                <tr>
-                                    <td id="checkbox_data" class="checkbox_data">{{row.id}}</td>
-                                    <td></td>
-                                    <!-- <td><b>{{row.item.generic.name}}</b> {{row.sub_generic.name}} {{row.description}}</td> -->
-                                    <td><b>{{row.item.generic.name}}</b> {{row.item.sub_generic.name}} {{row.item.description}}</td>
-                                    <td>{{row.item.brand.name}}</td>
-                                    <td>{{row.pcs_quantity}}</td>
-                                    <td>₱ {{row.unit_price|floatformat:2}}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                        {% endcomment %}
                         <table id="tbl-items" class="table display compact">
                             <thead>
                                 <tr>
@@ -820,7 +793,7 @@
                                 is_emergency: is_er,
                                 emergency_amt: emergency_exact_amt,
                                 payment_type: pymt_tpe,
-
+                                category: 'sales'
                             },
                         }).done(function (data) {
                             if (data.data == 'success') {
