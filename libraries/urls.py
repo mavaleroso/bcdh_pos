@@ -8,8 +8,14 @@ urlpatterns = [
     path('item_edit', views.item_edit, name='item-edit'),
     path('item_update', views.item_update, name='item-update'),
     path('item_load', views.item_load, name='item-load'),
-    path('fetch_item_by_barcode', views.fetch_item_by_barcode,name='fetch-item-by-barcode'),
+    path('fetch_item_by_barcode', views.fetch_item_by_barcode,
+         name='fetch-item-by-barcode'),
     path('item_collections', views.item_collections, name='item-collections'),
+    path('clients/collections', views.clients_collections,
+         name='clients-collections'),
+
+    path('clients/get', views.get_client,
+         name='get-client'),
 
     # company ----------------->
     path('company', views.company, name='company-list'),
@@ -42,7 +48,7 @@ urlpatterns = [
     # path('subgeneric_update', views.subgeneric_update, name='sub-generic-update'),
     # path('subgeneric_load', views.subgeneric_load, name='sub-generic-load'),
     # end --------------------->
-    
+
     path('subgeneric', views.subgeneric, name='sub-generic-list'),
     path('addsubgeneric', views.addsubgeneric, name='add-sub-generic'),
     path('updatesubgeneric', views.updatesubgeneric, name='update-sub-generic'),

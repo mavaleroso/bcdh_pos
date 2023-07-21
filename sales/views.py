@@ -51,7 +51,7 @@ def saleslist(request):
     allowed_roles = ["Sales Staff", "Admin"]
     if role.role_name in allowed_roles:
         context = {
-            'sales': Sales.objects.filter().select_related(),
+            'sales': Sales.objects.filter(category="sales").select_related(),
             'role_permission': role.role_name,
         }
         return render(request, 'sales/list.html', context)
@@ -130,12 +130,16 @@ def salesitem(request):
         code = generate_code()
         is_emergency = request.POST.get('is_emergency')
         payment_type = request.POST.get('payment_type')
+        category = request.POST.get('category')
 
         if discount_id == "0":
             discount_id = None
 
+        if client_id == "0":
+            client_id = None
+
         addsales = Sales(transaction_code=code, is_er=is_emergency, remarks=sales_remarks, client_id=client_id,
-                         discount_id=discount_id, user_id=user_id, payment_status=payment_type, exact_amount_paid=emergency_amt)
+                         discount_id=discount_id, user_id=user_id, payment_status=payment_type, exact_amount_paid=emergency_amt, category=category, status=0)
         addsales.save()
 
         if addsales.id:

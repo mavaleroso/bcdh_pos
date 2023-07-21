@@ -1,0 +1,190 @@
+{% extends 'index.html' %} {% block content %} {% load staticfiles %}
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="fw-bold py-3 mb-4">
+        <span class="text-muted fw-light">Inventory/Out/</span>
+        In-patient
+    </h4>
+    <div class="row">
+        <div class="col-12">
+            <form id="out-frm">
+                <div class="card">
+                    <div
+                        class="card-header sticky-element bg-label-secondary d-flex justify-content-sm-between align-items-sm-center flex-column flex-sm-row"
+                    >
+                        <h5 class="card-title mb-sm-0 me-2">In-patient List</h5>
+                        <div class="action-btns">
+                            <a href="{% url 'out-inpatient-create' %}" class="btn btn-primary"><i class="ti ti-user-plus me-1"></i>Create</a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-datatable table-responsive pt-0">
+                            <table id="tbl-inpatient" class="table display compact">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Transaction Code</th>
+                                        <th>Client</th>
+                                        <th>Status</th>
+                                        <th>Remarks</th>
+                                        <th>Staff</th>
+                                        <th>Date added</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for row in sales %}
+                                    <tr>
+                                        <td>
+                                            <a href="javascript:;" data-id="{{ row.id }}" class="edit-status text-body me-1"
+                                                ><i class="text-primary ti ti-edit"></i
+                                            ></a>
+                                            <a href="javascript:;" class="text-body"><i class="text-primary ti ti-file-description"></i></a>
+                                        </td>
+                                        <td><span class="badge bg-primary">{{row.transaction_code}}</span></td>
+                                        <td>{{row.client.first_name}} {{row.client.middle_name}} {{row.client.last_name}}</td>
+                                        <td>
+                                            {% if row.status == 0 %}
+                                            <span class="badge bg-label-warning">Pending</span>
+                                            {% elif row.status == 1 %}
+                                            <span class="badge bg-label-success">Completed</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{row.remarks}}</td>
+                                        <td>{{row.user.username}}</td>
+                                        <td>{{row.created_at}}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+    <div class="modal fade" id="edit-status-modal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="edit-status-modalTitle">Update Inpatient Item Status</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <label for="inpatient-status" class="form-label">Status</label>
+                            <select id="inpatient-status" class="form-select" data-allow-clear="true">
+                                <option></option>
+                                <option value="0">Pending</option>
+                                <option value="1">Completed</option>
+                            </select>
+                        </div>
+                        <div class="col-12 mb-3">
+                            <label class="form-label">Remarks</label>
+                            <textarea id="remarks" class="form-control"></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-label-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="update-inpatient-status-btn">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %} {% block footer_scripts %}
+<script src="{% static 'assets/js/autofill.js' %}"></script>
+<script>
+    var csrftoken = getCookie('csrftoken')
+
+    $(document).ready(function () {
+        const tbl_inpatient = $('#tbl-inpatient')
+        const edit_status_modal = $('#edit-status-modal')
+        const inpatient_status = $('#inpatient-status')
+        const update_inpatient_status_btn = $('#update-inpatient-status-btn')
+        const remarks = $('#remarks')
+
+        let edit_status = $('.edit-status')
+        let id = 0
+
+        tbl_inpatient.DataTable()
+
+        edit_status.on('click', function () {
+            id = $(this).data('id')
+            edit_status_modal.modal('show')
+        })
+
+        if (inpatient_status.length) {
+            inpatient_status.wrap('<div class="position-relative"></div>')
+            inpatient_status.select2({
+                placeholder: 'Select Status',
+                dropdownParent: inpatient_status.parent(),
+                minimumResultsForSearch: -1,
+            })
+        }
+
+        update_inpatient_status_btn.on('click', function () {
+            if (inpatient_status.val() == '') {
+                Swal.fire({
+                    icon: 'info',
+                    title: 'Cannot be saved!',
+                    text: 'Please select status first',
+                    customClass: {
+                        confirmButton: 'btn btn-info',
+                    },
+                })
+                return false
+            }
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, save it!',
+                customClass: {
+                    confirmButton: 'btn btn-primary me-3',
+                    cancelButton: 'btn btn-label-secondary',
+                },
+                buttonsStyling: false,
+            }).then(function (result) {
+                if (result.value) {
+                    $.ajax({
+                        type: 'POST',
+                        url: "{% url 'update-inpatient-status' %}",
+                        data: { id: id, status: inpatient_status.val(), remarks: remarks.val() },
+                        headers: {
+                            'X-CSRFToken': csrftoken,
+                        },
+                    }).done(function (data) {
+                        if (data.data == 'success') {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Successfully save!',
+                                text: 'Inpatient status updated!.',
+                                customClass: {
+                                    confirmButton: 'btn btn-success',
+                                },
+                            })
+
+                            setTimeout(() => {
+                                window.location.reload()
+                            }, 1300)
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error saving!',
+                                text: 'Encountered error on updating status!',
+                                customClass: {
+                                    confirmButton: 'btn btn-success',
+                                },
+                            })
+                        }
+                    })
+                }
+            })
+        })
+    })
+</script>
+{% endblock footer_scripts %}

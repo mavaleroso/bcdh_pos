@@ -1,0 +1,64 @@
+{% extends 'index.html' %} {% block content %} {% load staticfiles %}
+<div class="container-xxl flex-grow-1 container-p-y">
+    <h4 class="fw-bold py-3 mb-4">
+        <span class="text-muted fw-light">Inventory/Out/</span>
+        Damage
+    </h4>
+    <div class="row">
+        <div class="col-12">
+            <form id="out-frm">
+                <div class="card">
+                    <div
+                        class="card-header sticky-element bg-label-secondary d-flex justify-content-sm-between align-items-sm-center flex-column flex-sm-row"
+                    >
+                        <h5 class="card-title mb-sm-0 me-2">Damage List</h5>
+                        <div class="action-btns">
+                            <a href="{% url 'out-damage-create' %}" class="btn btn-primary"><i class="ti ti-shopping-cart-x me-1"></i>File Damage</a>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-datatable table-responsive pt-0">
+                            <table id="tbl-damage" class="table display compact">
+                                <thead>
+                                    <tr>
+                                        <th></th>
+                                        <th>Transaction Code</th>
+                                        <th>Remarks</th>
+                                        <th>Staff</th>
+                                        <th>Date added</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for row in sales %}
+                                    <tr>
+                                        <td>
+                                            <a href="javascript:;" data-id="{{ row.id }}" class="edit-status text-body me-1"
+                                                ><i class="text-primary ti ti-edit"></i
+                                            ></a>
+                                            <a href="javascript:;" class="text-body"><i class="text-primary ti ti-file-description"></i></a>
+                                        </td>
+                                        <td><span class="badge bg-primary">{{row.transaction_code}}</span></td>
+                                        <td>{{row.remarks}}</td>
+                                        <td>{{row.user.username}}</td>
+                                        <td>{{row.created_at}}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %} {% block footer_scripts %}
+<script>
+    $(document).ready(function () {
+        const tbl_damage = $('#tbl-damage')
+
+        tbl_damage.DataTable()
+    })
+</script>
+{% endblock footer_scripts %}
