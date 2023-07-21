@@ -9,7 +9,6 @@ from django.contrib import messages
 from main.models import (UserDetails, RoleDetails, AuthUser, StocksItems, OutItems, StockLocation, Clients )
 from django.db.models import Sum
 
-
 def get_user_details(request):
     return UserDetails.objects.filter(user_id=request.user.id).first()
 
@@ -37,10 +36,10 @@ def login(request):
             request.session['username'] = user.username
             request.session['fullname'] = user.first_name + user.last_name
             return redirect("dashboard")
-        
+
         elif user is None:
             messages.error(request, 'Invalid Username or Password/blocked.')
-        
+
         else:
             messages.error(request, 'Your account is blocked')
 
@@ -50,7 +49,7 @@ def login(request):
 @login_required(login_url='login')
 def dashboard(request):
     user_details = get_user_details(request)
-    
+
     allowed_roles = ["Admin", "Management"]
 
     #Overall
@@ -93,15 +92,10 @@ def dashboard(request):
 
     user_id = request.session.get('user_id', 0)
 
-    # UserDetails.objects.filter(user_id=user_id).select_related().first()
-
-    
-
-
 
     role = RoleDetails.objects.filter(id=user_details.role_id).first()
     context = {
-        'user_role' : role.role_name,
+        'user_role': role.role_name,
         'role_permission': role.role_name,
         'overall': total_overall,
         'main': total_main,
@@ -110,11 +104,8 @@ def dashboard(request):
         'walk_in':walk_in,
         'out_patient':out_patient,
         'in_patient':in_patient,
-        # 'role_name': role_name
-
     }
     return render(request, 'dashboard.html',context)
-
 
 
 

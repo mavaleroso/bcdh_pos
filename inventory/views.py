@@ -5,7 +5,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import render
 from django.http import JsonResponse, HttpResponse
 from main.models import (Stocks, StocksItems, Items, StockLocation, SystemConfiguration,
-                         ItemType, Company, Generic, SubGeneric, Brand, AuthUser, OutItems, Location, UserDetails, RoleDetails)
+                         ItemType, Company, Generic, SubGeneric, Brand, AuthUser, OutItems, Location, UserDetails, RoleDetails, Sales)
 from datetime import date, datetime
 import math
 import xlwt
@@ -14,15 +14,15 @@ from django.db.models import Q, Sum
 from django.contrib.auth.decorators import login_required
 
 
-
 def get_user_details(request):
     return UserDetails.objects.filter(user_id=request.user.id).first()
+
 
 @login_required(login_url='login')
 def inventory_in(request):
     user_details = get_user_details(request)
     role = RoleDetails.objects.filter(id=user_details.role_id).first()
-    allowed_roles = ["Inventory Staff", "Admin"] 
+    allowed_roles = ["Inventory Staff", "Admin"]
     if role.role_name in allowed_roles:
         context = {
             'item_type': ItemType.objects.filter().order_by('name'),
@@ -37,10 +37,84 @@ def inventory_in(request):
         return render(request, 'pages/unauthorized.html')
 
 
+@login_required(login_url='login')
+def out_sales(request):
+    user_details = get_user_details(request)
+    role = RoleDetails.objects.filter(id=user_details.role_id).first()
+    allowed_roles = ["Inventory Staff", "Admin"]
+    if role.role_name in allowed_roles:
+        context = {
+            'role_permission': role.role_name,
+        }
+        return render(request, 'inventory/out_sales.html', context)
+    else:
+        return render(request, 'pages/unauthorized.html')
+
+
+@login_required(login_url='login')
+def out_inpatient(request):
+    user_details = get_user_details(request)
+    role = RoleDetails.objects.filter(id=user_details.role_id).first()
+    allowed_roles = ["Inventory Staff", "Admin"]
+    if role.role_name in allowed_roles:
+        context = {
+            'sales': Sales.objects.select_related().filter(category='inpatient'),
+            'role_permission': role.role_name,
+        }
+        return render(request, 'inventory/out_inpatient.html', context)
+    else:
+        return render(request, 'pages/unauthorized.html')
+
+
+@login_required(login_url='login')
+def out_inpatient_create(request):
+    user_details = get_user_details(request)
+    role = RoleDetails.objects.filter(id=user_details.role_id).first()
+    allowed_roles = ["Inventory Staff", "Admin"]
+    if role.role_name in allowed_roles:
+        context = {
+            'location': Location.objects.filter().order_by('id'),
+            'role_permission': role.role_name,
+        }
+        return render(request, 'inventory/out_inpatient_create.html', context)
+    else:
+        return render(request, 'pages/unauthorized.html')
+
+
+@login_required(login_url='login')
+def out_damage(request):
+    user_details = get_user_details(request)
+    role = RoleDetails.objects.filter(id=user_details.role_id).first()
+    allowed_roles = ["Inventory Staff", "Admin"]
+    if role.role_name in allowed_roles:
+        context = {
+            'sales': Sales.objects.select_related().filter(category='damage'),
+            'role_permission': role.role_name,
+        }
+        return render(request, 'inventory/out_damage.html', context)
+    else:
+        return render(request, 'pages/unauthorized.html')
+
+
+@login_required(login_url='login')
+def out_damage_create(request):
+    user_details = get_user_details(request)
+    role = RoleDetails.objects.filter(id=user_details.role_id).first()
+    allowed_roles = ["Inventory Staff", "Admin"]
+    if role.role_name in allowed_roles:
+        context = {
+            'location': Location.objects.filter().order_by('id'),
+            'role_permission': role.role_name,
+        }
+        return render(request, 'inventory/out_damage_create.html', context)
+    else:
+        return render(request, 'pages/unauthorized.html')
+
+
 def inventory_list(request):
     user_details = get_user_details(request)
     role = RoleDetails.objects.filter(id=user_details.role_id).first()
-    allowed_roles = ["Inventory Staff","Sales Staff", "Admin"] 
+    allowed_roles = ["Inventory Staff", "Sales Staff", "Admin"]
     if role.role_name in allowed_roles:
         context = {
             'role_permission': role.role_name,
@@ -179,6 +253,7 @@ def inventory_load(request):
 
             stock_details_data = {
                 'id': stock.id,
+                'stock_item_id': stock_item_id[len(stock_item_id)-1],
                 'item_type_name': stock.item_type_name,
                 'details': stock.item_details,
                 'pcs_quantity': stock.total_quantity,
@@ -496,11 +571,10 @@ def export_excel(request):
     return response
 
 
-
 def inventory_po_list(request):
     user_details = get_user_details(request)
     role = RoleDetails.objects.filter(id=user_details.role_id).first()
-    allowed_roles = ["Inventory Staff","Sales Staff","Admin"] 
+    allowed_roles = ["Inventory Staff", "Sales Staff", "Admin"]
     if role.role_name in allowed_roles:
         context = {
             'role_permission': role.role_name
@@ -508,6 +582,7 @@ def inventory_po_list(request):
         return render(request, 'inventory/po_list.html', context)
     else:
         return render(request, 'pages/unauthorized.html')
+
 
 def inventory_po_load(request):
     _search = request.GET.get('search[value]')
@@ -662,5 +737,17 @@ def update_stock_locations(request):
                 quantity=stock_location_query_2[0].quantity -
                 int(transfer_quantity),
             )
+
+        return JsonResponse({'data': 'success'})
+
+
+def update_inpatient_status(request):
+    if request.method == 'POST':
+        sales_id = request.POST.get('id')
+        status = request.POST.get('status')
+        remarks = request.POST.get('remarks')
+
+        Sales.objects.filter(id=sales_id).update(
+            status=status, remarks=remarks)
 
         return JsonResponse({'data': 'success'})

@@ -3,6 +3,17 @@ from . import views
 
 urlpatterns = [
     path('in', views.inventory_in, name='inventory-in'),
+    path('out/sales', views.out_sales, name='out-sales'),
+    path('out/inpatient', views.out_inpatient, name='out-inpatient'),
+    path('out/inpatient/create', views.out_inpatient_create,
+         name='out-inpatient-create'),
+    path('out/inpatient/update/status', views.update_inpatient_status,
+         name='update-inpatient-status'),
+
+    path('out/damage', views.out_damage, name='out-damage'),
+    path('out/damage/create', views.out_damage_create,
+         name='out-damage-create'),
+
     path('store_stock_data', views.store_stock_data, name='store-stock-data'),
     path('update_stock_data', views.update_stock_data, name='update-stock-data'),
     path('update_stock/<int:stock_id>', views.update_stock, name='update-stock'),
