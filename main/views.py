@@ -91,6 +91,12 @@ def dashboard(request):
     in_patient = Clients.objects.filter(client_type_id=3).count()
     #end   
 
+    user_id = request.session.get('user_id', 0)
+
+    # UserDetails.objects.filter(user_id=user_id).select_related().first()
+
+    
+
 
 
     role = RoleDetails.objects.filter(id=user_details.role_id).first()
