@@ -160,20 +160,31 @@ def inventory_load(request):
 
         stock_data = StocksItems.objects.raw(
             """
-            SELECT
-                si.item_id AS id,
-                GROUP_CONCAT(si.id SEPARATOR ',') as n_id,
-                it.name AS item_type_name,
-                CONCAT(g.name,' ',sg.name,' ',i.classification, ' ', i.description) AS item_details,
-                SUM(si.pcs_quantity) AS total_quantity,
-                si.unit_price
-            FROM stock_items AS si
-            JOIN stocks AS s ON s.id = si.stock_id
-            JOIN items AS i ON i.id = si.item_id
-            JOIN item_type AS it ON it.id = i.type_id
-            JOIN generic AS g ON g.id = i.generic_id
-            JOIN sub_generic AS sg ON sg.id = i.sub_generic_id
-            GROUP BY si.item_id
+            SELECT 
+                id, 
+                GROUP_CONCAT(primary_id SEPARATOR ',') AS n_id, 
+                barcode, 
+                item_type_name, 
+                item_details, 
+                SUM(quantity) AS total_quantity, 
+                unit_price 
+            FROM (
+                SELECT
+                        DISTINCT si.item_id AS id,
+                        si.id AS primary_id,
+                        i.barcode,
+                        it.name AS item_type_name,
+                        CONCAT(g.name,' ',sg.name,' ',i.classification, ' ', i.description) AS item_details,
+                        si.pcs_quantity AS quantity,
+                        si.unit_price
+                FROM stock_items AS si
+                JOIN stocks AS s ON s.id = si.stock_id
+                JOIN items AS i ON i.id = si.item_id
+                JOIN item_type AS it ON it.id = i.type_id
+                JOIN generic AS g ON g.id = i.generic_id
+                JOIN sub_generic AS sg ON sg.id = i.sub_generic_id
+                ORDER BY s.delivered_date ASC
+            ) AS rs GROUP BY id
             ORDER BY """+_column_name+""" """+_order_dir+"""
             """
         )
@@ -689,16 +700,23 @@ def po_export_excel(request):
 
 
 def po_view(request, stock_id):
-    context = {
-        'item_type': ItemType.objects.filter().order_by('name'),
-        'company': Company.objects.filter().order_by('name'),
-        'generic': Generic.objects.filter().order_by('name'),
-        'sub_generic': SubGeneric.objects.filter().order_by('name'),
-        'brand': Brand.objects.filter().order_by('name'),
-        'stock_data': Stocks.objects.select_related().get(id=stock_id),
-        'stock_items_data': StocksItems.objects.select_related().filter(stock_id=stock_id)
-    }
-    return render(request, 'inventory/po_view.html', context)
+    user_details = get_user_details(request)
+    role = RoleDetails.objects.filter(id=user_details.role_id).first()
+    allowed_roles = ["Inventory Staff", "Admin"]
+    if role.role_name in allowed_roles:
+        context = {
+            'item_type': ItemType.objects.filter().order_by('name'),
+            'company': Company.objects.filter().order_by('name'),
+            'generic': Generic.objects.filter().order_by('name'),
+            'sub_generic': SubGeneric.objects.filter().order_by('name'),
+            'brand': Brand.objects.filter().order_by('name'),
+            'stock_data': Stocks.objects.select_related().get(id=stock_id),
+            'stock_items_data': StocksItems.objects.select_related().filter(stock_id=stock_id),
+            'role_permission': role.role_name,
+        }
+        return render(request, 'inventory/po_view.html', context)
+    else:
+        return render(request, 'pages/unauthorized.html')
 
 
 def po_delete(request):
