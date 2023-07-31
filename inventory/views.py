@@ -167,24 +167,73 @@ def inventory_load(request):
                 item_type_name, 
                 item_details, 
                 SUM(quantity) AS total_quantity, 
-                unit_price 
+                unit_price,
+                DATEDIFF(expiration_date, DATE(now())) AS date_diff,
+                expired_count
             FROM (
-                SELECT
-                        DISTINCT si.item_id AS id,
-                        si.id AS primary_id,
-                        i.barcode,
-                        it.name AS item_type_name,
-                        CONCAT(g.name,' ',sg.name,' ',i.classification, ' ', i.description) AS item_details,
-                        si.pcs_quantity AS quantity,
-                        si.unit_price
-                FROM stock_items AS si
-                JOIN stocks AS s ON s.id = si.stock_id
-                JOIN items AS i ON i.id = si.item_id
-                JOIN item_type AS it ON it.id = i.type_id
-                JOIN generic AS g ON g.id = i.generic_id
-                JOIN sub_generic AS sg ON sg.id = i.sub_generic_id
-                ORDER BY s.delivered_date ASC
-            ) AS rs GROUP BY id
+                SELECT 
+                    id, 
+                    primary_id,
+                    barcode, 
+                    item_type_name, 
+                    item_details, 
+                    quantity,
+                    unit_price,
+                    expiration_date,
+                    DATEDIFF(expiration_date, DATE(now())) AS date_diff,
+                    '1' AS expired_count
+                FROM (
+                    SELECT
+                            DISTINCT si.item_id AS id,
+                            si.id AS primary_id,
+                            i.barcode,
+                            it.name AS item_type_name,
+                            CONCAT(g.name,' ',sg.name,' ',i.classification, ' ', i.description) AS item_details,
+                            si.pcs_quantity AS quantity,
+                            si.unit_price,
+                            si.expiration_date
+                    FROM stock_items AS si
+                    JOIN stocks AS s ON s.id = si.stock_id
+                    JOIN items AS i ON i.id = si.item_id
+                    JOIN item_type AS it ON it.id = i.type_id
+                    JOIN generic AS g ON g.id = i.generic_id
+                    JOIN sub_generic AS sg ON sg.id = i.sub_generic_id
+                    WHERE DATEDIFF(expiration_date, DATE(now())) < 182
+                    ORDER BY si.expiration_date
+                ) AS rs1 
+                UNION ALL
+                SELECT 
+                    id, 
+                    primary_id,
+                    barcode, 
+                    item_type_name, 
+                    item_details, 
+                    quantity,
+                    unit_price,
+                    expiration_date,
+                    DATEDIFF(expiration_date, DATE(now())) AS date_diff,
+                    '0' AS expired_count
+                    FROM (
+                        SELECT
+                            DISTINCT si.item_id AS id,
+                            si.id AS primary_id,
+                            i.barcode,
+                            it.name AS item_type_name,
+                            CONCAT(g.name,' ',sg.name,' ',i.classification, ' ', i.description) AS item_details,
+                            si.pcs_quantity AS quantity,
+                            si.unit_price,
+                            si.expiration_date
+                        FROM stock_items AS si
+                        JOIN stocks AS s ON s.id = si.stock_id
+                        JOIN items AS i ON i.id = si.item_id
+                        JOIN item_type AS it ON it.id = i.type_id
+                        JOIN generic AS g ON g.id = i.generic_id
+                        JOIN sub_generic AS sg ON sg.id = i.sub_generic_id
+                        WHERE DATEDIFF(expiration_date, DATE(now())) > 182
+                        ORDER BY s.delivered_date
+                    ) AS rs2
+            ) AS rs
+            GROUP BY id
             ORDER BY """+_column_name+""" """+_order_dir+"""
             """
         )
@@ -217,21 +266,82 @@ def inventory_load(request):
 
             stock_data = StocksItems.objects.raw(
                 """
-                SELECT
-                    si.item_id AS id,
-                    GROUP_CONCAT(si.id SEPARATOR ',') as n_id,
-                    it.name AS item_type_name,
-                    CONCAT(g.name,' ',sg.name,' ',i.classification, ' ', i.description) AS item_details,
-                    SUM(si.pcs_quantity) AS total_quantity,
-                    si.unit_price
-                FROM stock_items AS si
-                JOIN stocks AS s ON s.id = si.stock_id
-                JOIN items AS i ON i.id = si.item_id
-                JOIN item_type AS it ON it.id = i.type_id
-                JOIN generic AS g ON g.id = i.generic_id
-                JOIN sub_generic AS sg ON sg.id = i.sub_generic_id
-                WHERE si.item_id IN """+where_in_search()+"""
-                GROUP BY si.item_id
+                SELECT 
+                    id, 
+                    GROUP_CONCAT(primary_id SEPARATOR ',') AS n_id, 
+                    barcode, 
+                    item_type_name, 
+                    item_details, 
+                    SUM(quantity) AS total_quantity, 
+                    unit_price,
+                    DATEDIFF(expiration_date, DATE(now())) AS date_diff,
+                    expired_count
+                FROM (
+                    SELECT 
+                        id, 
+                        primary_id,
+                        barcode, 
+                        item_type_name, 
+                        item_details, 
+                        quantity,
+                        unit_price,
+                        expiration_date,
+                        DATEDIFF(expiration_date, DATE(now())) AS date_diff,
+                        '1' AS expired_count
+                    FROM (
+                        SELECT
+                                DISTINCT si.item_id AS id,
+                                si.id AS primary_id,
+                                i.barcode,
+                                it.name AS item_type_name,
+                                CONCAT(g.name,' ',sg.name,' ',i.classification, ' ', i.description) AS item_details,
+                                si.pcs_quantity AS quantity,
+                                si.unit_price,
+                                si.expiration_date
+                        FROM stock_items AS si
+                        JOIN stocks AS s ON s.id = si.stock_id
+                        JOIN items AS i ON i.id = si.item_id
+                        JOIN item_type AS it ON it.id = i.type_id
+                        JOIN generic AS g ON g.id = i.generic_id
+                        JOIN sub_generic AS sg ON sg.id = i.sub_generic_id
+                        WHERE DATEDIFF(expiration_date, DATE(now())) < 182
+                        AND si.item_id IN """+where_in_search()+"""
+                        ORDER BY si.expiration_date
+                    ) AS rs1 
+                    UNION ALL
+                    SELECT 
+                        id, 
+                        primary_id,
+                        barcode, 
+                        item_type_name, 
+                        item_details, 
+                        quantity,
+                        unit_price,
+                        expiration_date,
+                        DATEDIFF(expiration_date, DATE(now())) AS date_diff,
+                        '0' AS expired_count
+                        FROM (
+                            SELECT
+                                DISTINCT si.item_id AS id,
+                                si.id AS primary_id,
+                                i.barcode,
+                                it.name AS item_type_name,
+                                CONCAT(g.name,' ',sg.name,' ',i.classification, ' ', i.description) AS item_details,
+                                si.pcs_quantity AS quantity,
+                                si.unit_price,
+                                si.expiration_date
+                            FROM stock_items AS si
+                            JOIN stocks AS s ON s.id = si.stock_id
+                            JOIN items AS i ON i.id = si.item_id
+                            JOIN item_type AS it ON it.id = i.type_id
+                            JOIN generic AS g ON g.id = i.generic_id
+                            JOIN sub_generic AS sg ON sg.id = i.sub_generic_id
+                            WHERE DATEDIFF(expiration_date, DATE(now())) > 182
+                            AND si.item_id IN """+where_in_search()+"""
+                            ORDER BY s.delivered_date
+                        ) AS rs2
+                ) AS rs
+                GROUP BY id
                 ORDER BY """+_column_name+""" """+_order_dir+"""
                 """
             )
@@ -269,6 +379,8 @@ def inventory_load(request):
                 'details': stock.item_details,
                 'pcs_quantity': stock.total_quantity,
                 'unit_price': stock.unit_price,
+                'date_diff': stock.date_diff,
+                'expired_count': stock.expired_count
             }
 
             for l in location_data:
