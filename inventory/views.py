@@ -1,3 +1,4 @@
+from django.db import connection
 from django.shortcuts import render
 
 # Create your views here.
@@ -12,6 +13,7 @@ import xlwt
 
 from django.db.models import Q, Sum
 from django.contrib.auth.decorators import login_required
+from django.forms.models import model_to_dict
 
 
 def get_user_details(request):
@@ -881,3 +883,80 @@ def update_inpatient_status(request):
             status=status, remarks=remarks)
 
         return JsonResponse({'data': 'success'})
+
+
+def inventory_stock_balance(request):
+    if request.method == 'GET':
+        item_id = request.GET.get('id')
+
+        initial_values_query = """
+            SET @run_balqty := 0;
+            SET @run_balcost := 0;
+            SET @run_baltotal := 0;
+        """
+
+        main_query = """
+            SELECT 
+                rs.* ,
+                (CASE
+                    WHEN rs.trans_type = 'in' THEN
+                        (@run_balqty := @run_balqty + rs.quantity)
+                    ELSE
+                        (@run_balqty := @run_balqty - rs.quantity)
+                END) AS balance_qty,
+                (CASE
+                    WHEN rs.trans_type = 'in' THEN
+                        round( (@run_baltotal := @run_baltotal + rs.total), 2)
+                    ELSE
+                        round( (@run_baltotal := @run_baltotal - rs.total), 2)
+                END) AS balance_total,
+                (CASE
+                    WHEN rs.trans_type = 'in' THEN
+                        round((@run_balcost := @run_baltotal / @run_balqty), 2)
+                    ELSE
+                        round((@run_balcost := @run_baltotal / @run_balqty), 2)
+                END) AS balance_cost
+            FROM (
+                SELECT 
+                    s.`code` AS code, 
+                    s.delivered_date AS trans_date, 
+                    si.id AS trans_id, 
+                    si.item_id AS item_id, 
+                    si.pcs_quantity AS quantity, 
+                    si.unit_price AS cost,
+                    (si.unit_price * si.pcs_quantity) AS total,
+                    'in' AS trans_type
+                FROM stocks AS s
+                LEFT JOIN stock_items AS si ON si.stock_id = s.id
+                WHERE si.item_id = """+item_id+"""
+                UNION ALL 
+                SELECT 
+                    s2.transaction_code AS code, 
+                    s2.created_at as trans_date, 
+                    si2.id AS trans_id, 
+                    si2.item_id AS item_id, 
+                    oi.quantity AS quantity,
+                    si2.unit_price AS cost, 
+                    (si2.unit_price * oi.quantity) as total,
+                    'out' AS trans_type
+                FROM sales AS s2
+                LEFT JOIN out_items AS oi ON oi.sales_id = s2.id
+                LEFT JOIN stock_items AS si2 ON si2.id = oi.stock_item_id
+                WHERE si2.item_id = """+item_id+"""
+            ) AS rs 
+            ORDER BY 
+                rs.trans_id, 
+                rs.trans_date ASC
+        """
+
+        with connection.cursor() as cursor:
+            cursor.execute(initial_values_query)
+
+            cursor.execute(main_query)
+            data = cursor.fetchall()
+
+        keys = ('code', 'trans_date', 'trans_id', 'item_id', 'quantity', 'cost',
+                'total', 'trans_type', 'balance_qty', 'balance_total', 'balance_cost')
+        result_data = [dict(zip(keys, row)) for row in data]
+
+        return JsonResponse(result_data, safe=False)

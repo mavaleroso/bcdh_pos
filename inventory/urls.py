@@ -30,4 +30,6 @@ urlpatterns = [
     path('stock/locations', views.stock_locations, name='get-stock-locations'),
     path('stock/locations/update', views.update_stock_locations,
          name='update-stock-locations'),
+    path('inventory/stock/balance', views.inventory_stock_balance,
+         name='inventory-stock-balance'),
 ]
