@@ -344,6 +344,7 @@
 
                 cart_item[0]['location_id'] = location_id
                 $(this).parent().siblings().children('.stock-data').text(cart_item[0][`${val}`])
+                $(this).parent().siblings().children('.pre-quantity').val(0)
             })
 
             $('.selected-location').each(function() {
@@ -351,6 +352,9 @@
             })
 
             $('.pre-quantity').on('keyup', function(){
+                let max_value = $(this).parent().siblings().children('.stock-data').text()
+                if($(this).val() > max_value) $(this).val(max_value)
+
                 let id = $(this).data('id')
                 let cart_data = selected_items.filter(i => i.id == id)
                 let stock_data = $(this).parent().siblings().children('.stock-data').text()
