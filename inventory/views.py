@@ -910,12 +910,13 @@ def inventory_stock_balance(request):
                     ELSE
                         round( (@run_baltotal := @run_baltotal - rs.total), 2)
                 END) AS balance_total,
-                (CASE
-                    WHEN rs.trans_type = 'in' THEN
-                        round((@run_balcost := @run_baltotal / @run_balqty), 2)
-                    ELSE
-                        round((@run_balcost := @run_baltotal / @run_balqty), 2)
-                END) AS balance_cost
+                #(CASE
+                #    WHEN rs.trans_type = 'in' THEN
+                #        round((@run_balcost := @run_baltotal / @run_balqty), 2)
+                #    ELSE
+                #        round((@run_balcost := @run_baltotal / @run_balqty), 2)
+                #END) AS balance_cost
+                cost AS balance_cost
             FROM (
                 SELECT 
                     s.`code` AS code, 
