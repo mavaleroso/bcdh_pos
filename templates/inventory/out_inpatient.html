@@ -34,7 +34,7 @@
                                     {% for row in sales %}
                                     <tr>
                                         <td>
-                                            <a href="javascript:;" data-id="{{ row.id }}" class="edit-status text-body me-1"
+                                            <a href="{% url 'out-inpatient-edit' row.id %}" data-id="{{ row.id }}" class="text-body me-1"
                                                 ><i class="text-primary ti ti-edit"></i
                                             ></a>
                                             <a href="javascript:;" class="text-body"><i class="text-primary ti ti-file-description"></i></a>

@@ -885,6 +885,22 @@ def update_inpatient_status(request):
         return JsonResponse({'data': 'success'})
 
 
+@login_required(login_url='login')
+def out_inpatient_edit(request, trans_id):
+    user_details = get_user_details(request)
+    role = RoleDetails.objects.filter(id=user_details.role_id).first()
+    allowed_roles = ["Inventory Staff", "Admin"]
+    if role.role_name in allowed_roles:
+        context = {
+            'transaction': Sales.objects.select_related().filter(id=trans_id).first(),
+            'location': Location.objects.filter().order_by('id'),
+            'role_permission': role.role_name,
+        }
+        return render(request, 'inventory/out_inpatient_edit.html', context)
+    else:
+        return render(request, 'pages/unauthorized.html')
+
+
 def inventory_stock_balance(request):
     if request.method == 'GET':
         item_id = request.GET.get('id')
@@ -961,3 +977,37 @@ def inventory_stock_balance(request):
         result_data = [dict(zip(keys, row)) for row in data]
 
         return JsonResponse(result_data, safe=False)
+
+
+def get_out_items(request):
+    if request.method == 'GET':
+        trans_id = request.GET.get('trans_id')
+        arr_data = []
+        out_items_data = OutItems.objects.select_related().filter(
+            sales_id=trans_id)
+        location_data = Location.objects.filter()
+
+        for oid in out_items_data:
+            data = {
+                'Emergency': 5,
+                'Main': 10,
+                'Others': 0,
+                'id': oid.stock_item.item.id,
+                'item': oid.stock_item.item.generic.name + ' ' + oid.stock_item.item.sub_generic.name + ' ' + oid.stock_item.item.classification + ' ' + oid.stock_item.item.description,
+                'location_id': oid.location_id,
+                'price': oid.stock_item.unit_price,
+                'quantity': oid.quantity,
+                'stock_item_id': oid.stock_item_id
+            }
+
+            # for ld in location_data:
+            #     data[ld.name] = 5
+
+            arr_data.append(data)
+
+        return JsonResponse(arr_data, safe=False)
+
+
+def out_inpatient_update(request):
+    if request.method == 'POST':
+        return JsonResponse({'data': 'success'})

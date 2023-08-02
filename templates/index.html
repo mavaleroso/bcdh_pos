@@ -121,21 +121,16 @@
                             </a>
                         </li>
                         <li
-                            class="menu-item {% if url_name == 'out-sales' or url_name == 'out-inpatient' or url_name == 'out-inpatient-create' or url_name == 'out-damage' or url_name == 'out-damage-create' %}active open{% endif %}"
+                            class="menu-item {% if url_name == 'out-sales' or url_name == 'out-inpatient' or url_name == 'out-inpatient-create' or url_name == 'out-inpatient-edit' or url_name == 'out-damage' or url_name == 'out-damage-create' %}active open{% endif %}"
                         >
                             <a href="javascript:void(0);" class="menu-link menu-toggle">
                                 <i class="menu-icon tf-icons ti ti-stack-pop"></i>
                                 <div data-i18n="Out">Out</div>
                             </a>
                             <ul class="menu-sub">
-                                {% comment %}
-                                <li class="menu-item {% if url_name == 'out-sales' %}active{% endif %}">
-                                    <a href="{% url 'out-sales' %}" class="menu-link">
-                                        <div data-i18n="Sales">Sales</div>
-                                    </a>
-                                </li>
-                                {% endcomment %}
-                                <li class="menu-item {% if url_name == 'out-inpatient' or url_name == 'out-inpatient-create' %}active{% endif %}">
+                                <li
+                                    class="menu-item {% if url_name == 'out-inpatient' or url_name == 'out-inpatient-create' or url_name == 'out-inpatient-edit' %}active{% endif %}"
+                                >
                                     <a href="{% url 'out-inpatient' %}" class="menu-link">
                                         <div data-i18n="In-patient">In-patient</div>
                                     </a>
@@ -682,14 +677,15 @@
                                                         </div>
                                                     </div>
                                                     <div class="flex-grow-1">
-                                                        <span class="fw-semibold d-block">{{ request.user.first_name }} {{ request.user.last_name }}</span>
+                                                        <span class="fw-semibold d-block"
+                                                            >{{ request.user.first_name }} {{ request.user.last_name }}</span
+                                                        >
                                                         <small class="text-muted">{{ user_role }}</small>
-                                                      
                                                     </div>
                                                 </div>
                                             </a>
                                         </li>
-                                       
+
                                         <li>
                                             <a class="dropdown-item" href="{% url 'logout' %}">
                                                 <i class="ti ti-logout me-2 ti-sm"></i>
