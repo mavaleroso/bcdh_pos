@@ -11,7 +11,9 @@
                     <div
                         class="card-header sticky-element bg-label-secondary d-flex justify-content-sm-between align-items-sm-center flex-column flex-sm-row"
                     >
-                        <h5 class="card-title mb-sm-0 me-2">Edit In-patient Form</h5>
+                        <h5 class="card-title mb-sm-0 me-2">
+                            <span class="badge bg-primary me-2">{{transaction.transaction_code}}</span>Edit In-patient Form
+                        </h5>
                         <div class="action-btns">
                             <div class="btn-group" role="group">
                                 <a href="{% url 'out-inpatient' %}" class="btn btn-label-primary waves-effect"><i class="ti ti-list me-1"></i>List</a>
@@ -182,6 +184,8 @@
 {% endblock %} {% block footer_scripts %}
 <script src="{% static 'assets/js/autofill.js' %}"></script>
 <script>
+    var csrftoken = getCookie('csrftoken')
+
     const toast_options = (toastr.options = {
         maxOpened: 1,
         autoDismiss: true,
@@ -367,6 +371,7 @@
                                 $(this).prop('checked', true)
                                 var array_id = {
                                     id: id,
+                                    oid_id: 0,
                                     item: $(this).data('details'),
                                     quantity: $(this).data('quantity'),
                                     stock_item_id: $(this).data('stock-item-id'),
@@ -378,7 +383,6 @@
                                 {% endfor %}
 
                                 selected_items.push(array_id)
-                                console.log(selected_items)
                             } else {
                                 $(this).prop('checked', false)
                                 let id_index = selected_items.findIndex(i => i.id === id)
@@ -499,7 +503,9 @@
 
             })
 
-            $('.pre-quantity').keyup()
+            setTimeout(() => {
+                $('.pre-quantity').keyup()
+            }, 500)
         })
 
 
@@ -526,8 +532,12 @@
                 if (result.value) {
                     $.ajax({
                         type: 'POST',
-                        url: "{% url 'sales-item' %}",
+                        url: "{% url 'out-inpatient-update' %}",
+                        headers: {
+                            'X-CSRFToken': csrftoken,
+                        },
                         data: {
+                            trans_id: trans_id,
                             cl_id: client_id,
                             dis_id: 0,
                             amt_paid: grand_total_value,
