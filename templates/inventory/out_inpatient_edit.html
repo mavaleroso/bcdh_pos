@@ -2,7 +2,7 @@
 <div class="container-xxl flex-grow-1 container-p-y">
     <h4 class="fw-bold py-3 mb-4">
         <span class="text-muted fw-light">Inventory/Out/In-patient/</span>
-        Create
+        Edit
     </h4>
     <div class="row">
         <div class="col-12">
@@ -11,12 +11,14 @@
                     <div
                         class="card-header sticky-element bg-label-secondary d-flex justify-content-sm-between align-items-sm-center flex-column flex-sm-row"
                     >
-                        <h5 class="card-title mb-sm-0 me-2">Create In-patient Form</h5>
+                        <h5 class="card-title mb-sm-0 me-2">
+                            <span class="badge bg-primary me-2">{{transaction.transaction_code}}</span>Edit In-patient Form
+                        </h5>
                         <div class="action-btns">
                             <div class="btn-group" role="group">
                                 <a href="{% url 'out-inpatient' %}" class="btn btn-label-primary waves-effect"><i class="ti ti-list me-1"></i>List</a>
-                                <button id="btn-submit" type="button" class="btn btn-primary waves-effect">
-                                    <i class="ti ti-device-floppy me-1"></i>Submit
+                                <button id="btn-update" type="button" class="btn btn-primary waves-effect">
+                                    <i class="ti ti-device-floppy me-1"></i>Update
                                 </button>
                             </div>
                         </div>
@@ -47,6 +49,7 @@
                             Please select client and items!
                         </div>
                         <h6>Details</h6>
+                        {{ transaction.client_id|json_script:'client-id' }} {{ transaction.id|json_script:'trans-id' }}
                         <div class="row">
                             <div class="col-md-4">
                                 <div class="mb-3">
@@ -181,6 +184,8 @@
 {% endblock %} {% block footer_scripts %}
 <script src="{% static 'assets/js/autofill.js' %}"></script>
 <script>
+    var csrftoken = getCookie('csrftoken')
+
     const toast_options = (toastr.options = {
         maxOpened: 1,
         autoDismiss: true,
@@ -207,12 +212,16 @@
         const tbl_carted_items = $('#tbl-carted-items')
         const grand_total = $('#grand-total')
         const total_cart_amount = $('#total-cart-amount')
-        const btn_submit = $('#btn-submit')
+        const btn_update = $('#btn-update')
         const alert_warning = $('#alert-warning')
 
         let grand_total_value = 0
         let selected_items = []
-        let client_id = 0
+        let client_id = $('#client-id').text()
+        let trans_id = $('#trans-id').text()
+
+        get_inpatient(client_id)
+        get_out_items(trans_id)
 
         quick_search_inpatient.autofill({
             datasetURL: "{% url 'clients-collections' %}",
@@ -223,7 +232,7 @@
         })
 
         function get_inpatient(field) {
-            client_id = field.id
+            client_id = field.id ?? client_id
             $.ajax({
                 type: 'GET',
                 url: "{% url 'get-client' %}?id=" + client_id,
@@ -238,6 +247,18 @@
                 address.val(data[0].address)
                 occupation.val(data[0].occupation)
                 quick_search_inpatient.val('')
+            })
+        }
+
+        function get_out_items(trans_id) {
+            $.ajax({
+                type: 'GET',
+                url: "{% url 'get-out-items' %}?trans_id=" + trans_id,
+            }).done(function (data) {
+                selected_items = data
+                toastr.success('Successfully Fetch Outed Items', 'Fetch Items', toast_options)
+                add_stock.click()
+                $('.pre-quantity').keyup()
             })
         }
 
@@ -350,6 +371,7 @@
                                 $(this).prop('checked', true)
                                 var array_id = {
                                     id: id,
+                                    oid_id: 0,
                                     item: $(this).data('details'),
                                     quantity: $(this).data('quantity'),
                                     stock_item_id: $(this).data('stock-item-id'),
@@ -409,13 +431,13 @@
                         <td>
                             <select class="selected-location form-select" data-id="${e.id}">
                                 {% for l in location %}
-                                <option data-id="{{ l.id }}" value="{{ l.name }}">{{l.name}}</option>
+                                <option data-id="{{ l.id }}" value="{{ l.name }}" ${e.location_id == {{ l.id }} ? 'selected' : ''}>{{l.name}}</option>
                                 {% endfor %}
                             </select>
                         </td>
                         <td><span class="stock-data badge bg-label-primary">0</span></td>
                         <td class="text-right">${currencyFormat(e.price)}</td>
-                        <td><input data-id="${e.id}" data-price=${e.price} type="number" class="pre-quantity form-control" /></td>
+                        <td><input data-id="${e.id}" data-price=${e.price} type="number" value="${e.quantity}" class="pre-quantity form-control" /></td>
                         <td class="text-right"><span class="subtotal-data"></span></td>
                     </tr>`
                 })
@@ -437,8 +459,10 @@
                 let location_id = $(this).find(':selected').data('id')
 
                 cart_item[0]['location_id'] = location_id
+
                 $(this).parent().siblings().children('.stock-data').text(cart_item[0][`${val}`])
-                $(this).parent().siblings().children('.pre-quantity').val(0)
+
+                $('.pre-quantity').keyup()
             })
 
             $('.selected-location').each(function() {
@@ -446,13 +470,15 @@
             })
 
             $('.pre-quantity').on('keyup', function(){
-                let max_value = $(this).parent().siblings().children('.stock-data').text()
-                if($(this).val() > max_value) $(this).val(max_value)
+                let stock_data = $(this).parent().siblings().children('.stock-data').text()
+                let val = parseInt($(this).val() ?? 0)
+
+                if(val > stock_data) {
+                    $(this).val(stock_data)
+                }
 
                 let id = $(this).data('id')
                 let cart_data = selected_items.filter(i => i.id == id)
-                let stock_data = $(this).parent().siblings().children('.stock-data').text()
-                let val = parseInt($(this).val() ?? 0)
                 let price = $(this).data('price')
                 let sub_total = val * price
                 let grand_total_tmp = 0;
@@ -476,9 +502,15 @@
                 grand_total_value = grand_total_tmp
 
             })
+
+            setTimeout(() => {
+                $('.pre-quantity').keyup()
+            }, 500)
         })
 
-        btn_submit.on('click', function() {
+
+
+        btn_update.on('click', function() {
             if(client_id == 0 || selected_items.length == 0) {
                 alert_warning.show()
                 return false;
@@ -500,8 +532,12 @@
                 if (result.value) {
                     $.ajax({
                         type: 'POST',
-                        url: "{% url 'sales-item' %}",
+                        url: "{% url 'out-inpatient-update' %}",
+                        headers: {
+                            'X-CSRFToken': csrftoken,
+                        },
                         data: {
+                            trans_id: trans_id,
                             cl_id: client_id,
                             dis_id: 0,
                             amt_paid: grand_total_value,

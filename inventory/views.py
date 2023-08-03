@@ -1,3 +1,4 @@
+import json
 from django.db import connection
 from django.shortcuts import render
 
@@ -13,11 +14,106 @@ import xlwt
 
 from django.db.models import Q, Sum
 from django.contrib.auth.decorators import login_required
-from django.forms.models import model_to_dict
+from django.db.models import CharField, Value
+from django.db.models.functions import Concat
 
 
 def get_user_details(request):
     return UserDetails.objects.filter(user_id=request.user.id).first()
+
+
+def stock_item_data(_column_name='id', _order_dir='asc', _where_item_id_val=None, where_in_search=None):
+    query = """
+        SELECT 
+            id, 
+            GROUP_CONCAT(primary_id SEPARATOR ',') AS n_id, 
+            barcode, 
+            item_type_name, 
+            item_details, 
+            SUM(quantity) AS total_quantity, 
+            unit_price,
+            DATEDIFF(expiration_date, DATE(now())) AS date_diff,
+            expired_count
+        FROM (
+            SELECT 
+                id, 
+                primary_id,
+                barcode, 
+                item_type_name, 
+                item_details, 
+                quantity,
+                unit_price,
+                expiration_date,
+                DATEDIFF(expiration_date, DATE(now())) AS date_diff,
+                '1' AS expired_count
+            FROM (
+                SELECT
+                        DISTINCT si.item_id AS id,
+                        si.id AS primary_id,
+                        i.barcode,
+                        it.name AS item_type_name,
+                        CONCAT(g.name,' ',sg.name,' ',i.classification, ' ', i.description) AS item_details,
+                        si.pcs_quantity AS quantity,
+                        si.unit_price,
+                        si.expiration_date
+                FROM stock_items AS si
+                JOIN stocks AS s ON s.id = si.stock_id
+                JOIN items AS i ON i.id = si.item_id
+                JOIN item_type AS it ON it.id = i.type_id
+                JOIN generic AS g ON g.id = i.generic_id
+                JOIN sub_generic AS sg ON sg.id = i.sub_generic_id
+                WHERE DATEDIFF(expiration_date, DATE(now())) < 182
+                """+('AND si.item_id IN '+where_in_search+'' if where_in_search else '')+"""
+                ORDER BY si.expiration_date
+            ) AS rs1 
+            UNION ALL
+            SELECT 
+                id, 
+                primary_id,
+                barcode, 
+                item_type_name, 
+                item_details, 
+                quantity,
+                unit_price,
+                expiration_date,
+                DATEDIFF(expiration_date, DATE(now())) AS date_diff,
+                '0' AS expired_count
+                FROM (
+                    SELECT
+                        DISTINCT si.item_id AS id,
+                        si.id AS primary_id,
+                        i.barcode,
+                        it.name AS item_type_name,
+                        CONCAT(g.name,' ',sg.name,' ',i.classification, ' ', i.description) AS item_details,
+                        si.pcs_quantity AS quantity,
+                        si.unit_price,
+                        si.expiration_date
+                    FROM stock_items AS si
+                    JOIN stocks AS s ON s.id = si.stock_id
+                    JOIN items AS i ON i.id = si.item_id
+                    JOIN item_type AS it ON it.id = i.type_id
+                    JOIN generic AS g ON g.id = i.generic_id
+                    JOIN sub_generic AS sg ON sg.id = i.sub_generic_id
+                    WHERE DATEDIFF(expiration_date, DATE(now())) > 182
+                    """+('AND si.item_id IN '+where_in_search+'' if where_in_search else '')+"""
+                    ORDER BY s.delivered_date
+                ) AS rs2
+        ) AS rs
+        """+('WHERE rs.id = '+_where_item_id_val+'' if _where_item_id_val else '')+"""
+        GROUP BY id
+        ORDER BY """+_column_name+""" """+_order_dir+"""
+        """
+
+    with connection.cursor() as cursor:
+        cursor.execute(query)
+        results = cursor.fetchall()
+
+    keys = ('id', 'n_id', 'barcode', 'item_type_name', 'item_details', 'total_quantity',
+            'unit_price', 'date_diff', 'expired_count')
+
+    result_data = [dict(zip(keys, row)) for row in results]
+
+    return result_data
 
 
 @login_required(login_url='login')
@@ -131,7 +227,7 @@ def inventory_list(request):
 def get_stock_id_availability(stock_data=[], return_val='', availability=False):
     stock_id = []
     for stock in stock_data:
-        outItemsData = OutItems.objects.filter(stock_id=stock.id)
+        outItemsData = OutItems.objects.filter(stock_id=stock['id'])
         expended_stock = 0
         damage_stock = stock.is_damaged if stock.is_damaged else 0
 
@@ -141,10 +237,10 @@ def get_stock_id_availability(stock_data=[], return_val='', availability=False):
         available = stock.pcs_quantity - expended_stock - damage_stock
 
         if availability == True and available > 0:
-            stock_id.append(stock.id)
+            stock_id.append(stock['id'])
 
         elif availability == False and available <= 0:
-            stock_id.append(stock.id)
+            stock_id.append(stock['id'])
 
     if return_val == 'stock_id':
         return stock_id
@@ -160,103 +256,25 @@ def inventory_load(request):
         _column_name = request.GET.get('columns['+_order_col_num+'][data]')
         _search_id = []
 
-        stock_data = StocksItems.objects.raw(
-            """
-            SELECT 
-                id, 
-                GROUP_CONCAT(primary_id SEPARATOR ',') AS n_id, 
-                barcode, 
-                item_type_name, 
-                item_details, 
-                SUM(quantity) AS total_quantity, 
-                unit_price,
-                DATEDIFF(expiration_date, DATE(now())) AS date_diff,
-                expired_count
-            FROM (
-                SELECT 
-                    id, 
-                    primary_id,
-                    barcode, 
-                    item_type_name, 
-                    item_details, 
-                    quantity,
-                    unit_price,
-                    expiration_date,
-                    DATEDIFF(expiration_date, DATE(now())) AS date_diff,
-                    '1' AS expired_count
-                FROM (
-                    SELECT
-                            DISTINCT si.item_id AS id,
-                            si.id AS primary_id,
-                            i.barcode,
-                            it.name AS item_type_name,
-                            CONCAT(g.name,' ',sg.name,' ',i.classification, ' ', i.description) AS item_details,
-                            si.pcs_quantity AS quantity,
-                            si.unit_price,
-                            si.expiration_date
-                    FROM stock_items AS si
-                    JOIN stocks AS s ON s.id = si.stock_id
-                    JOIN items AS i ON i.id = si.item_id
-                    JOIN item_type AS it ON it.id = i.type_id
-                    JOIN generic AS g ON g.id = i.generic_id
-                    JOIN sub_generic AS sg ON sg.id = i.sub_generic_id
-                    WHERE DATEDIFF(expiration_date, DATE(now())) < 182
-                    ORDER BY si.expiration_date
-                ) AS rs1 
-                UNION ALL
-                SELECT 
-                    id, 
-                    primary_id,
-                    barcode, 
-                    item_type_name, 
-                    item_details, 
-                    quantity,
-                    unit_price,
-                    expiration_date,
-                    DATEDIFF(expiration_date, DATE(now())) AS date_diff,
-                    '0' AS expired_count
-                    FROM (
-                        SELECT
-                            DISTINCT si.item_id AS id,
-                            si.id AS primary_id,
-                            i.barcode,
-                            it.name AS item_type_name,
-                            CONCAT(g.name,' ',sg.name,' ',i.classification, ' ', i.description) AS item_details,
-                            si.pcs_quantity AS quantity,
-                            si.unit_price,
-                            si.expiration_date
-                        FROM stock_items AS si
-                        JOIN stocks AS s ON s.id = si.stock_id
-                        JOIN items AS i ON i.id = si.item_id
-                        JOIN item_type AS it ON it.id = i.type_id
-                        JOIN generic AS g ON g.id = i.generic_id
-                        JOIN sub_generic AS sg ON sg.id = i.sub_generic_id
-                        WHERE DATEDIFF(expiration_date, DATE(now())) > 182
-                        ORDER BY s.delivered_date
-                    ) AS rs2
-            ) AS rs
-            GROUP BY id
-            ORDER BY """+_column_name+""" """+_order_dir+"""
-            """
-        )
+        stock_data = stock_item_data(_column_name, _order_dir)
 
         if _search:
             for stock in stock_data:
-                if _search.lower() in stock.item_type_name.lower():
-                    if stock.id not in _search_id:
-                        _search_id.append(stock.id)
+                if _search.lower() in stock['item_type_name'].lower():
+                    if stock['id'] not in _search_id:
+                        _search_id.append(stock['id'])
 
-                if _search.lower() in stock.item_details.lower():
-                    if stock.id not in _search_id:
-                        _search_id.append(stock.id)
+                if _search.lower() in stock['item_details'].lower():
+                    if stock['id'] not in _search_id:
+                        _search_id.append(stock['id'])
 
-                if _search in str(stock.total_quantity):
-                    if stock.id not in _search_id:
-                        _search_id.append(stock.id)
+                if _search in str(stock['total_quantity']):
+                    if stock['id'] not in _search_id:
+                        _search_id.append(stock['id'])
 
-                if _search in str(stock.unit_price):
-                    if stock.id not in _search_id:
-                        _search_id.append(stock.id)
+                if _search in str(stock['unit_price']):
+                    if stock['id'] not in _search_id:
+                        _search_id.append(stock['id'])
 
             def where_in_search():
                 if len(_search_id) == 1:
@@ -266,87 +284,8 @@ def inventory_load(request):
                 else:
                     return "(0)"
 
-            stock_data = StocksItems.objects.raw(
-                """
-                SELECT 
-                    id, 
-                    GROUP_CONCAT(primary_id SEPARATOR ',') AS n_id, 
-                    barcode, 
-                    item_type_name, 
-                    item_details, 
-                    SUM(quantity) AS total_quantity, 
-                    unit_price,
-                    DATEDIFF(expiration_date, DATE(now())) AS date_diff,
-                    expired_count
-                FROM (
-                    SELECT 
-                        id, 
-                        primary_id,
-                        barcode, 
-                        item_type_name, 
-                        item_details, 
-                        quantity,
-                        unit_price,
-                        expiration_date,
-                        DATEDIFF(expiration_date, DATE(now())) AS date_diff,
-                        '1' AS expired_count
-                    FROM (
-                        SELECT
-                                DISTINCT si.item_id AS id,
-                                si.id AS primary_id,
-                                i.barcode,
-                                it.name AS item_type_name,
-                                CONCAT(g.name,' ',sg.name,' ',i.classification, ' ', i.description) AS item_details,
-                                si.pcs_quantity AS quantity,
-                                si.unit_price,
-                                si.expiration_date
-                        FROM stock_items AS si
-                        JOIN stocks AS s ON s.id = si.stock_id
-                        JOIN items AS i ON i.id = si.item_id
-                        JOIN item_type AS it ON it.id = i.type_id
-                        JOIN generic AS g ON g.id = i.generic_id
-                        JOIN sub_generic AS sg ON sg.id = i.sub_generic_id
-                        WHERE DATEDIFF(expiration_date, DATE(now())) < 182
-                        AND si.item_id IN """+where_in_search()+"""
-                        ORDER BY si.expiration_date
-                    ) AS rs1 
-                    UNION ALL
-                    SELECT 
-                        id, 
-                        primary_id,
-                        barcode, 
-                        item_type_name, 
-                        item_details, 
-                        quantity,
-                        unit_price,
-                        expiration_date,
-                        DATEDIFF(expiration_date, DATE(now())) AS date_diff,
-                        '0' AS expired_count
-                        FROM (
-                            SELECT
-                                DISTINCT si.item_id AS id,
-                                si.id AS primary_id,
-                                i.barcode,
-                                it.name AS item_type_name,
-                                CONCAT(g.name,' ',sg.name,' ',i.classification, ' ', i.description) AS item_details,
-                                si.pcs_quantity AS quantity,
-                                si.unit_price,
-                                si.expiration_date
-                            FROM stock_items AS si
-                            JOIN stocks AS s ON s.id = si.stock_id
-                            JOIN items AS i ON i.id = si.item_id
-                            JOIN item_type AS it ON it.id = i.type_id
-                            JOIN generic AS g ON g.id = i.generic_id
-                            JOIN sub_generic AS sg ON sg.id = i.sub_generic_id
-                            WHERE DATEDIFF(expiration_date, DATE(now())) > 182
-                            AND si.item_id IN """+where_in_search()+"""
-                            ORDER BY s.delivered_date
-                        ) AS rs2
-                ) AS rs
-                GROUP BY id
-                ORDER BY """+_column_name+""" """+_order_dir+"""
-                """
-            )
+            stock_data = stock_item_data(
+                _column_name, _order_dir, None, where_in_search())
 
         total = sum(1 for result in stock_data)
 
@@ -362,7 +301,7 @@ def inventory_load(request):
 
         for stock in stock_data:
 
-            stock_item_id = [int(num) for num in stock.n_id.split(',')]
+            stock_item_id = [int(num) for num in stock['n_id'].split(',')]
 
             location_data = Location.objects.filter()
 
@@ -372,17 +311,17 @@ def inventory_load(request):
             out_total_qty = out_total_qty if out_total_qty != '' else 0
 
             if out_total_qty is not None:
-                stock.total_quantity -= out_total_qty
+                stock['total_quantity'] -= out_total_qty
 
             stock_details_data = {
-                'id': stock.id,
+                'id': stock['id'],
                 'stock_item_id': stock_item_id[len(stock_item_id)-1],
-                'item_type_name': stock.item_type_name,
-                'details': stock.item_details,
-                'pcs_quantity': stock.total_quantity,
-                'unit_price': stock.unit_price,
-                'date_diff': stock.date_diff,
-                'expired_count': stock.expired_count
+                'item_type_name': stock['item_type_name'],
+                'details': stock['item_details'],
+                'pcs_quantity': stock['total_quantity'],
+                'unit_price': stock['unit_price'],
+                'date_diff': stock['date_diff'],
+                'expired_count': stock['expired_count']
             }
 
             for l in location_data:
@@ -645,8 +584,9 @@ def export_excel(request):
     data = []
 
     for stock in stock_data:
-        outItemsData = OutItems.objects.filter(stock_id=stock.id)
-        stockLocation = StockLocation.objects.select_related().filter(stock_id=stock.id)
+        outItemsData = OutItems.objects.filter(stock_id=stock['id'])
+        stockLocation = StockLocation.objects.select_related().filter(
+            stock_id=stock['id'])
 
         expended_stock = 0
         damage_stock = stock.is_damaged if stock.is_damaged else 0
@@ -749,7 +689,7 @@ def inventory_po_load(request):
 
     for stock in stock_data:
         stock_obj = {
-            'id': stock.id,
+            'id': stock['id'],
             'code': stock.code,
             'company': stock.company.name,
             'delivered_date': stock.delivered_date,
@@ -885,6 +825,22 @@ def update_inpatient_status(request):
         return JsonResponse({'data': 'success'})
 
 
+@login_required(login_url='login')
+def out_inpatient_edit(request, trans_id):
+    user_details = get_user_details(request)
+    role = RoleDetails.objects.filter(id=user_details.role_id).first()
+    allowed_roles = ["Inventory Staff", "Admin"]
+    if role.role_name in allowed_roles:
+        context = {
+            'transaction': Sales.objects.select_related().filter(id=trans_id).first(),
+            'location': Location.objects.filter().order_by('id'),
+            'role_permission': role.role_name,
+        }
+        return render(request, 'inventory/out_inpatient_edit.html', context)
+    else:
+        return render(request, 'pages/unauthorized.html')
+
+
 def inventory_stock_balance(request):
     if request.method == 'GET':
         item_id = request.GET.get('id')
@@ -952,7 +908,6 @@ def inventory_stock_balance(request):
 
         with connection.cursor() as cursor:
             cursor.execute(initial_values_query)
-
             cursor.execute(main_query)
             data = cursor.fetchall()
 
@@ -961,3 +916,101 @@ def inventory_stock_balance(request):
         result_data = [dict(zip(keys, row)) for row in data]
 
         return JsonResponse(result_data, safe=False)
+
+
+def get_out_items(request):
+    if request.method == 'GET':
+        trans_id = request.GET.get('trans_id')
+        arr_data = []
+        out_items_data = OutItems.objects.select_related().filter(
+            sales_id=trans_id)
+        location_data = Location.objects.filter()
+
+        for oid in out_items_data:
+            oid_data = {
+                'oid_id': oid.id,
+                'id': oid.stock_item.item.id,
+                'item': oid.stock_item.item.generic.name + ' ' + oid.stock_item.item.sub_generic.name + ' ' + oid.stock_item.item.classification + ' ' + oid.stock_item.item.description,
+                'location_id': oid.location_id,
+                'price': oid.stock_item.unit_price,
+                'quantity': oid.quantity,
+                'stock_item_id': oid.stock_item_id
+            }
+
+            stock_data = stock_item_data(
+                'id', 'asc', str(oid.stock_item.item.id))
+
+            for stock in stock_data:
+
+                stock_item_id = [int(num) for num in stock['n_id'].split(',')]
+
+                location_data = Location.objects.filter()
+
+                out_total_qty = OutItems.objects.filter(stock_item_id__in=stock_item_id).aggregate(
+                    total_quantity=Sum('quantity'))['total_quantity']
+
+                out_total_qty = out_total_qty if out_total_qty != '' else 0
+
+                if out_total_qty is not None:
+                    stock['total_quantity'] -= out_total_qty
+
+                for l in location_data:
+                    stock_location_data = StockLocation.objects.filter(
+                        stock_item_id__in=stock_item_id)
+                    out_items_location_data = OutItems.objects.filter(
+                        stock_item_id__in=stock_item_id)
+
+                    oid_data[l.name] = 0
+                    for sld in stock_location_data:
+                        if sld.location_id == l.id:
+                            oid_data[l.name] += sld.quantity
+
+                    for oild in out_items_location_data:
+                        if oild.location_id == l.id:
+                            oid_data[l.name] -= oild.quantity
+
+                    if oid.location_id == l.id:
+                        oid_data[l.name] += oid.quantity
+
+            arr_data.append(oid_data)
+
+        return JsonResponse(arr_data, safe=False)
+
+
+def out_inpatient_update(request):
+    if request.method == 'POST':
+        trans_id = request.POST.get('trans_id')
+        client_id = request.POST.get('cl_id')
+        user_id = request.session.get('user_id', 0)
+        amt_paid = request.POST.get('amt_paid')
+        stock_list = json.loads(request.POST.get('out_stocks'))
+
+        transaction_data = Sales.objects.get(pk=trans_id)
+
+        transaction_data.client_id = client_id
+        transaction_data.user_id = user_id
+        transaction_data.exact_amount_paid = amt_paid
+        transaction_data.save()
+
+        group_id_list = (
+            OutItems.objects.filter(sales_id=trans_id)
+            .annotate(group_id=Concat('id', Value(''), output_field=CharField()))
+            .values_list('group_id', flat=True)
+        )
+
+        group_id_list = list(group_id_list)
+
+        for sl in stock_list:
+            OutItems.objects.update_or_create(
+                stock_item_id=sl['stock_item_id'],
+                sales_id=trans_id,
+                defaults={"stock_item_id": sl['stock_item_id'], "quantity": sl['qty'],
+                          "location_id": sl['location_id'], "discounted_amount": 0, "sales_id": trans_id},
+            )
+
+            if sl['oid_id'] != 0:
+                group_id_list.remove(str(sl['oid_id']))
+
+        OutItems.objects.filter(id__in=group_id_list).delete()
+
+        return JsonResponse({'data': 'success'})

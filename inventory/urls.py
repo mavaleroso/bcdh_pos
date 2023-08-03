@@ -9,11 +9,13 @@ urlpatterns = [
          name='out-inpatient-create'),
     path('out/inpatient/update/status', views.update_inpatient_status,
          name='update-inpatient-status'),
-
+    path('out/inpatient/edit/<int:trans_id>', views.out_inpatient_edit,
+         name='out-inpatient-edit'),
+    path('out/inpatient/update', views.out_inpatient_update,
+         name='out-inpatient-update'),
     path('out/damage', views.out_damage, name='out-damage'),
     path('out/damage/create', views.out_damage_create,
          name='out-damage-create'),
-
     path('store_stock_data', views.store_stock_data, name='store-stock-data'),
     path('update_stock_data', views.update_stock_data, name='update-stock-data'),
     path('update_stock/<int:stock_id>', views.update_stock, name='update-stock'),
@@ -32,4 +34,6 @@ urlpatterns = [
          name='update-stock-locations'),
     path('inventory/stock/balance', views.inventory_stock_balance,
          name='inventory-stock-balance'),
+    path('out/items/get', views.get_out_items,
+         name='get-out-items'),
 ]
