@@ -90,7 +90,9 @@ def dashboard(request):
     in_patient = Clients.objects.filter(client_type_id=3).count()
     #end   
 
-    user_id = request.session.get('user_id', 0)
+    usr_id = request.session.get('user_id', 0)
+    gender = UserDetails.objects.filter(user_id=usr_id).first()
+
 
 
     role = RoleDetails.objects.filter(id=user_details.role_id).first()
@@ -104,6 +106,8 @@ def dashboard(request):
         'walk_in':walk_in,
         'out_patient':out_patient,
         'in_patient':in_patient,
+        'gender':gender.sex,
+
     }
     return render(request, 'dashboard.html',context)
 

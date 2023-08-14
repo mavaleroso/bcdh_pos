@@ -15,11 +15,21 @@
             </div>
             <div class="col-5 text-center text-sm-left">
               <div class="card-body pb-0 px-0 px-md-4">
+
+                {% if gender == 'Male' %}
                 <img
                   src="{% static 'assets/img/illustrations/card-advance-sale.png' %}"
                   height="140"
                   alt="view sales"
                 />
+                {% else %}
+                <img
+                  src="{% static 'assets/img/illustrations/wizard-create-deal-confirm.png' %}"
+                  height="140"
+                  alt="view sales"
+              />
+
+                {% endif %}
               </div>
             </div>
           </div>
@@ -95,10 +105,8 @@
             <div class="card">
               
               <div class="card-header pb-0">
-                
                 <h5 class="card-title mb-0">In-Patient</h5>
-                <h3 class="card-title mb-1">{{ in_patient }}</h3>
-               
+                <h4 class="card-title mb-1">{{ in_patient }}</h4>
               </div>
               <div class="card-body">
                 <div id="expensesChart"></div>
@@ -112,8 +120,7 @@
             <div class="card">
               <div class="card-header pb-0">
                 <h5 class="card-title mb-0">Out Patient</h5>
-              
-                <h3 class="card-title mb-1">{{ out_patient }}</h3>
+                <h4 class="card-title mb-1">{{ out_patient }}</h4>
               </div>
               <div class="card-body">
                 <div id="profitLastMonth"></div>
@@ -131,10 +138,9 @@
                   <div class="d-flex flex-column">
                     <div class="card-title mb-auto">
                       <h5 class="mb-1 text-nowrap">Walk in</h5>
-                  
                     </div>
                     <div class="chart-statistics">
-                      <h3 class="card-title mb-1">{{ walk_in }}</h3>
+                      <h4 class="card-title mb-1">{{ walk_in }}</h4>
                     </div>
                   </div>
                   <div id="generatedLeadsChart"></div>
