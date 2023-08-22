@@ -437,8 +437,10 @@
                 let location_id = $(this).find(':selected').data('id')
 
                 cart_item[0]['location_id'] = location_id
+
                 $(this).parent().siblings().children('.stock-data').text(cart_item[0][`${val}`])
-                $(this).parent().siblings().children('.pre-quantity').val(0)
+
+                $('.pre-quantity').keyup()
             })
 
             $('.selected-location').each(function() {
@@ -446,13 +448,15 @@
             })
 
             $('.pre-quantity').on('keyup', function(){
-                let max_value = $(this).parent().siblings().children('.stock-data').text()
-                if($(this).val() > max_value) $(this).val(max_value)
+                let stock_data = $(this).parent().siblings().children('.stock-data').text()
+                let val = parseInt($(this).val() ?? 0)
+
+                if(val > stock_data) {
+                    $(this).val(stock_data)
+                }
 
                 let id = $(this).data('id')
                 let cart_data = selected_items.filter(i => i.id == id)
-                let stock_data = $(this).parent().siblings().children('.stock-data').text()
-                let val = parseInt($(this).val() ?? 0)
                 let price = $(this).data('price')
                 let sub_total = val * price
                 let grand_total_tmp = 0;
@@ -476,6 +480,10 @@
                 grand_total_value = grand_total_tmp
 
             })
+
+            setTimeout(() => {
+                $('.pre-quantity').keyup()
+            }, 500)
         })
 
         btn_submit.on('click', function() {

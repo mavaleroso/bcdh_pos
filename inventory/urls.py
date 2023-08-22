@@ -36,4 +36,8 @@ urlpatterns = [
          name='inventory-stock-balance'),
     path('out/items/get', views.get_out_items,
          name='get-out-items'),
+    path('report', views.inventory_report, name='inventory-report'),
+    path('report/list', views.inventory_report_list,
+         name='inventory-report-list'),
+
 ]

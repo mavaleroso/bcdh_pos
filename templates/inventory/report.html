@@ -1,0 +1,57 @@
+{% extends 'index.html' %} {% block content %} {% load staticfiles %}
+
+<!-- Content wrapper -->
+<div class="content-wrapper">
+    <!-- Content -->
+    <div class="container-xxl flex-grow-1 container-p-y">
+        <h4 class="fw-bold py-3 mb-4"><span class="text-muted fw-light">Inventory /</span> Report</h4>
+
+        <div class="card">
+            <div class="card-body">
+                <div class="card-datatable text-nowrap">
+                    <table id="tbl-report-list" class="table display compact">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Delivery Date</th>
+                            </tr>
+                        </thead>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} {% block footer_scripts %}
+<script>
+    $(document).ready(function () {
+        const tbl_report_list = $('#tbl-report-list')
+
+        tbl_report_list.DataTable({
+            processing: true,
+            serverSide: true,
+            ajax: {
+                url: "{% url 'inventory-report-list' %}",
+            },
+            columns: [{ data: 'delivered_date' }, { data: 'delivered_date' }],
+            columnDefs: [
+                {
+                    targets: 0,
+                    orderable: false,
+                    searchable: false,
+                    render: function (data, type, row) {
+                        let id = data.toString()
+                        return `<a href="javascript:;" class="stock-location text-body"><i class="text-secondary ti ti-eye-check"></i></a>`
+                    },
+                },
+                {
+                    targets: 1,
+                    render: function (data) {
+                        return `<span class="badge bg-secondary">${data}</span>`
+                    },
+                },
+            ],
+        })
+    })
+</script>
+{% endblock footer_scripts %}

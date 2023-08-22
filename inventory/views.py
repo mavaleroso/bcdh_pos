@@ -689,7 +689,7 @@ def inventory_po_load(request):
 
     for stock in stock_data:
         stock_obj = {
-            'id': stock['id'],
+            'id': stock.id,
             'code': stock.code,
             'company': stock.company.name,
             'delivered_date': stock.delivered_date,
@@ -1014,3 +1014,69 @@ def out_inpatient_update(request):
         OutItems.objects.filter(id__in=group_id_list).delete()
 
         return JsonResponse({'data': 'success'})
+
+
+@login_required(login_url='login')
+def inventory_report(request):
+    user_details = get_user_details(request)
+    role = RoleDetails.objects.filter(id=user_details.role_id).first()
+    allowed_roles = ["Inventory Staff", "Admin"]
+    if role.role_name in allowed_roles:
+        context = {
+            'role_permission': role.role_name,
+        }
+        return render(request, 'inventory/report.html', context)
+    else:
+        return render(request, 'pages/unauthorized.html')
+
+
+def inventory_report_list(request):
+    if request.method == 'GET':
+        _search = request.GET.get('search[value]')
+        _start = request.GET.get('start')
+        _length = request.GET.get('length')
+        _order_dir = request.GET.get('order[0][dir]')
+        _order_dash = '-' if _order_dir == 'desc' else ''
+        _order_col_num = request.GET.get('order[0][column]')
+
+        def _order_col():
+            prefix_col = ''
+            column = request.GET.get('columns['+_order_col_num+'][data]')
+
+            if column == 'company':
+                prefix_col = 'company__' + column
+            else:
+                prefix_col = column
+
+            return prefix_col
+
+        stock_data = Stocks.objects.values('delivered_date').distinct()
+
+        total = stock_data.count()
+
+        if _start and _length:
+            start = int(_start)
+            length = int(_length)
+            page = math.ceil(start / length) + 1
+            per_page = length
+
+            stock_data = stock_data[start:start + length]
+
+        data = []
+
+        for stock in stock_data:
+            stock_obj = {
+                'delivered_date': stock['delivered_date'],
+            }
+
+            data.append(stock_obj)
+
+        response = {
+            'data': data,
+            'page': page,
+            'per_page': per_page,
+            'recordsTotal': total,
+            'recordsFiltered': total,
+        }
+
+        return JsonResponse(response)

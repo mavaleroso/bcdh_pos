@@ -90,12 +90,12 @@ if (typeof TemplateCustomizer !== 'undefined') {
   window.templateCustomizer = new TemplateCustomizer({
     cssPath: assetsPath + 'vendor/css' + (rtlSupport ? '/rtl' : '') + '/',
     themesPath: assetsPath + 'vendor/css' + (rtlSupport ? '/rtl' : '') + '/',
-    displayCustomizer: true,
+    displayCustomizer: false,
     // lang: 'fr',
-    // defaultTheme: 2,
+    defaultTheme: 1,
     // defaultStyle: 'light',
-    // defaultTextDir: 'ltr',
-    // defaultLayoutType: 'fixed',
+    defaultTextDir: 'ltr',
+    defaultLayoutType: 'fixed',
     // defaultMenuCollapsed: true,
     // defaultNavbarFixed: true,
     // defaultFooterFixed: false

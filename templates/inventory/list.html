@@ -544,13 +544,13 @@
                                             <th>${e.code}</th>
                                             <th class="text-right">${e.quantity}</th>
                                             <th class="text-right">${currencyFormat(e.cost)}</th>
-                                            <th class="text-right">${Number(e.total).toFixed(2)}</th>
+                                            <th class="text-right">${currencyFormat(e.total)}</th>
                                             <th></th>
                                             <th></th>
                                             <th></th>
                                             <th class="text-right">${e.balance_qty}</th>
                                             <th class="text-right">${currencyFormat(e.balance_cost ?? 0)}</th>
-                                            <th class="text-right">${e.balance_total}</th>
+                                            <th class="text-right">${currencyFormat(e.balance_total)}</th>
                                         </tr>
                                     `
                                 } else {
@@ -563,10 +563,10 @@
                                             <th></th>
                                             <th class="text-right">${e.quantity}</th>
                                             <th class="text-right">${currencyFormat(e.cost)}</th>
-                                            <th class="text-right">${Number(e.total).toFixed(2)}</th>
+                                            <th class="text-right">${currencyFormat(e.total)}</th>
                                             <th class="text-right">${e.balance_qty}</th>
                                             <th class="text-right">${currencyFormat(e.balance_cost ?? 0)}</th>
-                                            <th class="text-right">${e.balance_total}</th>
+                                            <th class="text-right">${currencyFormat(e.balance_total)}</th>
                                         </tr>
                                     `
                                 }

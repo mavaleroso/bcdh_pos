@@ -490,7 +490,7 @@
                     let val = parseInt($(this).val() ?? 0)
                     let price = $(this).data('price')
                     let sub_total = val * price
-                    grand_total_tmp+=sub_total
+                    grand_total_tmp += sub_total
                 });
 
                 let isNan_grand_total = isNaN(grand_total_tmp) ? 0 : grand_total_tmp;
@@ -507,8 +507,6 @@
                 $('.pre-quantity').keyup()
             }, 500)
         })
-
-
 
         btn_update.on('click', function() {
             if(client_id == 0 || selected_items.length == 0) {
